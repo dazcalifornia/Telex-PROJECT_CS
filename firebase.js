@@ -1,11 +1,3 @@
-import React,{useRef,useState} from 'react'
-import {
-  View,
-  Text,
-  Button,
-} from 'native-base'
-
-
 import firebase from 'firebase/compat/app'
 
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -26,18 +18,16 @@ firebase.initializeApp({
   measurementId: "G-PJ3DGLKW52"
 })
 
-const auth = firebase.auth()
-const firestore = firebase.firestore()
-
-const MessageTest = () => {
-
-
-  return (
-    <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
-      <Text>MessageTest</Text>
-    </View>
-  )
+let app ;
+if( firebase.apps.length === 0){
+  app = firebase.initializeApp(firebaseConfig)
+}else{
+  app = firebase.app()
 }
 
 
-export default MessageTest
+const auth = app.auth()
+const db = app.firestore()
+
+export { auth, db };
+

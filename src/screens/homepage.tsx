@@ -1,49 +1,63 @@
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useCallback, useEffect, useState, useLayoutEffect } from 'react'
 import {
   View,
   ScrollView,
   Button,
   VStack
 } from 'native-base'
-import ThemeToggle from '../components/ThemeToggle';
-
-
+import { GiftedChat } from 'react-native-gifted-chat'
+import { auth,db } from '../../firebase';
 
 import Header from '../components/header'
-import ChatList from '../components/chatList'
+
 const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
   const { navigate } = props.navigation;
+  const [message, setMessage] = useState([])
 
+  useLayoutEffect(() => {
+    const unsubscribe = db.collection('messages').orderBy('createdAt', 'desc').onSnapshot(snapshot => (
+      setMessage(snapshot.docs.map(doc => ({
+        _id: doc.data()._id,
+        createdAt: doc.data().createdAt.toDate(),
+        text: doc.data().text,
+        user: doc.data().user,
+      })))
+    ))
+    return unsubscribe;
+  }, [])
+ 
+  const onSend = useCallback((messages = []) => {
+    setMessage(previousMessages => GiftedChat.append(previousMessages, messages))
+    const {
+      _id, 
+      createdAt, 
+      text, 
+      user 
+    } = messages[0]
+    db.collection('messages').add({
+      _id,
+      createdAt,
+      text,
+      user
+      })
+  }, [])
 
   return (
     <>
-      <Header />
-      <ScrollView>
-        <ChatList />
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <VStack space={4} alignItems="center">
-            <Button
-              colorScheme="primary"
-              onPress={() => {
-                console.log('Navigate to login')
-                navigate('Login')
-              }}>
-              Login Screen
-            </Button>
-            <Button
-              variant={"subtle"}
-              colorScheme="primary"
-              onPress={() => {
-                navigate('MessageTest')
-                console.log('Navigate to messageTest')
-              }}>MessageTest</Button>
+      <Header {...props}/>
+      <GiftedChat
+        messages={message}
+        showAvatarForEveryMessage={true}
+        onSend={messages => onSend(messages)}
+        user={{
+          _id: auth.currentUser?.email,
+          name: auth.currentUser?.displayName,
+          avatar: auth.currentUser?.photoURL,
 
-            <ThemeToggle />
-          </VStack>
-        </View>
-      </ScrollView>
+        }}
+      />
     </>
-  )
+ )
 }
 
 

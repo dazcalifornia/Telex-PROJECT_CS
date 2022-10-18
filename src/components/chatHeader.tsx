@@ -15,9 +15,18 @@ import {
   CommonActions,
 } from '@react-navigation/native';
 
-export default function ChatHeader(props:{navigation:{goBack:any};}) {
-  const {goBack} = props.navigation;
-  return (
+import {auth} from '../../firebase';
+
+export default function ChatHeader(props:{navigation:{navigate:any};}) {
+  //sign out
+   const signOut = () => {
+    auth.signOut().then(() => {
+    // Sign-out successful.
+        props.navigate.replace("Login");
+        }).catch((error) => {
+            // An error happened.
+        });
+}  return (
     <View>
       <StatusBar barStyle="light-content"/>
       <HStack safeAreaTop bg="base" px="1" py="3" 
@@ -53,7 +62,7 @@ export default function ChatHeader(props:{navigation:{goBack:any};}) {
             size: 5,
             color: "subbase",
           }}
-          onPress={() => console.log('Pressed chat menu')}
+          onPress={() =>{signOut()}}
           />
       </HStack>
     </View>

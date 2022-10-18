@@ -10,9 +10,19 @@ import {
 import React from 'react'
 import { Entypo } from '@expo/vector-icons';
 
+import {auth} from '../../firebase';
 
-import { useNavigation } from '@react-navigation/native'
-const Header = () => {
+const Header = (props:{navigation:{navigate:any;};}) => {
+  const {replace} = props.navigation;
+
+  const signOut = () => {
+auth.signOut().then(() => {
+// Sign-out successful.
+replace("Login");
+}).catch((error) => {
+// An error happened.
+});
+}
   return (
     <>
     <StatusBar barStyle="light-content" />
@@ -20,12 +30,12 @@ const Header = () => {
         justifyContent="space-between" 
         alignItems="center" w="100%" h="165px">
         <Image source={{
-          uri: 'https://source.unsplash.com/user/21plenka'
+          uri: auth?.currentUser?.photoURL
         }} alt="Profile image" ml="24px" size={65} rounded="full" />
         {/*/<HStack alignItems="center" ml="24px">
           //<Text color="white" fontSize="2xl" fontWeight="bold">Logo</Text>
         </HStack>/*/}
-          <Text color="white" fontSize="2xl" fontWeight="bold">Hello "Franx"</Text>
+          <Text color="white" fontSize="2xl" fontWeight="bold">Hello "{auth?.currentUser?.displayName}"</Text>
         <IconButton
           mr="24px"
           borderRadius="15px"
@@ -37,7 +47,7 @@ const Header = () => {
             size: 5,
             color: "subbase",
           }}
-          onPress={() => console.log('Pressed')}
+          onPress={signOut}
         />
     </HStack>
     </>

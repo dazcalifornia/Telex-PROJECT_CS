@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState,useEffect } from 'react'
 import {
   Text,
   Button,
@@ -11,22 +11,30 @@ import {
   Link,
   Center,
 } from 'native-base'
-
-
-export enum AuthState {
-  None,
-  Login,
-  Loading,
-  LoginError,
-  RegisterError,
-}
+import { auth } from '../../firebase'
 
 const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [authState, setAuthState] = useState(AuthState.None);
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(function(user) {
+      if (user) {
+        props.navigation.replace('Home')
+      } else {
+        // No user is signed in.
+      }
+    });
+    return unsubscribe;
+  }, []);
+  const signIn = () => {
+    auth.signInWithEmailAndPassword(email, password)
+      .catch((error) => {
+        var errorMessage = error.message;
+        alert(errorMessage)
+      });
+  }
   return (
     <Center w="100%">
       <Box safeArea p="2" py="8" w="90%" maxW="290">
@@ -66,8 +74,7 @@ const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
           <Button
             mt="2"
             colorScheme="indigo"
-            isLoading={authState === AuthState.Loading}
-
+            onPress={signIn}
           >
             Sign in
           </Button>
@@ -81,19 +88,12 @@ const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
               color: "indigo.500",
               fontWeight: "medium",
               fontSize: "sm"
-            }}
+            }} onPress={() => props.navigation.navigate('Register')}>
 
             >
               Sign Up
             </Link>
           </HStack>
-          {authState === AuthState.LoginError && (
-            <Text color="red.500">Login failed</Text>
-          )}
-          {authState === AuthState.RegisterError && (
-            <Text color="red.500">Register failed</Text>
-          )}
-
         </VStack>
       </Box>
     </Center>
