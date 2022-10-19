@@ -7,7 +7,7 @@ import {
 } from 'native-base'
 import { GiftedChat } from 'react-native-gifted-chat'
 import { auth,db } from '../../firebase';
-
+import ChatList from '../components/chatList';
 import Header from '../components/header'
 
 const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
@@ -45,6 +45,7 @@ const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
   return (
     <>
       <Header {...props}/>
+      <ChatList {...props}/>
       <GiftedChat
         messages={message}
         showAvatarForEveryMessage={true}
@@ -59,7 +60,4 @@ const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
     </>
  )
 }
-
-
-
 export default HomeScreen

@@ -43,7 +43,7 @@ replace("Login");
           colorScheme="indigo"
           _icon={{
             as: Entypo,
-            name: "dots-three-horizontal",
+            name: "log-out",
             size: 5,
             color: "subbase",
           }}
