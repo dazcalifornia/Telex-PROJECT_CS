@@ -16,29 +16,17 @@ import {auth,db} from '../../firebase'
 
 export default function ChatList(props: { navigation: { navigate: any; }; }) {
   const [users, setUsers] = useState([])
- 
-  const findUsers = () => {
-    db.collection('users').onSnapshot(snapshot => {
+  
+  //show FirebaseUser in console
+  useEffect(() => {
+    const unsubscribe = db.collection('users').onSnapshot(snapshot => (
       setUsers(snapshot.docs.map(doc => ({
         id: doc.id,
         data: doc.data()
       })))
-    })
-  }
-  useEffect(() => {
-    findUsers()
+    ))
+    return unsubscribe;
   }, [])
-  return (
-    <View style={{flex:1}}>
-      <ScrollView>
-        {users.map((user: { id: any; data: { email: any; }; }) => (
-          <Hstack key={user.id} onPress={() => props.navigation.navigate('Chat', {email: user.data.email})}>
-            <Text>{user.data.email}</Text>
-          </Hstack>
-        ))}
-      </ScrollView>
-    </View>
-  );
 
   return (
     <View>

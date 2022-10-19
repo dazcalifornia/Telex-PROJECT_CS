@@ -16,13 +16,14 @@ const Header = (props:{navigation:{navigate:any;};}) => {
   const {replace} = props.navigation;
 
   const signOut = () => {
-auth.signOut().then(() => {
-// Sign-out successful.
-replace("Login");
-}).catch((error) => {
-// An error happened.
-});
-}
+    auth.signOut().then(() => {
+      // Sign-out successful.
+      replace("Login");
+    }).catch((error) => {
+        // An error happened.
+        });
+  }
+
   return (
     <>
     <StatusBar barStyle="light-content" />
