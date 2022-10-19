@@ -3,16 +3,28 @@ import {
   View,
   ScrollView,
   Button,
-  VStack
+  VStack,
+  Input
 } from 'native-base'
 import { GiftedChat } from 'react-native-gifted-chat'
 import { auth,db } from '../../firebase';
-import ChatList from '../components/chatList';
+;
 import Header from '../components/header'
 
 const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
   const { navigate } = props.navigation;
   const [message, setMessage] = useState([])
+  const [friendList, setFriendList] = useState([])
+
+  //search user in user Firestore
+  const searchUser = (text: string) => {
+    db.collection('users').where('name', '==', text).get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        setFriendList(doc.data().name)
+          console.log(doc.data().name)
+      })
+    })
+  }
 
   useLayoutEffect(() => {
     const unsubscribe = db.collection('messages').orderBy('createdAt', 'desc').onSnapshot(snapshot => (
@@ -45,7 +57,22 @@ const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
   return (
     <>
       <Header {...props}/>
-      <ChatList {...props}/>
+      <Input 
+        placeholder="Add Friend"
+        onChangeText={(text) => searchUser(text)}
+      />
+      {/* <ScrollView>
+        <VStack space={4} alignItems="center">
+          {friendList.map((friend: any) => (
+            <Button
+              key={friend}
+              onPress={() => navigate('Chat', { name: friend })}
+            >
+              {friend}
+            </Button>
+          ))}
+        </VStack>
+      </ScrollView> */}
       <GiftedChat
         messages={message}
         showAvatarForEveryMessage={true}

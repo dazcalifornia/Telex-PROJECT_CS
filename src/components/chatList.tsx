@@ -13,27 +13,16 @@ import {
 } from 'native-base';
 
 import {auth,db} from '../../firebase'
-
 export default function ChatList(props: { navigation: { navigate: any; }; }) {
   const [users, setUsers] = useState([])
   
-  //show FirebaseUser in console
-  useEffect(() => {
-    const unsubscribe = db.collection('users').onSnapshot(snapshot => (
-      setUsers(snapshot.docs.map(doc => ({
-        id: doc.id,
-        data: doc.data()
-      })))
-    ))
-    return unsubscribe;
-  }, [])
+
 
   return (
     <View>
       <Box>
         <Heading>chat list</Heading>
         <ScrollView w="100%" h="60%" showVerticalScrollIndicator={false}>
-          <ChatItem />
         </ScrollView>
       </Box>
     </View>

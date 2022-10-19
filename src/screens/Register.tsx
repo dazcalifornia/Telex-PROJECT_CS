@@ -9,7 +9,7 @@ import {
   Button,
 } from 'native-base';
 
-import {auth} from '../../firebase';//firebase auth
+import {auth, db} from '../../firebase';//firebase auth
 const Register = (props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +24,15 @@ const Register = (props) => {
       user.updateProfile({
         displayName: name,
         photoURL: imageURL,
-      }).catch((error) => {
+      }).then(function() {
+        db.collection('users').doc(user.uid).set({
+          uid: userCredential.user.uid,
+          email: userCredential.user.email,
+          name: user.displayName,
+          imageURL: user.photoURL,
+        })
+      })
+      .catch((error) => {
         // An error occurred
         alert(error.message);
       });
