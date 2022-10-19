@@ -23,7 +23,7 @@ const Register = (props) => {
       var user = userCredential.user;
       user.updateProfile({
         displayName: name,
-        photoURL: imageURL,
+        photoURL: imageURL? imageURL :"https://www.pngitem.com/pimgs/m/30-307416_profile-icon-png-image-free-download-searchpng-employee.png",
       }).then(function() {
         db.collection('users').doc(user.uid).set({
           uid: userCredential.user.uid,
@@ -31,6 +31,7 @@ const Register = (props) => {
           name: user.displayName,
           imageURL: user.photoURL,
         })
+            props.navigation.replace('Login');
       })
       .catch((error) => {
         // An error occurred

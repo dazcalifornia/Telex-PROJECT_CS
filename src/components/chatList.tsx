@@ -9,63 +9,61 @@ import {
   Heading,
   ScrollView,
   SwipeListView,
-  Hstack
+  Hstack,
+  Image
 } from 'native-base';
 
+import Chat from '../screens/chat';
 import {auth,db} from '../../firebase'
-export default function ChatList(props: { navigation: { navigate: any; }; }) {
+
+function ChatList(props: { navigation: { navigate: any; }; }) {
   const [users, setUsers] = useState([])
-  
-
-
+  {/*load all user form database*/}
+  useEffect(() => {
+    db.collection('users').onSnapshot(snapshot => (
+      setUsers(snapshot.docs.map(doc => ({
+        name: doc.data().name,
+        email: doc.data().email,
+        photoURL: doc.data().imageURL,
+      })))
+    ))
+    console.log(`users`, users)
+  }, [])
+  const goChat = (item: { name: any; }) => {
+    navigate('Chat', {name: item.name})
+  }
   return (
     <View>
-      <Box>
+      <Box >
         <Heading>chat list</Heading>
         <ScrollView w="100%" h="60%" showVerticalScrollIndicator={false}>
+          {users.map((userobj,i)=>{
+            return(
+              
+              <Box 
+                onPress={()=>goChat(userobj.name)}
+                key={i} flex={1} alignItems="center" justifyContent="center" w="80%" h="20%" bg="white" p={2} my={2} borderRadius={10}>
+              <Text>
+                {userobj.name}
+              </Text>
+              <Text>
+                {userobj.email}
+              </Text>
+              <Image
+                  key={i}
+                source={{uri: userobj.photoURL}}
+                alt="Alternate Text"
+                borderRadius={100}
+                size="md"
+              />
+              </Box>
+            )
+            })
+          }
         </ScrollView>
       </Box>
     </View>
   );
 }
 
-
-const ChatItem = () => {
-  const data = [{
-    key: '1',
-    title: 'Title 1',
-    description: 'Description 1',
-  }, {
-    key: '2',
-    title: 'Title 2',
-    description: 'Description 2',
-  }, {
-    key: '3',
-    title: 'Title 3',
-    description: 'Description 3',
-  }, {
-    key: '4',
-    title: 'Title 4',
-    description: 'Description 4',
-  }, {
-    key: '5',
-    title: 'Title 5',
-    description: 'Description 5',
-  }, {
-  }]
-  return (
-    <View>
-      <Box>
-        {data.map((item) => {
-          return (
-            <Box pl="4" pr="5" py="2" key={item.key}>
-               <Text>{item.title}</Text>
-               <Text>{item.description}</Text>
-            </Box>
-          );
-        })}
-      </Box>
-    </View>
-  );
-}
-
+export default ChatList;

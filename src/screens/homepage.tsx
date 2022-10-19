@@ -10,6 +10,7 @@ import { GiftedChat } from 'react-native-gifted-chat'
 import { auth,db } from '../../firebase';
 ;
 import Header from '../components/header'
+import ChatList from '../components/chatList';
 
 const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
   const { navigate } = props.navigation;
@@ -54,13 +55,14 @@ const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
       })
   }, [])
 
-  return (
+  return(
     <>
       <Header {...props}/>
       <Input 
         placeholder="Add Friend"
         onChangeText={(text) => searchUser(text)}
       />
+        <ChatList {...props}/>
       {/* <ScrollView>
         <VStack space={4} alignItems="center">
           {friendList.map((friend: any) => (
@@ -80,7 +82,7 @@ const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
         user={{
           _id: auth.currentUser?.email,
           name: auth.currentUser?.displayName,
-          avatar: auth.currentUser?.photoURL,
+          avatar: auth.currentUser?.photoURL
 
         }}
       />
