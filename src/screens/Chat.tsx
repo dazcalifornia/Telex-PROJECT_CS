@@ -19,14 +19,15 @@ function Chat (props:{name:string, email:string, photoURL:string}) {
   const [message, setMessage] = useState([])
 
   //test data insert to firestore
-  const [inputRef, setInputRef] = useState('');
-  
-  //hendle input
-  const sentData=()=>{
-    let chatroofRef = db.collection('Chatrooms');
-    console.log(inputRef)
-  }
+  const [inputRef, setInputRef] = useState("");
 
+  //function when send button is pressed
+  const sentData = () => {
+    if(inputRef === ""){
+      alert("please enter data")
+    }
+    console.log("it's working")
+  }
   useLayoutEffect(() => {
     const loadChat = db.collection('message').orderBy('createdAt', 'desc').onSnapshot(snapshot => (
       setMessage(snapshot.docs.map(doc => ({
