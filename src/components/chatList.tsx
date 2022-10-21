@@ -8,8 +8,7 @@ import {
   Box,
   Heading,
   ScrollView,
-  SwipeListView,
-  Hstack,
+  Button,
   Image
 } from 'native-base';
 
@@ -18,6 +17,9 @@ import {auth,db} from '../../firebase'
 
 function ChatList(props: { navigation: { navigate: any; }; }) {
   const [users, setUsers] = useState([])
+
+  const { navigate } = props.navigation;
+  
   {/*load all user form database*/}
   useEffect(() => {
     db.collection('users').onSnapshot(snapshot => (
@@ -27,11 +29,8 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
         photoURL: doc.data().imageURL,
       })))
     ))
-    console.log(`users`, users)
   }, [])
-  const goChat = (item: { name: any; }) => {
-    navigate('Chat', {name: item.name})
-  }
+
   return (
     <View>
       <Box >
@@ -41,8 +40,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
             return(
               
               <Box 
-                onPress={()=>goChat(userobj.name)}
-                key={i} flex={1} alignItems="center" justifyContent="center" w="80%" h="20%" bg="white" p={2} my={2} borderRadius={10}>
+                key={i} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
               <Text>
                 {userobj.name}
               </Text>
@@ -56,6 +54,14 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                 borderRadius={100}
                 size="md"
               />
+                  <Button
+                    onPress={() => navigate('Chat',
+                    { name:userobj.name, 
+                      email:userobj.email, 
+                      photoURL:userobj.photoURL}
+                  )}
+                    title="Chat"
+                  />
               </Box>
             )
             })

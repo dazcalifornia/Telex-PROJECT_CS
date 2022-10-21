@@ -13,9 +13,7 @@ import Header from '../components/header'
 import ChatList from '../components/chatList';
 
 const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
-  const { navigate } = props.navigation;
   const [message, setMessage] = useState([])
-  const [friendList, setFriendList] = useState([])
 
   //search user in user Firestore
   const searchUser = (text: string) => {
@@ -62,7 +60,7 @@ const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
         placeholder="Add Friend"
         onChangeText={(text) => searchUser(text)}
       />
-        <ChatList {...props}/>
+      <ChatList {...props}/>
       {/* <ScrollView>
         <VStack space={4} alignItems="center">
           {friendList.map((friend: any) => (

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React,{useEffect} from 'react';
 import {
   Text,
   View,
@@ -11,22 +11,19 @@ import {
   Image,
 } from 'native-base';
 import { Entypo } from '@expo/vector-icons';
-import {
-  CommonActions,
-} from '@react-navigation/native';
 
 import {auth} from '../../firebase';
 
-export default function ChatHeader(props:{navigation:{navigate:any};}) {
-  //sign out
-   const signOut = () => {
-    auth.signOut().then(() => {
-    // Sign-out successful.
-        props.navigate.replace("Login");
-        }).catch((error) => {
-            // An error happened.
-        });
-}  return (
+export default function ChatHeader(props: {name:string, email:string, photoURL:string, navigation:any}) {
+ 
+  const {name, email, photoURL} = props.route.params;
+  const { goBack } = props.navigation;
+  useEffect(() => {
+    console.log(`name`, name)
+    console.log(`email`, email)
+    console.log(`photoURL`, photoURL)
+  }, [])
+  return (
     <View>
       <StatusBar barStyle="light-content"/>
       <HStack safeAreaTop bg="base" px="1" py="3" 
@@ -48,10 +45,10 @@ export default function ChatHeader(props:{navigation:{navigate:any};}) {
           }
         />
         <Image source={{
-          uri: 'https://source.unsplash.com/user/21plenka'
-        }} alt="Profile image" ml="18px" size={54} rounded="full" />
+          uri: photoURL
+        }} alt="Profile image" size={54} rounded="full" />
           <VStack>
-            <Heading color="white" fontSize="2xl" fontWeight="bold">Franx</Heading>
+            <Heading color="white" fontSize="2xl" fontWeight="bold">{name}</Heading>
             <Text color="subbase" fontSize="sm" fontWeight="bold">Online</Text>
           </VStack>
         <IconButton
@@ -62,7 +59,7 @@ export default function ChatHeader(props:{navigation:{navigate:any};}) {
             size: 5,
             color: "subbase",
           }}
-          onPress={() =>{signOut()}}
+          onPress={() => console.log('pressed Settings')}
           />
       </HStack>
     </View>
