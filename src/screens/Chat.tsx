@@ -2,40 +2,25 @@ import React, { useState, useEffect, useLayoutEffect,useCallback } from 'react';
 
 import {auth, db} from '../../firebase';
 
-import { 
-  View,
+import {
   Text,
-  Box,
-  Heading,
-  ScrollView, 
   HStack,
   Input,
   Button,
 } from 'native-base';
 import { GiftedChat } from 'react-native-gifted-chat';
 import ChatHeader from '../components/chatHeader';
-function Chat (props:{name:string, email:string, photoURL:string}) {
+
+function Chat (props:{name:string, email:string, photoURL:string,navigation:any}) {
   const {name, email, photoURL} = props.route.params;
   const [message, setMessage] = useState([])
 
-  //test data insert to firestore
-  const [inputRef, setInputRef] = useState("");
+   useEffect(() => {
+    console.log(`name`, name)
+    console.log(`email`, email)
+    console.log(`photoURL`, photoURL)
+  }, [])
 
-  //function when send button is pressed
-  const sentData = () => {
-    if(inputRef === ""){
-      alert("please enter data")
-    }else{
-      alert(inputRef)
-      console.log("it's working")
-      //set inputRef to empty
-      setInputRef("")
-      {/*db.collection('messages').add({
-        name: inputRef,
-      })
-      setInputRef("")*/}
-    }
-  }
   useLayoutEffect(() => {
     const loadChat = db.collection('message').orderBy('createdAt', 'desc').onSnapshot(snapshot => (
       setMessage(snapshot.docs.map(doc => ({
@@ -68,11 +53,8 @@ function Chat (props:{name:string, email:string, photoURL:string}) {
   return (
     <>
       <ChatHeader {...props}/>
-      <HStack style={{width:100}}>
-        <Input onChange={(input)=>setInputRef(input)} w='100%' type="text" placeholder="Add data" />
-        <Button onPress={sentData}>Send</Button>
-      </HStack>
-        <GiftedChat
+      <Text>{auth?.currentUser?.uid}</Text>
+      <GiftedChat
           messages={message}
           onSend={messages => onSend(messages)}
           user={{

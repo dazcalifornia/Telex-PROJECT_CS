@@ -8,6 +8,7 @@ import {
   Box,
   Heading,
   ScrollView,
+  VStack,
   Button,
   Image
 } from 'native-base';
@@ -21,8 +22,10 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
   const { navigate } = props.navigation;
   
   {/*load all user form database*/}
+  //load all user from database except current user
+
   useEffect(() => {
-    db.collection('users').onSnapshot(snapshot => (
+    db.collection('users').where('uid','!=',auth.currentUser?.uid).onSnapshot(snapshot => (
       setUsers(snapshot.docs.map(doc => ({
         name: doc.data().name,
         email: doc.data().email,
@@ -33,14 +36,14 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
 
   return (
     <View>
-      <Box >
+      <Box>
+      <ScrollView>
         <Heading>chat list</Heading>
-        <ScrollView w="100%" h="60%" showVerticalScrollIndicator={false}>
+        <VStack space={4} alignItems="center">
           {users.map((userobj,i)=>{
-            return(
-              
+            return( 
               <Box 
-                key={i} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
+                key={i} style={{ flex: 1, alignitems: 'center', justifycontent: 'center', }}>
               <Text>
                 {userobj.name}
               </Text>
@@ -50,24 +53,25 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
               <Image
                   key={i}
                 source={{uri: userobj.photoURL}}
-                alt="Alternate Text"
-                borderRadius={100}
+                alt="alternate text"
+                borderradius={100}
                 size="md"
               />
                   <Button
                     onPress={() => navigate('Chat',
                     { name:userobj.name, 
                       email:userobj.email, 
-                      photoURL:userobj.photoURL}
+                      photourl:userobj.photoURL}
                   )}
-                    title="Chat"
+                    title="chat"
                   />
               </Box>
             )
             })
           }
-        </ScrollView>
-      </Box>
+        </VStack>
+      </ScrollView> 
+     </Box>
     </View>
   );
 }

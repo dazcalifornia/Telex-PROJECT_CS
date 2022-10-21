@@ -18,12 +18,8 @@ export default function ChatHeader(props: {name:string, email:string, photoURL:s
  
   const {name, email, photoURL} = props.route.params;
   const { goBack } = props.navigation;
-  useEffect(() => {
-    console.log(`name`, name)
-    console.log(`email`, email)
-    console.log(`photoURL`, photoURL)
-  }, [])
-  return (
+
+   return (
     <View>
       <StatusBar barStyle="light-content"/>
       <HStack safeAreaTop bg="base" px="1" py="3" 
