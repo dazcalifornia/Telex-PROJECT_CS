@@ -10,14 +10,14 @@ import ChatList from '../components/chatList';
 const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
   const [message, setMessage] = useState([])
 
-  const [firendList, setFriendList] = useState([])
+  const [friendList, setFriendList] = useState([])
 
   //search user in user Firestore
   const searchUser = (text: string) => {
-    db.collection('users').where('name', '==', text).get().then((querySnapshot) => {
+    db.collection('users').where('username', '==', text).get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         setFriendList(doc.data().name)
-          console.log(doc.data().name)
+          console.log(friendList)
       })
     })
   }
@@ -29,6 +29,7 @@ const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
         onChangeText={(text) => searchUser(text)}
       />
       <ChatList {...props}/>
+
    </>
  )
 }

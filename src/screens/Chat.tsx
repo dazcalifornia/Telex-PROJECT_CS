@@ -13,13 +13,7 @@ import ChatHeader from '../components/chatHeader';
 
 function Chat (props:{name:string, email:string, photoURL:string,navigation:any}) {
   const {name, email, photoURL} = props.route.params;
-  const [message, setMessage] = useState([])
-
-   useEffect(() => {
-    console.log(`name`, name)
-    console.log(`email`, email)
-    console.log(`photoURL`, photoURL)
-  }, [])
+  const [message, setMessage] = useState([])  //loadmessage from firebase specific to user 
 
   useLayoutEffect(() => {
     const loadChat = db.collection('message').orderBy('createdAt', 'desc').onSnapshot(snapshot => (

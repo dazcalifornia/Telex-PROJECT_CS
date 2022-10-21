@@ -63,8 +63,9 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       email:userobj.email, 
                       photoURL:userobj.photoURL}
                   )}
-                    title="chat"
-                  />
+                  >
+                  Chat
+                  </Button>
               </Box>
             )
             })
