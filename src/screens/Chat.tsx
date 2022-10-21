@@ -25,8 +25,16 @@ function Chat (props:{name:string, email:string, photoURL:string}) {
   const sentData = () => {
     if(inputRef === ""){
       alert("please enter data")
+    }else{
+      alert(inputRef)
+      console.log("it's working")
+      //set inputRef to empty
+      setInputRef("")
+      {/*db.collection('messages').add({
+        name: inputRef,
+      })
+      setInputRef("")*/}
     }
-    console.log("it's working")
   }
   useLayoutEffect(() => {
     const loadChat = db.collection('message').orderBy('createdAt', 'desc').onSnapshot(snapshot => (
