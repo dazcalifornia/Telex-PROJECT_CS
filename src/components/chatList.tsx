@@ -61,7 +61,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                     onPress={() => navigate('Chat',
                     { name:userobj.name, 
                       email:userobj.email, 
-                      photourl:userobj.photoURL}
+                      photoURL:userobj.photoURL}
                   )}
                     title="chat"
                   />
