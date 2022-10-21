@@ -11,8 +11,8 @@ import {
 import { GiftedChat } from 'react-native-gifted-chat';
 import ChatHeader from '../components/chatHeader';
 
-function Chat (props:{name:string, email:string, photoURL:string,navigation:any}) {
-  const {name, email, photoURL} = props.route.params;
+function Chat (props:{userId:string,name:string, email:string, photoURL:string,navigation:any}) {
+  const {userId, name, email, photoURL} = props.route.params;
   const [message, setMessage] = useState([])  //loadmessage from firebase specific to user 
 
   useLayoutEffect(() => {
@@ -44,12 +44,24 @@ function Chat (props:{name:string, email:string, photoURL:string,navigation:any}
       })
   }, [])
 
+  const addCollectionGroup = () => {
+    //add collection group to firebase with user uid as id
+    db.collectionGroup('Chatrooms').where('uid', '==', '').get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        console.log(doc.id, " => ", doc.data());
+      });
+    })
+  }
+
   return (
     <>
       <ChatHeader {...props}/>
+      <Text>Target UID:{userId}</Text>
       <Text>{auth?.currentUser?.uid}</Text>
+      <Button onPress={addCollectionGroup}>add collection</Button>
       <GiftedChat
           messages={message}
+          showUserAvatar={true}
           onSend={messages => onSend(messages)}
           user={{
             _id: auth?.currentUser?.uid,

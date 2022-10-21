@@ -27,6 +27,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
   useEffect(() => {
     db.collection('users').where('uid','!=',auth.currentUser?.uid).onSnapshot(snapshot => (
       setUsers(snapshot.docs.map(doc => ({
+        userId: doc.data().uid,
         name: doc.data().name,
         email: doc.data().email,
         photoURL: doc.data().imageURL,
@@ -59,7 +60,9 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
               />
                   <Button
                     onPress={() => navigate('Chat',
-                    { name:userobj.name, 
+                    { 
+                      userId: userobj.userId,
+                      name:userobj.name, 
                       email:userobj.email, 
                       photoURL:userobj.photoURL}
                   )}
