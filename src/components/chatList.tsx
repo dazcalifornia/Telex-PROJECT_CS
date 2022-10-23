@@ -3,14 +3,16 @@ import React, {
   useEffect,
 } from 'react';
 import {
-  View,
+
   Text,
   Box,
   Heading,
   ScrollView,
   VStack,
   Button,
-  Image
+  Image,
+  HStack,
+  Pressable,
 } from 'native-base';
 
 import Chat from '../screens/chat';
@@ -36,48 +38,49 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
   }, [])
 
   return (
-    <View>
-      <Box>
-      <ScrollView>
-        <Heading>chat list</Heading>
-        <VStack space={4} alignItems="center">
-          {users.map((userobj,i)=>{
-            return( 
-              <Box 
-                key={i} style={{ flex: 1, alignitems: 'center', justifycontent: 'center', }}>
-              <Text>
-                {userobj.name}
-              </Text>
-              <Text>
-                {userobj.email}
-              </Text>
-              <Image
-                  key={i}
-                source={{uri: userobj.photoURL}}
-                alt="alternate text"
-                borderradius={100}
-                size="md"
-              />
-                  <Button
-                    onPress={() => navigate('Chat',
-                    { 
+    <>
+      <Box flex={1} bg="white" roundedTop="30px">
+        <Heading size="xl" pt="7px" pl="14px" fontSize="40" color="black">Friend List</Heading>
+        <ScrollView pt="18px">
+          <VStack space={4} ml="14px" alignItems="center">
+            {users.map((userobj, i) => {
+              return (
+                <Box
+                  py="4px"
+                  w="100%"
+                  key={i} style={{ 
+                    flex: 1, 
+                    alignitems: 'center', 
+                    justifycontent: 'center',
+                  }}
+                >
+                  <Pressable onPress={() => navigate('Chat',
+                    {
                       userId: userobj.userId,
-                      name:userobj.name, 
-                      email:userobj.email, 
-                      photoURL:userobj.photoURL}
-                  )}
-                  >
-                  Chat
-                  </Button>
-              </Box>
-            )
+                      name: userobj.name,
+                      email: userobj.email,
+                      photoURL: userobj.photoURL
+                    }
+                  )}>
+                  <HStack space={4} alignItems="center" w={100}>
+                    <Image 
+                      key={i}
+                      source={{ uri: userobj.photoURL }}
+                      alt="Friend picture"
+                      borderRadius={100}
+                      size="65px"
+                    />
+                    <Text> {userobj.name} </Text>
+                    </HStack>
+                  </Pressable>
+                </Box>
+              )
             })
-          }
-        </VStack>
-      </ScrollView> 
-     </Box>
-    </View>
-  );
+            }
+          </VStack>
+        </ScrollView>
+      </Box>
+    </>
+  )
 }
-
 export default ChatList;

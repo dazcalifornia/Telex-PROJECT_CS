@@ -4,10 +4,15 @@ import {auth, db} from '../../firebase';
 
 import {
   Text,
-  HStack,
-  Input,
+  Box,
+  Heading,
+  ScrollView,
+  VStack,
   Button,
+  Image,
+  Input,
 } from 'native-base';
+
 import { GiftedChat } from 'react-native-gifted-chat';
 import ChatHeader from '../components/chatHeader';
 
@@ -31,15 +36,6 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
     return loadChat;
   }, [])
  
-
-  //create chatRooms in firebase
-  const createChatRoom = useCallback(() => {
-    db.collection('chatRooms').doc(chatId).set({
-      member: member,
-      chatId: chatId,
-    })
-  }, [chatId, member])
-
   const onSend = useCallback((messages = []) => {
     setMessage(previousMessages => GiftedChat.append(previousMessages, messages))
     const {
@@ -61,8 +57,10 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
     <>
       <ChatHeader {...props}/>
       <Text>Target UID:{userId}</Text>
-      <Text>{auth?.currentUser?.uid}</Text>
-      <Button onPress={createChatRoom}>add collection</Button>
+      <Text>Your UID:{auth?.currentUser?.uid}</Text>
+      <Input placeholder="Type your message here" />
+
+
       <GiftedChat
           messages={message}
           showUserAvatar={true}
