@@ -39,13 +39,15 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
 
   return (
     <>
-      <Box flex={1} bg="white" roundedTop="30px">
+      <Box shadow={2} mt="10px" flex={1} bg="white" roundedTop="30px">
         <Heading size="xl" pt="7px" pl="14px" fontSize="40" color="black">Friend List</Heading>
         <ScrollView pt="18px">
           <VStack space={4} ml="14px" alignItems="center">
             {users.map((userobj, i) => {
               return (
                 <Box
+                  shadow={2}
+                  bg="#FCFBFC"
                   py="4px"
                   w="100%"
                   key={i} style={{ 
