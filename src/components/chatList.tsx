@@ -15,43 +15,58 @@ import {
   Pressable,
 } from 'native-base';
 
-import Chat from '../screens/chat';
 import {auth,db} from '../../firebase'
 
 function ChatList(props: { navigation: { navigate: any; }; }) {
   const [users, setUsers] = useState([])
-
+  const [friends, setFriends] = useState([])
   const { navigate } = props.navigation;
   
   {/*load all user form database*/}
   //load all user from database except current userObject
-  const userObject = auth.currentUser;
-
+  const currentUser = auth.currentUser?.uid
+  const getFriendsId = async () => {
+    const friendsId = await db.collection('users').where('uid','==',currentUser).get('friends')
+    const friendsIdArray = friendsId.docs.map(doc => doc.data().friends)
+    setFriends(friendsIdArray => friendsIdArray.concat(friendsIdArray))
+    console.log(friends)
+    return friends
+  }
   useEffect(() => {
-    db.collection('users').where('friends','!=',null)
-    .get().then((querySnapshot) => {
-      setUsers(querySnapshot.docs.map(doc => ({
-          userId: doc.data().uid,
-          name: doc.data().name,
-          email: doc.data().email,
-          photoURL: doc.data().photoURL,
-        })
-      ))
+    const bruh = db.collection('users').where('uid','==',currentUser).get('friends')
+      .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        //retrive all friends id from current user and put in to friendsArray
+        const friendsArray = doc.data().friends
+        setFriends(friendsArray)
+      });
+      console.log(friends)
     })
-
+    .catch((error) => {
+      console.log("Error getting documents: ", error);
+    })
+    db.collection('users').where('uid','==',friends).onSnapshot(snapshot => (
+      setUsers(snapshot.docs.map(doc => ({
+        userId: doc.data().uid,
+        name: doc.data().name,
+        email: doc.data().email,
+        photoURL: doc.data().imageURL,
+      })))
+    ))
   }, [])
 
   return (
     <>
-      <Box shadow={2} mt="10px" flex={1} bg="white" roundedTop="30px">
+      <Box shadow={2} mt="10px" flex={1} bg="white" roundedTop="30px" bg="#FCFBFC">
         <Heading size="xl" pt="7px" pl="14px" fontSize="40" color="black">Friend List</Heading>
         <ScrollView pt="18px">
-          <VStack space={4} px="14px" alignItems="center">
+          <Button onPress={() => getFriendsId()} bg="white" _text={{ color: 'black' }} size="sm" ml="14px" mt="10px" rounded="full" px="4" py="2" _pressed={{ bg: 'gray.200' }}>
+            <Text fontSize="sm" fontWeight="bold">Add Friend</Text>
+          </Button>
+          <VStack  space={4} px="14px" alignItems="center">
             {users.map((userobj, i) => {
               return (
                 <Box
-                  shadow={2}
-                  bg="#FCFBFC"
                   py="4px"
                   w="100%"
                   key={i} style={{ 
@@ -65,7 +80,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       userId: userobj.userId,
                       name: userobj.name,
                       email: userobj.email,
-                      photoURL: userobj.photoURL
+                      photoURL: userobj.imageURL
                     }
                   )}>
                   <HStack space={4} alignItems="center" w={100}>
@@ -76,7 +91,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       borderRadius={100}
                       size="65px"
                     />
-                    <Text> {userobj.name} </Text>
+                      <Text> {userobj.name} </Text>
                     </HStack>
                   </Pressable>
                 </Box>
