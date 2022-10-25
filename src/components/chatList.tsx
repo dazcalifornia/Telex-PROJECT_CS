@@ -24,17 +24,21 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
   const { navigate } = props.navigation;
   
   {/*load all user form database*/}
-  //load all user from database except current user
+  //load all user from database except current userObject
+  const userObject = auth.currentUser;
 
   useEffect(() => {
-    db.collection('users').where('uid','!=',auth.currentUser?.uid).onSnapshot(snapshot => (
-      setUsers(snapshot.docs.map(doc => ({
-        userId: doc.data().uid,
-        name: doc.data().name,
-        email: doc.data().email,
-        photoURL: doc.data().imageURL,
-      })))
-    ))
+    db.collection('users').where('friends','!=',null)
+    .get().then((querySnapshot) => {
+      setUsers(querySnapshot.docs.map(doc => ({
+          userId: doc.data().uid,
+          name: doc.data().name,
+          email: doc.data().email,
+          photoURL: doc.data().photoURL,
+        })
+      ))
+    })
+
   }, [])
 
   return (
