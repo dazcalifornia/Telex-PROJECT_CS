@@ -59,9 +59,6 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
       <Text>Target UID:{userId}</Text>
       <Text>Your UID:{auth?.currentUser?.uid}</Text>
       <Input placeholder="Type your message here" />
-
-
-      <GiftedChat
           messages={message}
           showUserAvatar={true}
           onSend={messages => onSend(messages)}
