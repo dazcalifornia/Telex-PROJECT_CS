@@ -24,8 +24,11 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
   const [users, setUsers] = useState([])
   const [friends, setFriends] = useState([])
 
-  const friendList = db.collection('users')
-    .where('uid','==',auth.currentUser?.uid)
+  const onloadUser = auth?.currentUser?.uid;
+  
+  const friendList=(client) =>{ 
+    db.collection('users')
+    .where('uid','==',client)
     .get('friends').then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         db.collection('users').where('uid','==',doc.data().friends).onSnapshot(snapshot => (
@@ -35,13 +38,32 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
             email: doc.data().email,
             photoURL: doc.data().imageURL,
           })))
-        )) 
+        ))
+        setFriends(doc.data().friends)
+        console.log('friends',friends)
+        return friends
       });
     })
-  
+  }
+
   useEffect(() => {
-
-
+    console.log('onloadUser',onloadUser)
+   // friendList(onloadUser)
+    db.collection('users').where('uid','==',onloadUser).get('friends').then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const friendListed = doc.data().friends
+        db.collection('users').where('uid','==',friendListed).onSnapshot(snapshot => (
+          //loadUser here! or code below 
+          setUsers(snapshot.docs.map(doc => ({
+            userId: doc.data().uid,
+            name: doc.data().name,
+            email: doc.data().email,
+            photoURL: doc.data().imageURL,
+          })))
+        ))
+        console.log('friends',friends)
+      });
+    })
     { /*db.collection('users').where('uid', '!=', auth.currentUser?.uid).onSnapshot(snapshot => {
       setUsers(snapshot.docs.map(doc => ({
         userId: doc.data().userId,
@@ -56,10 +78,11 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
     <>
       <Box shadow={2} mt="10px" flex={1} bg="white" roundedTop="30px" bg="#FCFBFC">
         <Heading size="xl" pt="7px" pl="14px" fontSize="40" color="black">Friend List</Heading>
+        <Button onPress={() => console.log("Clear huh?")} bg="white" _text={{ color: 'black' }} size="sm" ml="14px" mt="10px" rounded="full" px="4" py="2" _pressed={{ bg: 'gray.200' }}>
+          <Text fontSize="sm" fontWeight="bold">Add Friend</Text>
+        </Button>
         <ScrollView pt="18px">
-          <Button onPress={() => console.log("Clear huh?")} bg="white" _text={{ color: 'black' }} size="sm" ml="14px" mt="10px" rounded="full" px="4" py="2" _pressed={{ bg: 'gray.200' }}>
-            <Text fontSize="sm" fontWeight="bold">Add Friend</Text>
-          </Button>
+          
           <VStack  space={4} px="14px" alignItems="center">
             {users.map((userobj, i) => {
               return (
