@@ -48,6 +48,41 @@ function SplashPage() {
     </View>
   );
 }
+function loaduser(){
+    const [users, setUsers] = useState([])
+  const [friends, setFriends] = useState([])
+  const { navigate } = props.navigation;
+  
+  {/*load all user form database*/}
+  //load all user from database except current userObject
+  const currentUser = auth.currentUser?.uid
+  console.log(currentUser)
+  useEffect(() => {
+    db.collection('users').where('uid','==',currentUser).get('friends')
+      .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        //retrive all friends id from current user and put in to friendsArray
+        const friendsArray = doc.data().friends
+        setFriends(...friendsArray)
+      });
+    })
+    .catch((error) => {
+      console.log("Error getting documents: ", error);
+    }).then(()=>{
+    db.collection('users').where('uid','==',friends).onSnapshot(snapshot => (
+      setUsers(snapshot.docs.map(doc => ({
+        userId: doc.data().uid,
+        name: doc.data().name,
+        email: doc.data().email,
+        photoURL: doc.data().imageURL,
+      })))
+    ))
+  })
+    console.log(friends)
+  }, [])
+
+
+}
 function splash () {
   return (
     <View>

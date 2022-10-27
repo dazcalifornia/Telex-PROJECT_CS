@@ -18,36 +18,38 @@ import {
 import {auth,db} from '../../firebase'
 
 function ChatList(props: { navigation: { navigate: any; }; }) {
+  const {navigate} = props.navigation;
+
+  //store User that retrieve from database
   const [users, setUsers] = useState([])
   const [friends, setFriends] = useState([])
-  const { navigate } = props.navigation;
-  
-  {/*load all user form database*/}
-  //load all user from database except current userObject
-  const currentUser = auth.currentUser?.uid
- 
-  useEffect(() => {
-    db.collection('users').where('uid','==',currentUser).get('friends')
-      .then((querySnapshot) => {
+
+  const friendList = db.collection('users')
+    .where('uid','==',auth.currentUser?.uid)
+    .get('friends').then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        //retrive all friends id from current user and put in to friendsArray
-        const friendsArray = doc.data().friends
-        setFriends(...friendsArray)
+        db.collection('users').where('uid','==',doc.data().friends).onSnapshot(snapshot => (
+          setUsers(snapshot.docs.map(doc => ({
+            userId: doc.data().uid,
+            name: doc.data().name,
+            email: doc.data().email,
+            photoURL: doc.data().imageURL,
+          })))
+        )) 
       });
     })
-    .catch((error) => {
-      console.log("Error getting documents: ", error);
-    }).then(()=>{
-    db.collection('users').where('uid','==',friends).onSnapshot(snapshot => (
+  
+  useEffect(() => {
+
+
+    { /*db.collection('users').where('uid', '!=', auth.currentUser?.uid).onSnapshot(snapshot => {
       setUsers(snapshot.docs.map(doc => ({
-        userId: doc.data().uid,
+        userId: doc.data().userId,
         name: doc.data().name,
         email: doc.data().email,
         photoURL: doc.data().imageURL,
       })))
-    ))
-  })
-    console.log(friends)
+    })*/}
   }, [])
 
   return (
