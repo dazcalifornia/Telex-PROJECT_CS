@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useLayoutEffect,useCallback } from 'react';
-
 import {auth, db} from '../../firebase';
 
 import {
@@ -22,7 +21,6 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
   
   const member = [auth.currentUser?.uid, userId];
   const chatId = member.sort().join('_');
-
   useLayoutEffect(() => {
     const loadChat = db.collection('message').doc(chatId).collection('messages')
     .orderBy('createdAt', 'desc').onSnapshot(snapshot => (
@@ -35,7 +33,7 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
     ))
     return loadChat;
   }, [])
- 
+console.log("imageURL",photoURL)
   const onSend = useCallback((messages = []) => {
     setMessage(previousMessages => GiftedChat.append(previousMessages, messages))
     const {
@@ -51,21 +49,22 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
         user,
       })
   }, [])
-
-
   return (
     <>
       <ChatHeader {...props}/>
       <Text>Target UID:{userId}</Text>
       <Text>Your UID:{auth?.currentUser?.uid}</Text>
       <Input placeholder="Type your message here" />
+
+
+      <GiftedChat
           messages={message}
           showUserAvatar={true}
           onSend={messages => onSend(messages)}
           user={{
             _id: auth?.currentUser?.uid,
             name: auth?.currentUser?.displayName,
-            avatar: auth?.currentUser?.photoURL
+            avatar: auth?.currentUser?.imageURL
           }}
         />
     </>

@@ -22,33 +22,11 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
 
   //store User that retrieve from database
   const [users, setUsers] = useState([])
-  const [friends, setFriends] = useState([])
 
   const onloadUser = auth?.currentUser?.uid;
   
-  const friendList=(client) =>{ 
-    db.collection('users')
-    .where('uid','==',client)
-    .get('friends').then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        db.collection('users').where('uid','==',doc.data().friends).onSnapshot(snapshot => (
-          setUsers(snapshot.docs.map(doc => ({
-            userId: doc.data().uid,
-            name: doc.data().name,
-            email: doc.data().email,
-            photoURL: doc.data().imageURL,
-          })))
-        ))
-        setFriends(doc.data().friends)
-        console.log('friends',friends)
-        return friends
-      });
-    })
-  }
-
   useEffect(() => {
     console.log('onloadUser',onloadUser)
-   // friendList(onloadUser)
     db.collection('users').where('uid','==',onloadUser).get('friends').then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const friendListed = doc.data().friends
@@ -64,15 +42,8 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
         ))
       });
     })
-    { /*db.collection('users').where('uid', '!=', auth.currentUser?.uid).onSnapshot(snapshot => {
-      setUsers(snapshot.docs.map(doc => ({
-        userId: doc.data().userId,
-        name: doc.data().name,
-        email: doc.data().email,
-        photoURL: doc.data().imageURL,
-      })))
-    })*/}
   }, [])
+
 
   return (
     <>
@@ -100,7 +71,8 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       userId: userobj.userId,
                       name: userobj.name,
                       email: userobj.email,
-                      photoURL: userobj.imageURL
+                      photoURL: userobj.photoURL
+                      
                     }
                   )}>
                   <HStack space={4} alignItems="center" w={100}>
@@ -124,4 +96,4 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
     </>
   )
 }
-export default ChatList;
+export default ChatList
