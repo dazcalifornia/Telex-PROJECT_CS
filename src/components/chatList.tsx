@@ -52,7 +52,8 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
     db.collection('users').where('uid','==',onloadUser).get('friends').then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const friendListed = doc.data().friends
-        db.collection('users').where('uid','==',friendListed).onSnapshot(snapshot => (
+        console.log('friendListed',friendListed)
+        db.collection('users').where('uid','in',friendListed).onSnapshot(snapshot => (
           //loadUser here! or code below 
           setUsers(snapshot.docs.map(doc => ({
             userId: doc.data().uid,
@@ -61,7 +62,6 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
             photoURL: doc.data().imageURL,
           })))
         ))
-        console.log('friends',friends)
       });
     })
     { /*db.collection('users').where('uid', '!=', auth.currentUser?.uid).onSnapshot(snapshot => {
