@@ -16,30 +16,26 @@ export default function Menubar() {
         space={4} 
         alignItems="center" 
         bg="#D9D9D9"
-        mx="15px"
-        my="10px"
-        mt="11px"
-        h="41px"
-        w="100%"
         borderRadius="10px"
+        w="auto"
+        h="45px"
+        m="15px"
         >
-      <HStack 
-      >
-
-      <IconButton
+      <HStack p="3">
+        <IconButton
           mr="24px"
           borderRadius="15px"
           variant="solid"
-          colorScheme="indigo"
+          bg="altbase"
           _icon={{
             as: Entypo,
             name: "home",
             size: 5,
-            color: "subbase",
+            color: "base",
           }}
-          onPress={console.log("HOME")}
-        />
-      </HStack>
+          onPress={() => console.log('pressed Home')}
+          />    
+        </HStack>
       </Box>
     </>
 
