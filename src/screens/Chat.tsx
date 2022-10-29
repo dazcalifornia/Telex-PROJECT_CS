@@ -33,7 +33,7 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
     ))
     return loadChat;
   }, [])
-console.log("imageURL",photoURL)
+
   const onSend = useCallback((messages = []) => {
     setMessage(previousMessages => GiftedChat.append(previousMessages, messages))
     const {
@@ -52,11 +52,6 @@ console.log("imageURL",photoURL)
   return (
     <>
       <ChatHeader {...props}/>
-      <Text>Target UID:{userId}</Text>
-      <Text>Your UID:{auth?.currentUser?.uid}</Text>
-      <Input placeholder="Type your message here" />
-
-
       <GiftedChat
           messages={message}
           showUserAvatar={true}
@@ -64,7 +59,7 @@ console.log("imageURL",photoURL)
           user={{
             _id: auth?.currentUser?.uid,
             name: auth?.currentUser?.displayName,
-            avatar: auth?.currentUser?.imageURL
+            avatar: auth?.currentUser?.photoURL
           }}
         />
     </>

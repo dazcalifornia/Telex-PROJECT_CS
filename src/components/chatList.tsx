@@ -49,9 +49,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
     <>
       <Box shadow={2} mt="10px" flex={1} bg="white" roundedTop="30px" bg="#FCFBFC">
         <Heading size="xl" pt="7px" pl="14px" fontSize="40" color="black">Friend List</Heading>
-        <Button onPress={() => console.log("Clear huh?")} bg="white" _text={{ color: 'black' }} size="sm" ml="14px" mt="10px" rounded="full" px="4" py="2" _pressed={{ bg: 'gray.200' }}>
-          <Text fontSize="sm" fontWeight="bold">Add Friend</Text>
-        </Button>
+       
         <ScrollView pt="18px">
           
           <VStack  space={4} px="14px" alignItems="center">
