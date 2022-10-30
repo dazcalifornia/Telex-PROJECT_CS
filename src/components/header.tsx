@@ -6,14 +6,47 @@ import {
   StatusBar,
   IconButton,
   Image,
+  Modal,
+  Button
 } from 'native-base'
 import React from 'react'
 import { Entypo } from '@expo/vector-icons';
 
 import {auth} from '../../firebase';
 
+
+//modal import 
+import {accMenus} from './accMenus';
+
 const Header = (props:{navigation:{navigate:any;};}) => {
+
+  const [modalVisible, setModalVisible] = React.useState(false);
+  
   const {replace} = props.navigation;
+
+  const userMenu = () => {
+    return(
+      <Modal 
+        isOpen={modalVisible} 
+        onClose={() => setModalVisible(false)}
+        justifyContent="flex-end"
+        >
+        <Modal.Content maxWidth="400px">
+          <Modal.CloseButton />
+          <Modal.Header>Account</Modal.Header>
+          <Modal.Body>
+            <Text>Account</Text>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Group variant="ghost" space={2}>
+              <Button onPress={() => setModalVisible(false)}>Cancel</Button>
+              <Button onPress={() => setModalVisible(false)}>Save</Button>
+            </Button.Group>
+          </Modal.Footer>
+        </Modal.Content>
+    </Modal>
+    )
+  }
 
   const signOut = () => {
     auth.signOut().then(() => {
@@ -21,6 +54,7 @@ const Header = (props:{navigation:{navigate:any;};}) => {
       replace("Login");
     }).catch((error) => {
         // An error happened.
+        console.log(error);
         });
   }
 
@@ -44,11 +78,11 @@ const Header = (props:{navigation:{navigate:any;};}) => {
           colorScheme="indigo"
           _icon={{
             as: Entypo,
-            name: "log-out",
+            name: "dots-three-vertical",
             size: 5,
             color: "subbase",
           }}
-          onPress={signOut}
+          onPress={() => setModalVisible(true)}
         />
     </HStack>
     </>

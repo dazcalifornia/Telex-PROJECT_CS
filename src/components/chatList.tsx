@@ -41,7 +41,9 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
           })))
         ))
       });
-    })
+    }).catch((error) => {
+      console.log("Error getting documents: ", error);
+      })
   }, [])
 
 
