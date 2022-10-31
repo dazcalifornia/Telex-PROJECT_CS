@@ -8,7 +8,6 @@ import {
 } from 'native-base';
 
 import {Entypo} from '@expo/vector-icons';
-import {addFriends} from './accMenus';
 export default function Menubar() {
   return (
     <>
@@ -57,7 +56,7 @@ export default function Menubar() {
                 fontSize: 'sm',
                 fontWeight: 'bold',
               }}
-              onPress={addFriends}
+              onPress={() => console.log('pressed tag')}
             >
             #addFriends
             </Button>

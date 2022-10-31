@@ -10,11 +10,12 @@ import {
 } from 'native-base';
 
 import {auth, db} from '../../firebase';//firebase auth
-const Register = (props) => {
+const Register = (props:{navigation:{navigate:any;};}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [imageURL, setImageURL] = useState('');
+
 
   const register = () => {
     auth.createUserWithEmailAndPassword(email, password)
@@ -27,10 +28,11 @@ const Register = (props) => {
       }).then(function() {
         db.collection('users').doc(user.uid).set({
           uid: userCredential.user.uid,
-          friend: [],
+          friends: [],
           email: userCredential.user.email,
           name: user.displayName,
           imageURL: user.photoURL,
+          username: "",
         })
             props.navigation.replace('Login');
       })

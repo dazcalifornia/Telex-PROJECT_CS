@@ -19,10 +19,10 @@ import {auth} from '../../firebase';
 import {accMenus} from './accMenus';
 
 const Header = (props:{navigation:{navigate:any;};}) => {
-
+  
   const [modalVisible, setModalVisible] = React.useState(false);
   
-  const {replace} = props.navigation;
+  const {navigate} = props.navigation;
 
   const userMenu = () => {
     return(
@@ -46,16 +46,6 @@ const Header = (props:{navigation:{navigate:any;};}) => {
         </Modal.Content>
     </Modal>
     )
-  }
-
-  const signOut = () => {
-    auth.signOut().then(() => {
-      // Sign-out successful.
-      replace("Login");
-    }).catch((error) => {
-        // An error happened.
-        console.log(error);
-        });
   }
 
   return (
@@ -82,7 +72,7 @@ const Header = (props:{navigation:{navigate:any;};}) => {
             size: 5,
             color: "subbase",
           }}
-          onPress={() => setModalVisible(true)}
+          onPress={() => navigate('UserMenu')}
         />
     </HStack>
     </>

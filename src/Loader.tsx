@@ -6,8 +6,10 @@ import LoginScreen from './screens/login';
 import MessageTest from './screens/messageTest';
 import Register from './screens/Register';
 import Chat from './screens/Chat';
+import UserMenu from './screens/userMenu';
 const Stack = createNativeStackNavigator();
 
+import {auth} from '../../firebase';
 
 const Loader = () => {
     
@@ -15,15 +17,24 @@ const Loader = () => {
     <Stack.Navigator
       initialRouteName="Login"
       screenOptions={{
+          mode: 'modal',
+          headerMode: 'none',
+            cardStyle:{
+              backgroundColor:"transparent",
+              opacity:0.99
+            },
         headerShown: false,
       }}
-    >
+    >  
       
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="MessageTest" component={MessageTest} />
         <Stack.Screen name="Chat" component={Chat} />
+      <Stack.Group screenOptions={{ presentation: 'modal' }}>
+        <Stack.Screen name="UserMenu" component={UserMenu} />
+      </Stack.Group>
     </Stack.Navigator>  
   )
 }

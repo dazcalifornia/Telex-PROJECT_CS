@@ -31,7 +31,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
       querySnapshot.forEach((doc) => {
         const friendListed = doc.data().friends
         console.log('friendListed',friendListed)
-        db.collection('users').where('uid','in',friendListed).onSnapshot(snapshot => (
+        db.collection('users').where('username','in',friendListed).onSnapshot(snapshot => (
           //loadUser here! or code below 
           setUsers(snapshot.docs.map(doc => ({
             userId: doc.data().uid,
