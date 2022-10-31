@@ -8,7 +8,7 @@ import {
 } from 'native-base';
 
 import {Entypo} from '@expo/vector-icons';
-
+import {addFriends} from './accMenus';
 export default function Menubar() {
   return (
     <>
@@ -47,6 +47,19 @@ export default function Menubar() {
               onPress={() => console.log('pressed Home')}
             >
             #home
+            </Button>
+            <Button
+              borderRadius="15px"
+              variant="solid"
+              bg="#979797"
+              _text={{
+                color: 'black',
+                fontSize: 'sm',
+                fontWeight: 'bold',
+              }}
+              onPress={addFriends}
+            >
+            #addFriends
             </Button>
         </HStack>
       </Box>

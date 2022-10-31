@@ -9,5 +9,13 @@ import {
 
 
 function addFriends(){
-  
+  console.log("add friends");
+  return(
+    <>
+      <Modal presentationStyle="pageSheet">
+        <Text>Modal Content</Text>
+      </Modal>
+    </>
+  )
 }
+export default addFriends;
