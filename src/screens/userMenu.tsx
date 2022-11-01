@@ -1,5 +1,6 @@
 import React,{
   useState,
+  useEffect,
 } from 'react';
 import{
   View,
@@ -7,7 +8,7 @@ import{
   Input,
   Button,
 } from 'native-base';
-import firebase from 'firebase/compat/app';
+//import firebase from 'firebase/compat/app';
 
 import {auth,db} from '../../firebase';
 
@@ -15,7 +16,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
   const {replace} = props.navigation;
   const [name,setName] = useState('');
   const [friendID,setFriendID] = useState('');
-
+  const [friendList,setFriendList] = useState([]);
   const setUsername = () => {
     auth.currentUser.updateProfile({
       username: "",
@@ -44,11 +45,18 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     if(friendID == ''){
       alert('Please enter friend ID')
     }else{
-          auth?.currentUser?.updateProfile({
-      friends: "",
+      db.collection('users').where('uid','==',auth?.currentUser?.uid).get('friends').then((doc) => {
+        const friendListed = doc.data().friendListed
+        console.log('friendListed',friendListed)
+        if(friendListed.includes(friendID)){
+          alert('This user is already your friend')
+        }else{
+      auth?.currentUser?.updateProfile({
+      friends: {'friendID':friendID},
     }).then(function() {
       db.collection('users').doc(auth?.currentUser?.uid).update({
-        friends: firebase.firestore.FieldValue.arrayUnion(friendID),
+        ['friends.'+friendID]: false,
+        //friends: firebase.firestore.FieldValue.arrayUnion(friendID),
       })
       replace('Home');
     })
@@ -58,7 +66,10 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     });
       alert('Friend added')
     console.log(friendID);
-
+  
+        
+        }
+      })
     }
   }
   const signOut = () => {

@@ -28,7 +28,7 @@ const Register = (props:{navigation:{navigate:any;};}) => {
       }).then(function() {
         db.collection('users').doc(user.uid).set({
           uid: userCredential.user.uid,
-          friends: [],
+          friends: {},
           email: userCredential.user.email,
           name: user.displayName,
           imageURL: user.photoURL,

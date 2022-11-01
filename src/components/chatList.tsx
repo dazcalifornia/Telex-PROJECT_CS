@@ -3,13 +3,11 @@ import React, {
   useEffect,
 } from 'react';
 import {
-
   Text,
   Box,
   Heading,
   ScrollView,
   VStack,
-  Button,
   Image,
   HStack,
   Pressable,
