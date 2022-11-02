@@ -99,6 +99,9 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     db.collection('users').where('uid','==',auth.currentUser?.uid).get().then((querySnapshot)=>{
       querySnapshot.forEach((doc) => {
         console.log('friendRequest',doc.data().friendRequest)
+        const friendRequest = doc.data().setFriendRequest
+        setFriendRequest(friendRequest)
+        console.log('localFriendRequest',friendRequest)
       })
     })
   }
@@ -136,16 +139,6 @@ useEffect(() =>{
           />
           <Text>{friendID}</Text>
         <Button onPress={addFriends}>Add Friend</Button>
-        <ScrollView>
-          <Text>Friend request list</Text>
-          <VStack>
-            {friendRequest.forEach((item) => {
-              return(
-                <Text>{item}</Text>
-              )
-            })}
-          </VStack>
-        </ScrollView>    
       </View>
     </View>
   )
