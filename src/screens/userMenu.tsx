@@ -7,8 +7,10 @@ import{
   Text,
   Input,
   Button,
+  VStack,
+  ScrollView,
 } from 'native-base';
-//import firebase from 'firebase/compat/app';
+import firebase from 'firebase/compat/app';
 
 import {auth,db} from '../../firebase';
 
@@ -17,7 +19,11 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
   const [name,setName] = useState('');
   const [friendID,setFriendID] = useState('');
   const [friendList,setFriendList] = useState([]);
+
+  const [friendRequest,setFriendRequest] = useState([]);
+  
   const setUsername = () => {
+    if(name !== ''){
     auth.currentUser.updateProfile({
       username: "",
     }).then(function() {
@@ -38,38 +44,43 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     }).catch(function(error) {
       console.log(error)
     });
+    }else{
+      alert('Please enter username')
+    }
     console.log(name);
   }
 
-  const addFriends = () => {
+ const addFriends = () => {
     if(friendID == ''){
       alert('Please enter friend ID')
     }else{
-      db.collection('users').where('uid','==',auth?.currentUser?.uid).get('friends').then((doc) => {
-        const friendListed = doc.data().friendListed
-        console.log('friendListed',friendListed)
-        if(friendListed.includes(friendID)){
-          alert('This user is already your friend')
-        }else{
       auth?.currentUser?.updateProfile({
-      friends: {'friendID':friendID},
+      friends: "",
     }).then(function() {
-      db.collection('users').doc(auth?.currentUser?.uid).update({
-        ['friends.'+friendID]: false,
-        //friends: firebase.firestore.FieldValue.arrayUnion(friendID),
+      const currentUser = auth?.currentUser?.uid;
+      console.log('currentUser',currentUser)
+      if(currentUser !== friendID){ 
+        db.collection('users').where('username','==',friendID).get().then((querySnapshot) => {
+          if(querySnapshot.empty){
+            alert('User not found')
+          }else{
+            querySnapshot.forEach((doc) => {
+              console.log("bruh dang",doc.data().uid)
+              const friendUID = doc.data().uid;
+              db.collection('users').doc(friendUID).update({
+                ['friendRequest.'+currentUser]:false,
+              }).then(function() {
+                alert('Friend request sent')
+              })
+            })
+          }
+        })
+      }
       })
-      replace('Home');
-    })
     .catch((error) => {
       // An error occurred
       alert(error.message);
     });
-      alert('Friend added')
-    console.log(friendID);
-  
-        
-        }
-      })
     }
   }
   const signOut = () => {
@@ -81,6 +92,22 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         console.log(error);
         });
   }
+  const subscribeFriendRequest = () => {
+    //if not have friend request then show no friend request 
+    //if have friend request then show friend request 
+    //
+    db.collection('users').where('uid','==',auth.currentUser?.uid).get().then((querySnapshot)=>{
+      querySnapshot.forEach((doc) => {
+        console.log('friendRequest',doc.data().friendRequest)
+      })
+    })
+  }
+
+useEffect(() =>{
+  subscribeFriendRequest()
+},[friendRequest])
+
+  //return code
   return(
     <View style={{
       flex: 1,
@@ -109,6 +136,16 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
           />
           <Text>{friendID}</Text>
         <Button onPress={addFriends}>Add Friend</Button>
+        <ScrollView>
+          <Text>Friend request list</Text>
+          <VStack>
+            {friendRequest.forEach((item) => {
+              return(
+                <Text>{item}</Text>
+              )
+            })}
+          </VStack>
+        </ScrollView>    
       </View>
     </View>
   )

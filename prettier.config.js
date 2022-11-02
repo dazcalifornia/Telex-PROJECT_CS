@@ -1,4 +1,4 @@
-const option ={
+const options ={
   arrowParens: 'avoid',
   singleQuote: true,
   backetSpacing: true,

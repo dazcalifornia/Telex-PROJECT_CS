@@ -11,6 +11,7 @@ import {
   Image,
   HStack,
   Pressable,
+  Center,
 } from 'native-base';
 
 import {auth,db} from '../../firebase'
@@ -43,16 +44,11 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
       console.log("Error getting documents: ", error);
       })
   }, [])
-
-
-  return (
-    <>
-      <Box shadow={2} mt="10px" flex={1} bg="white" roundedTop="30px" bg="#FCFBFC">
-        <Heading size="xl" pt="7px" pl="14px" fontSize="40" color="black">Friend List</Heading>
-       
-        <ScrollView pt="18px">
-          
-          <VStack  space={4} px="14px" alignItems="center">
+  function ListedUser () {
+    console.log("Hello")
+    if(users.length > 0){
+    return(
+      <VStack  space={4} px="14px" alignItems="center">
             {users.map((userobj, i) => {
               return (
                 <Box
@@ -89,6 +85,28 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
             })
             }
           </VStack>
+
+    )
+    }else{
+      return(
+      <Center>
+        <Text
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        > No friends yet let find someone 😆</Text>
+      </Center>
+      )
+    }
+  }
+  return (
+    <>
+      <Box shadow={2} mt="10px" flex={1} bg="white" roundedTop="30px" bg="#FCFBFC">
+        <Heading size="xl" pt="7px" pl="14px" fontSize="40" color="black">Friend List</Heading>
+        <ScrollView pt="18px">
+          <ListedUser />
         </ScrollView>
       </Box>
     </>
