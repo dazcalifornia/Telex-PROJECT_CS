@@ -108,6 +108,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         let loadData = doc.data().friendRequest
         const keyData = Object.keys(loadData);
         const valueData = Object.values(loadData);
+        console.log("valueData",valueData)
         setFriendRequest(keyData)
         console.log('localFrienRequest',FriendRequest)
         })
@@ -184,11 +185,14 @@ useEffect(() =>{
                               db.collection('users').doc(item).update({
                                 friends: firebase.firestore.FieldValue.arrayUnion(currentUserUsername),
                               }).then(function() {
-                                alert('Friend request accepted')
-                                replace('Home')
-                              })
-                            })
-                            
+                                 db.collection('users').doc(auth?.currentUser?.uid).update({
+                        ['friendRequest.'+item]:firebase.firestore.FieldValue.delete(),
+                      }).then(function() {
+                        alert('Friend request accepted')
+                        replace('Home')
+                      })
+                                    })
+                                  })
                           })
                         })
                       })
@@ -198,12 +202,16 @@ useEffect(() =>{
                 <Button 
                   colorScheme="secondary"
                   onPress={() => {
-                    db.collection('users').doc(auth.currentUser?.uid).update({
-                      ['friendRequest.'+item]:firebase.firestore.FieldValue.delete(),
-                    }).then(function() {
-                      alert('Friend request rejected')
-                    })
-                  }}
+                      //delete friend Request
+                      //then navigate to chatList
+                      //then show alert friend request rejected
+                      db.collection('users').doc(auth?.currentUser?.uid).update({
+                        ['friendRequest.'+item]:firebase.firestore.FieldValue.delete(),
+                      }).then(function() {
+                        alert('Friend request rejected')
+                        replace('Home')
+                      })
+                   }}
                   >Decline</Button>
               </HStack>
               </View>
