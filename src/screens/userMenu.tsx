@@ -104,7 +104,11 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         const valueData = Object.values(loadData);
         setFriendRequest(keyData)
         console.log('localFrienRequest',FriendRequest)
+<<<<<<< HEAD
         })
+=======
+      })
+>>>>>>> 0c3054aa958e93b1fd505cd2a99a954574623557
     })
   }
 
