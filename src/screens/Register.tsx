@@ -73,6 +73,7 @@ const Register = (props:{navigation:{navigate:any;};}) => {
             <Input
               value={password}
               onChangeText={setPassword}
+              type="password"
             />
           </FormControl>
           <FormControl>

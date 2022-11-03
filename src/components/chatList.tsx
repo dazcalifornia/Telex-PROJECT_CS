@@ -1,6 +1,7 @@
 import React, {
   useState,
   useEffect,
+  useCallback,
 } from 'react';
 import {
   Text,
@@ -13,19 +14,34 @@ import {
   Pressable,
   Center,
 } from 'native-base';
-
 import {auth,db} from '../../firebase'
 
+import Menubar from '../components/menubar'
+import { RefreshControl } from 'react-native';
 function ChatList(props: { navigation: { navigate: any; }; }) {
   const {navigate} = props.navigation;
 
   //store User that retrieve from database
   const [users, setUsers] = useState([])
-
   const onloadUser = auth?.currentUser?.uid;
+
+  //refresh the page
+  const [refresh, setRefresh] = useState(false)
   
-  useEffect(() => {
-    console.log('onloadUser',onloadUser)
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+
+  const onRefresh = useCallback(() => {
+    setRefresh(true)
+    wait(2000).then(() => {
+      setRefresh(false)
+      getUser()
+    });
+  }, []);
+
+  const getUser = async () => {
+        console.log('onloadUser',onloadUser)
     db.collection('users').where('uid','==',onloadUser).get('friends').then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const friendListed = doc.data().friends
@@ -43,6 +59,11 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
     }).catch((error) => {
       console.log("Error getting documents: ", error);
       })
+
+  }
+
+  useEffect(() => {
+    getUser()
   }, [])
   function ListedUser () {
     console.log("Hello")
@@ -103,9 +124,18 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
   }
   return (
     <>
+      <Menubar {...props}/>
       <Box shadow={2} mt="10px" flex={1} bg="white" roundedTop="30px" bg="#FCFBFC">
         <Heading size="xl" pt="7px" pl="14px" fontSize="40" color="black">Friend List</Heading>
-        <ScrollView pt="18px">
+        <ScrollView 
+          pt="18px"
+          refreshControl={
+            <RefreshControl
+              refreshing={refresh}
+              onRefresh={onRefresh}
+            />
+          }
+        >
           <ListedUser />
         </ScrollView>
       </Box>

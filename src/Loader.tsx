@@ -7,6 +7,9 @@ import MessageTest from './screens/messageTest';
 import Register from './screens/Register';
 import Chat from './screens/Chat';
 import UserMenu from './screens/userMenu';
+
+import DEV from './screens/dev';
+
 const Stack = createNativeStackNavigator();
 
 import {auth} from '../../firebase';
@@ -26,7 +29,7 @@ const Loader = () => {
         headerShown: false,
       }}
     >  
-      
+        <Stack.Screen name="DEV" component={DEV} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Login" component={LoginScreen} />

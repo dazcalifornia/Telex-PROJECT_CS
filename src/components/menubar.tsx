@@ -8,7 +8,7 @@ import {
 } from 'native-base';
 
 import {Entypo} from '@expo/vector-icons';
-export default function Menubar() {
+export default function Menubar(props: { navigation: { navigate: any; }; }) {
   return (
     <>
       <Box
@@ -56,9 +56,9 @@ export default function Menubar() {
                 fontSize: 'sm',
                 fontWeight: 'bold',
               }}
-              onPress={() => console.log('pressed tag')}
+              onPress={() => props.navigation.navigate('DEV')}
             >
-            #addFriends
+            #Dev
             </Button>
         </HStack>
       </Box>

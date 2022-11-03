@@ -9,11 +9,13 @@ import{
   Button,
   VStack,
   HStack,
+  Image,
   ScrollView,
 } from 'native-base';
 import firebase from 'firebase/compat/app';
 
 import {auth,db} from '../../firebase';
+import * as ImagePicker from 'expo-image-picker';
 
 function UserMenu(props:{navigation:{navigate:any;};}) {
   const {replace} = props.navigation;
@@ -50,6 +52,26 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     }
     console.log(name);
   }
+
+  //pick image from gallery
+  const [image, setImage] = useState(null);
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
+  };
+
 
  const addFriends = () => {
     if(friendID == ''){
@@ -131,7 +153,7 @@ useEffect(() =>{
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        }}>
+        }}>        
         <Text>Settings</Text>
         <Button onPress={signOut}>Sign Out</Button>
         <Input 
@@ -218,6 +240,15 @@ useEffect(() =>{
             )
           })}
         </ScrollView>
+          <Button onPress={pickImage}>image Testing</Button>
+        {image && <Image 
+          source={{ uri: image }} 
+          alt="just testing picture" 
+          style={{ 
+            width: 200, 
+            height: 200 
+          }} 
+          />}
         </View>
     </View>
   )
