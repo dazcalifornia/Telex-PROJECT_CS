@@ -20,7 +20,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
   const [friendID,setFriendID] = useState('');
   const [friendList,setFriendList] = useState([]);
 
-  const [friendRequest,setFriendRequest] = useState([]);
+  const [FriendRequest,setFriendRequest] = useState([]);
   
   const setUsername = () => {
     if(name !== ''){
@@ -99,16 +99,18 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     db.collection('users').where('uid','==',auth.currentUser?.uid).get().then((querySnapshot)=>{
       querySnapshot.forEach((doc) => {
         console.log('friendRequest',doc.data().friendRequest)
-        const friendRequest = doc.data().setFriendRequest
-        setFriendRequest(friendRequest)
-        console.log('localFriendRequest',friendRequest)
-      })
+        let loadData = doc.data().friendRequest
+        const keyData = Object.keys(loadData);
+        const valueData = Object.values(loadData);
+        setFriendRequest(keyData)
+        console.log('localFrienRequest',FriendRequest)
+        })
     })
   }
 
 useEffect(() =>{
   subscribeFriendRequest()
-},[friendRequest])
+},[])
 
   //return code
   return(
@@ -140,6 +142,23 @@ useEffect(() =>{
           <Text>{friendID}</Text>
         <Button onPress={addFriends}>Add Friend</Button>
       </View>
+      <View style={{
+        height:'50%',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        }}>
+        <Text>Friend Request</Text>
+        <ScrollView>
+          {FriendRequest.map((item,index) => {
+            return(
+              <View key={index}>
+                <Text>{item}</Text>
+                </View>
+            )
+          })}
+        </ScrollView>
+        </View>
     </View>
   )
 }
