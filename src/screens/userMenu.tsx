@@ -8,6 +8,7 @@ import{
   Input,
   Button,
   VStack,
+  HStack,
   ScrollView,
 } from 'native-base';
 import firebase from 'firebase/compat/app';
@@ -83,6 +84,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     });
     }
   }
+
   const signOut = () => {
     auth.signOut().then(() => {
       // Sign-out successful.
@@ -90,7 +92,11 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     }).catch((error) => {
         // An error happened.
         console.log(error);
-        });
+      });
+  }
+  const handleFriendRequest = () => {
+    const currentUser = auth?.currentUser?.uid;
+
   }
   const subscribeFriendRequest = () => {
     //if not have friend request then show no friend request 
@@ -104,12 +110,8 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         const valueData = Object.values(loadData);
         setFriendRequest(keyData)
         console.log('localFrienRequest',FriendRequest)
-<<<<<<< HEAD
         })
-=======
       })
->>>>>>> 0c3054aa958e93b1fd505cd2a99a954574623557
-    })
   }
 
 useEffect(() =>{
@@ -157,8 +159,54 @@ useEffect(() =>{
           {FriendRequest.map((item,index) => {
             return(
               <View key={index}>
+              <HStack
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
                 <Text>{item}</Text>
-                </View>
+                <Button 
+                  colorScheme="success"
+                  onPress={() => {
+                    db.collection('users').doc(auth.currentUser?.uid).update({
+                      ['friendRequest.'+item]:true,
+                    }).then(function() {
+                      //get username of friend
+                      db.collection('users').where('uid','==',item).get().then((querySnapshot)=>{
+                        querySnapshot.forEach((doc)=>{
+                          const friendUsername = doc.data().username
+                          db.collection('users').doc(auth.currentUser?.uid).update({
+                            friends: firebase.firestore.FieldValue.arrayUnion(friendUsername),
+                          }).then(function() {
+                            db.collection('users').doc(auth?.currentUser?.uid).get().then((doc)=>{
+                              const currentUserUsername = doc.data().username 
+                              db.collection('users').doc(item).update({
+                                friends: firebase.firestore.FieldValue.arrayUnion(currentUserUsername),
+                              }).then(function() {
+                                alert('Friend request accepted')
+                                replace('Home')
+                              })
+                            })
+                            
+                          })
+                        })
+                      })
+                    })
+                  }}
+                >Accept</Button>
+                <Button 
+                  colorScheme="secondary"
+                  onPress={() => {
+                    db.collection('users').doc(auth.currentUser?.uid).update({
+                      ['friendRequest.'+item]:firebase.firestore.FieldValue.delete(),
+                    }).then(function() {
+                      alert('Friend request rejected')
+                    })
+                  }}
+                  >Decline</Button>
+              </HStack>
+              </View>
             )
           })}
         </ScrollView>
