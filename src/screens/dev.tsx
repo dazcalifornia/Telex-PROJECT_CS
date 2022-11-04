@@ -1,14 +1,18 @@
-import React from 'react';
+import React,{
+  useState,
+} from 'react';
 import {
   View,
   Text,
   Select,
   CheckIcon,
   Box,
+  Center,
+  VStack,
 } from 'native-base';
 
 export default function DEV(props: { navigation: { navigate: any; }; }) {
-  const [service, setService] = React.useState("");
+  const [service, setService] = useState("");
 
   return (
     <View
@@ -21,7 +25,9 @@ export default function DEV(props: { navigation: { navigate: any; }; }) {
       h="45px"
       m="15px"
     >
+     <VStack alignItems="center" space={4}>
 
+    </VStack>
       <Text>DEV</Text>
     </View>
   );

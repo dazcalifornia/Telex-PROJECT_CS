@@ -42,7 +42,7 @@ export default function ChatHeader(props: {name:string, email:string, photoURL:s
         />
         <Image source={{
           uri: photoURL
-        }} alt="Profile image" size={54} rounded="full" />
+        }} alt="Profile image" ml="24px" size={54} rounded="full" />
           <VStack>
             <Heading color="white" fontSize="2xl" fontWeight="bold">{name}</Heading>
             <Text color="subbase" fontSize="sm" fontWeight="bold">Online</Text>
