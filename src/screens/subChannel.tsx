@@ -34,10 +34,7 @@ function SubChatrooms (props:{subId:string,chatId:string,chatName:string, userId
       })))
     ))
     return loadSubChat;
-
   }, [])
-
-
 
   const onSend = useCallback((messages = []) => {
     setMessage(previousMessages => GiftedChat.append(previousMessages, messages))

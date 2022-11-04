@@ -116,7 +116,15 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
           {channel.map((item, index) => (
             <Button
               key={index}
-              onPress={() => props.navigation.navigate('SubChannel', {subId:item.channelId ,chatId: chatId, chatName: item.chatName})}
+              onPress={() => props.navigation.navigate('SubChannel', {
+                subId:item.channelId ,
+                chatId: chatId, 
+                chatName: item.chatName,
+                userId: userId,
+                name: name,
+                email: email,
+                photoURL: photoURL,
+                })}
               variant="outline"
               colorScheme="primary"
               size="lg"
