@@ -30,17 +30,19 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
   const chatId = member.sort().join('_');
  
   useEffect(() => {
-        db.collection('Chatroom').doc(chatId).collection('subChannel').get().then((querySnapshot) => {
+    db.collection('Chatroom').doc(chatId).collection('subChannel').get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data());
-        setChannel(channel => [...channel, doc.data()])
-        console.log('channel',channel)
+        data = doc.data();
+        setChannel(channel => [...channel, data])
+        console.log('channel',data)
       });
     }).catch((error) => {
       console.log("error getting documents: ", error);
     })
   }, [])
+
   useLayoutEffect(() => {
+
     const loadChat = db.collection('Chatroom').doc(chatId).collection('messages')
     .orderBy('createdAt', 'desc').onSnapshot(snapshot => (
         setMessage(snapshot.docs.map(doc => ({
@@ -51,6 +53,7 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
       })))
     ))
     return loadChat;
+
   }, [])
 
   const createSubChannel =()=>{
@@ -81,17 +84,7 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
       }
   }
 
-  const loadSubChannel =()=>{
-    db.collection('Chatroom').doc(chatId).collection('subChannel').get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data().chatName);
-        setChannel(channel => [...channel, doc.data().chatName])
-        console.log('channel',channel)
-      });
-    }).catch((error) => {
-      console.log("error getting documents: ", error);
-    })
-  }
+
 
   const onSend = useCallback((messages = []) => {
     setMessage(previousMessages => GiftedChat.append(previousMessages, messages))
@@ -110,12 +103,12 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
   }, [])
   return (
     <>
-      <ChatHeader {...props}/>
+      <ChatHeader {...props} {...channel}/>
       <Select
+        selectedValue={chatName}
         minWidth={200}
         accessibilityLabel="Select a setService"
         placeholder="Select setService"
-        selectedValue={chatName}
         onValueChange={(itemValue) => setChatName(itemValue)}
         _selectedItem={{
           bg: "teal.600",
@@ -126,32 +119,6 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
           <Select.Item label={item.chatName} value={item.chatName} />
         ))}
       </Select>
-      <ScrollView>
-        <VStack space={4} alignItems="center">
-          {channel.map((item, index) => (
-            <Button
-              key={index}
-              onPress={() => props.navigation.navigate('SubChannel', {
-                subId:item.channelId ,
-                chatId: chatId, 
-                chatName: item.chatName,
-                userId: userId,
-                name: name,
-                email: email,
-                photoURL: photoURL,
-                })}
-              variant="outline"
-              colorScheme="primary"
-              size="lg"
-              width="90%"
-              my={2}
-              >
-              {item.chatName}
-            </Button>
-          ))}
-          </VStack>
-        </ScrollView>
-      <Button onPress={loadSubChannel}>SubChannel Data</Button>
       <Input onChangeText={(text)=>setChatName(text)} placeholder="Enter Chat Name" />
       <Button onPress={createSubChannel}>Create SubChannel</Button>
       <GiftedChat

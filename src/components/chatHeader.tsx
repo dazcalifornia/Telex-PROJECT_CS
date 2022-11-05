@@ -14,11 +14,16 @@ import { Entypo } from '@expo/vector-icons';
 
 import {auth} from '../../firebase';
 
-export default function ChatHeader(props: {name:string, email:string, photoURL:string, navigation:any}) {
- 
+export default function ChatHeader(props: {name:string, email:string, photoURL:string, navigation:any},channel:string) {
+
+
+  useEffect(() => {
+    console.log('channel Handle',channel)
+  }, [])
+
   const {name, email, photoURL} = props.route.params;
   const { goBack } = props.navigation;
-
+  const { navigate } = props.navigation;
    return (
     <View>
       <StatusBar barStyle="light-content"/>
@@ -55,7 +60,7 @@ export default function ChatHeader(props: {name:string, email:string, photoURL:s
             size: 5,
             color: "subbase",
           }}
-          onPress={() => console.log('pressed Settings')}
+          onPress={() => navigate('ChatMenu')}
           />
       </HStack>
     </View>

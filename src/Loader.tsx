@@ -11,6 +11,7 @@ import SubChatrooms from './screens/subChannel';
 
 import DEV from './screens/dev';
 
+import ChatMenu from './screens/chatMenu';
 const Stack = createNativeStackNavigator();
 
 import {auth} from '../../firebase';
@@ -35,8 +36,9 @@ const Loader = () => {
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="MessageTest" component={MessageTest} />
-      <Stack.Group>
+      <Stack.Group >
         <Stack.Screen name="Chat" component={Chat} />
+        <Stack.Screen name="ChatMenu" component={ChatMenu} />
         <Stack.Screen name="SubChannel" component={SubChatrooms} />
       </Stack.Group>
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
