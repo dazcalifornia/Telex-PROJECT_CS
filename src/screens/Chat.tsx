@@ -111,6 +111,21 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
   return (
     <>
       <ChatHeader {...props}/>
+      <Select
+        minWidth={200}
+        accessibilityLabel="Select a setService"
+        placeholder="Select setService"
+        selectedValue={chatName}
+        onValueChange={(itemValue) => setChatName(itemValue)}
+        _selectedItem={{
+          bg: "teal.600",
+          endIcon: <CheckIcon size={4} />,
+        }}
+      >
+        {channel.map((item:any) => (
+          <Select.Item label={item.chatName} value={item.chatName} />
+        ))}
+      </Select>
       <ScrollView>
         <VStack space={4} alignItems="center">
           {channel.map((item, index) => (
