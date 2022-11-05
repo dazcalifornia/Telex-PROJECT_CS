@@ -1,39 +1,28 @@
-import React,{
-  useState,
-} from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { 
-  NativeBaseProvider, 
-  Button,
-  Center, 
-  Box, 
-  Select, 
-  CheckIcon, 
-  Card,
-  Container,
-  FormControl,
-  HStack,
-  Menu,
-  } from 'native-base';
-import Constants from 'expo-constants';
+import React from 'react';
+import {
+  View,
+  Text,
+  Select,
+  CheckIcon,
+  Box,
+} from 'native-base';
+
 export default function DEV(props: { navigation: { navigate: any; }; }) {
-  const [value, setValue] = useState("");
+  const [service, setService] = React.useState("");
 
   return (
-  <>
-   <Menu.Group title="Free">
-          <Menu.Item>Arial</Menu.Item>
-          <Menu.Item>Nunito Sans</Menu.Item>
-          <Menu.Item>Roboto</Menu.Item>
-        </Menu.Group>
-        <Divider mt="3" w="100%" />
-        <Menu.Group title="Paid">
-          <Menu.Item>SF Pro</Menu.Item>
-          <Menu.Item>Helvetica</Menu.Item>
-        </Menu.Group>
-      </Menu>
-      </>
-    );
+    <View
+      flex={1}
+      justifyContent="center"
+      alignItems="center"
+      bg="#D9D9D9"
+      borderRadius="10px"
+      w="auto"
+      h="45px"
+      m="15px"
+    >
+
+      <Text>DEV</Text>
+    </View>
+  );
 }
-
-

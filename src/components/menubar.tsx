@@ -9,6 +9,7 @@ import {
 
 import {Entypo} from '@expo/vector-icons';
 export default function Menubar(props: { navigation: { navigate: any; }; }) {
+  console.log(props.navigation.navigate);
   return (
     <>
       <Box
