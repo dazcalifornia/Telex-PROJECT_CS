@@ -8,7 +8,12 @@ import {
   VStack
 } from "native-base";
 
-export default function DEV() {
+export default function DEV(props:any) {
+  const {subId, chatId, chatName, navigation} = props.route.params;
+  console.log('subId',subId)
+  console.log('chatId',chatId)
+  console.log('chatName',chatName)
+
   let [service, setService] = React.useState("");
   return (
     <Center flex={1}>
@@ -16,22 +21,7 @@ export default function DEV() {
         <Text fontSize="lg" bold>
           Select a setService
         </Text>
-        <Select
-          minWidth={200}
-          accessibilityLabel="Select a setService"
-          placeholder="Select setService"
-          selectedValue={service}
-          onValueChange={(itemValue) => setService(itemValue)}
-          _selectedItem={{
-            bg: "teal.600",
-            endIcon: <CheckIcon size={4} />,
-          }}
-        >
-          <Select.Item label="Facebook" value="facebook" />
-          <Select.Item label="Instagram" value="instagram" />
-          <Select.Item label="Twitter" value="twitter" />
-          <Select.Item label="LinkedIn" value="linkedin" />
-        </Select>
+          
       </VStack>
     </Center>
   );

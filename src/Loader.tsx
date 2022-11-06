@@ -36,11 +36,12 @@ const Loader = () => {
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="MessageTest" component={MessageTest} />
-      <Stack.Group >
+
+
         <Stack.Screen name="Chat" component={Chat} />
         <Stack.Screen name="ChatMenu" component={ChatMenu} />
         <Stack.Screen name="SubChannel" component={SubChatrooms} />
-      </Stack.Group>
+
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="UserMenu" component={UserMenu} />
       </Stack.Group>

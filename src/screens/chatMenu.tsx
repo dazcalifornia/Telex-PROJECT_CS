@@ -11,50 +11,155 @@ import {
   CheckIcon,
   Center,
   VStack,
-  } from 'native-base';
+  Button,
+  Input,
+} from 'native-base';
 
-const ChatMenu = (props:{channelId:string,chatName:string}) => {
-  const {channelId, chatName} = props.route.params;
+import {auth, db} from '../../firebase';
+const ChatMenu = (props:any) => {
 
-  const [chatList, setChatList] = useState([]);
+  const {dispatch,navigate,replace} = props.navigation;
+
+  const {userId, name, email, photoURL} = props.route.params;
+    
+  const [channel, setChannel] = useState([]) //load subroom from firebase
+
+  const [chatName, setChatName] = useState('') //load chat name from firebase specific to userId
+  
+  const member = [auth.currentUser?.uid, userId];
+  const chatId = member.sort().join('_');
+
   
   useEffect(() => {
+    console.log('chatId',chatId)
+    console.log('member',member)
     //load channel from firebase
-
-    console.log('chatId bruh',channel)
-    resloveChannel(channel);
-  }, [channel])
+    resloveChannel();
+  }, [])
 
   const resloveChannel = () => {
-    console.log('channel', channel)
+	    db.collection('Chatroom').doc(chatId).collection('subChannel').get().then((querySnapshot) => {
+      if(querySnapshot.empty){
+        //setchannel to empty and show text no channel 
+        setChannel(channel=>[...channel, {label:'No Channel', value:'No Channel'}])
+        console.log('empty')
+      }
+      querySnapshot.forEach((doc) => {
+        if(doc.exists){
+          let data = doc.data();
+          setChannel(channel => [...channel, data])
+          console.log('channel',data)
+        }
+      })
+    }).catch((error) => {
+      console.log("error getting documents: ", error);
+    })
   }
+
   const changeChannel = (itemValue:string) => {
-    setChannel(itemValue);
+    setChatName(itemValue);
+
+    //log chat Name in channel[]
+    let chName = channel.filter((item:any) => item.channelId === itemValue);
+    console.log('chName',chName[0].chatName)
+    dispatch(replace('SubChannel',{
+      subId: itemValue,
+      chatId: chatId,
+      chatName: chName[0].chatName,
+      userId: userId,
+      name: name,
+      photoURL: photoURL,
+      navigation: props.navigation,
+    }))
+    console.log('channelID',itemValue)
   };
 
-  return (
-    <>
-      <Center flex={1}>
-        <VStack space={2} alignItems="center">
-          <Text fontSize="lg" bold>
-            Select a channel
-          </Text>
-          <Select
+  const [newChat, setNewChat] = useState('') //create new chat 
+  const createSubChannel =()=>{
+    //subchannelID generate
+    const subChannelId = Math.random().toString(36).substring(7);
+    //subchannel is a collection of chatId
+    //if subChannel exist no create subChannel
+    const newChatname = newChat.replace(/\s/g, '');
+    if(newChatname){
+      db.collection('Chatroom').doc(chatId).collection('subChannel').where('chatName','==',newChatname).get().then((querySnapshot) => {
+        if(querySnapshot.empty){
+          db.collection('Chatroom').doc(chatId).collection('subChannel').doc(subChannelId).set({
+            channelId: subChannelId,
+            chatName: newChatname,
+            createdAt: new Date(),
+            member: member,
+          }).then(() => {
+              alert('subchannel created')
+              //reload channel 
+              setChannel([]);
+              resloveChannel();
+            }).catch((error) => {
+              console.log("error getting documents: ", error);
+            })
+        }else{
+          alert('subChannel exist')
+        }}).catch((error) => {
+          console.log("error getting documents: ", error);
+        })
+      }else{
+        alert('please enter chat name')
+      }
+  }
+
+  const ThrowChannel = () => {
+    if(channel.length > 0){
+      return(
+            <Select
             minWidth={200}
             accessibilityLabel="Select a setService"
             placeholder="Select setService"
-            selectedValue={channel}
+            selectedValue={chatName}
             onValueChange={(itemValue) => changeChannel(itemValue)}
             _selectedItem={{
               bg: "teal.600",
               endIcon: <CheckIcon size={4} />,
             }}
           >
-            <Select.Item label="Facebook" value="facebook" />
-            <Select.Item label="Instagram" value="instagram" />
-            <Select.Item label="Twitter" value="twitter" />
-            <Select.Item label="LinkedIn" value="linkedin" />
+            {channel.map((item:any) => (
+              <Select.Item label={item.chatName} value={item.channelId}/>
+            ))}
           </Select>
+      )
+    }else{
+      return(
+        <Select>
+          <Select.Item label="no channel" value="no channel"/>
+        </Select>
+      )
+    }
+  }
+
+  return (
+    <>
+      <Center flex={1}>
+        <Input
+            placeholder="Enter chat name"
+            onChangeText={(text) => setNewChat(text)}
+            value={newChat}
+          />
+          <Button onPress={createSubChannel}>Create newChat</Button>
+        <VStack space={2} alignItems="center">
+          <Text fontSize="lg" bold>
+            Select a channel
+          </Text>
+            <Button 
+              onPress={() => {
+              dispatch(navigate('Chat',{
+                userId: userId,
+                name: name,
+                email: email,
+                photoURL: photoURL,
+                navigation: props.navigation,
+              }))
+              
+            }}>Back to regular chat</Button>
+          <ThrowChannel/>
         </VStack>
       </Center>
     </>

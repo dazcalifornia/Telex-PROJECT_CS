@@ -19,30 +19,20 @@ import ChatHeader from '../components/chatHeader';
 
 
 function Chat (props:{userId:string,name:string, email:string, photoURL:string,navigation:any}) {
+
   const {userId, name, email, photoURL} = props.route.params;
+
   const [message, setMessage] = useState([])  //loadmessage from firebase specific to user 
 
-  const [chatName, setChatName] = useState('') //load chat name from firebase specific to userId
-  
+
   const [channel, setChannel] = useState([]) //load subroom from firebase
 
+  const [chatName, setChatName] = useState('') //load chat name from firebase specific to userId
   const member = [auth.currentUser?.uid, userId];
+
   const chatId = member.sort().join('_');
  
-  useEffect(() => {
-    db.collection('Chatroom').doc(chatId).collection('subChannel').get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        data = doc.data();
-        setChannel(channel => [...channel, data])
-        console.log('channel',data)
-      });
-    }).catch((error) => {
-      console.log("error getting documents: ", error);
-    })
-  }, [])
-
   useLayoutEffect(() => {
-
     const loadChat = db.collection('Chatroom').doc(chatId).collection('messages')
     .orderBy('createdAt', 'desc').onSnapshot(snapshot => (
         setMessage(snapshot.docs.map(doc => ({
@@ -55,36 +45,6 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
     return loadChat;
 
   }, [])
-
-  const createSubChannel =()=>{
-    //subchannelID generate
-    const subChannelId = Math.random().toString(36).substring(7);
-    //subchannel is a collection of chatId
-    //if subChannel exist no create subChannel 
-    if(chatName){
-      db.collection('Chatroom').doc(chatId).collection('subChannel').where('chatName','==',chatName).get().then((querySnapshot) => {
-        if(querySnapshot.empty){
-          db.collection('Chatroom').doc(chatId).collection('subChannel').doc(subChannelId).set({
-            channelId: subChannelId,
-            chatName: chatName,
-            createdAt: new Date(),
-            member: member,
-          }).then(() => {
-              alert('subchannel created')
-            }).catch((error) => {
-              console.log("error getting documents: ", error);
-            })
-        }else{
-          alert('subChannel exist')
-        }}).catch((error) => {
-          console.log("error getting documents: ", error);
-        })
-      }else{
-        alert('please enter chat name')
-      }
-  }
-
-
 
   const onSend = useCallback((messages = []) => {
     setMessage(previousMessages => GiftedChat.append(previousMessages, messages))
@@ -101,26 +61,10 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
       user,
     })
   }, [])
+
   return (
     <>
-      <ChatHeader {...props} {...channel}/>
-      <Select
-        selectedValue={chatName}
-        minWidth={200}
-        accessibilityLabel="Select a setService"
-        placeholder="Select setService"
-        onValueChange={(itemValue) => setChatName(itemValue)}
-        _selectedItem={{
-          bg: "teal.600",
-          endIcon: <CheckIcon size={4} />,
-        }}
-      >
-        {channel.map((item:any) => (
-          <Select.Item label={item.chatName} value={item.chatName} />
-        ))}
-      </Select>
-      <Input onChangeText={(text)=>setChatName(text)} placeholder="Enter Chat Name" />
-      <Button onPress={createSubChannel}>Create SubChannel</Button>
+      <ChatHeader {...props}/>
       <GiftedChat
         isTyping={true}
         isAnimated={true}

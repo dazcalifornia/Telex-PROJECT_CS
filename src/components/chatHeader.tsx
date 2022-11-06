@@ -14,23 +14,16 @@ import { Entypo } from '@expo/vector-icons';
 
 import {auth} from '../../firebase';
 
-export default function ChatHeader(props: {name:string, email:string, photoURL:string, navigation:any},channel:string) {
-
-
-  useEffect(() => {
-    console.log('channel Handle',channel)
-  }, [])
-
-  const {name, email, photoURL} = props.route.params;
-  const { goBack } = props.navigation;
-  const { navigate } = props.navigation;
+export default function ChatHeader(props:any) {
+  const {userId, name, email, photoURL} = props.route.params;
+  const { navigate,replace,dispatch } = props.navigation;
    return (
     <View>
       <StatusBar barStyle="light-content"/>
       <HStack safeAreaTop bg="base" px="1" py="3" 
       justifyContent="space-between"
       alignItems="center" w="100%" h="134px"
-      >
+       >
         <IconButton
           ml="34px"
           _icon={{
@@ -41,7 +34,7 @@ export default function ChatHeader(props: {name:string, email:string, photoURL:s
           }}
           onPress={() =>{ 
             console.log('go Back')
-            goBack()
+            dispatch(navigate('Home'))
             }
           }
         />
@@ -60,7 +53,13 @@ export default function ChatHeader(props: {name:string, email:string, photoURL:s
             size: 5,
             color: "subbase",
           }}
-          onPress={() => navigate('ChatMenu')}
+          onPress={() => navigate('ChatMenu',{
+            userId: userId,
+            name: name,
+            email: email,
+            photoURL: photoURL,
+            navigation: props.navigation,
+          })}
           />
       </HStack>
     </View>

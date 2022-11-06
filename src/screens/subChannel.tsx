@@ -3,25 +3,17 @@ import {auth, db} from '../../firebase';
 
 import {
   Text,
-  Box,
-  Heading,
-  ScrollView,
-  VStack,
-  Button,
-  Image,
-  Input,
-  Select,
-  CheckIcon,
+
 } from 'native-base';
 
 import { GiftedChat } from 'react-native-gifted-chat';
 import ChatHeader from '../components/chatHeader';
 
 
-function SubChatrooms (props:{subId:string,chatId:string,chatName:string, userId:string,name:string, email:string, photoURL:string,navigation:any}) {
-  const {subId, chatId, chatName, userId, name, email, photoURL} = props.route.params;
+function SubChatrooms (props:any) {
+  const {subId, chatId, chatName } = props.route.params;
   const [message, setMessage] = useState([])  //loadmessage from firebase specific to user 
-  
+
   useLayoutEffect(() => {
     console.log('channel',subId)
     const loadSubChat = db.collection('Chatroom').doc(chatId).collection('subChannel').doc(subId).collection('messages')
