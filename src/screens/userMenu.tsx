@@ -11,17 +11,25 @@ import{
   HStack,
   Image,
   ScrollView,
+  Heading,
+  Icon,
+  Box,
+  IconButton,
+  Modal,
 } from 'native-base';
 import firebase from 'firebase/compat/app';
 
 import {auth,db} from '../../firebase';
 import * as ImagePicker from 'expo-image-picker';
+import {Entypo} from '@expo/vector-icons';
 
 function UserMenu(props:{navigation:{navigate:any;};}) {
-  const {replace} = props.navigation;
+  const {replace,navigate} = props.navigation;
   const [name,setName] = useState('');
   const [friendID,setFriendID] = useState('');
   const [friendList,setFriendList] = useState([]);
+
+  const [bio,setBio] = useState('');
 
   const [FriendRequest,setFriendRequest] = useState([]);
     useEffect(() =>{
@@ -179,48 +187,98 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
           replace('Home')
       })
   }
-    //return code
+
+
+
   return(
     <View
-      bg="base"
       style={{
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'flex-start',
       }}>
+      <Box
+        style={{
+          flex: 1,
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+        }}>
+      <HStack space={2} alignItems="center" justifyContent="space-between">
+        <Heading style={{marginTop: 20, marginLeft: 20}}>
+          Setttings
+        </Heading>
+        <Button
+          leftIcon={<Icon as={Entypo} name="log-out" size="sm" />}
+          style={{marginTop: 20, marginRight: 20}}
+          colorScheme="secondary"
+          onPress={() => navigate('logout')}>
+          Sign Out
+        </Button>
+      </HStack>
       <Image source={{ uri: auth?.currentUser?.photoURL }} 
           rounded="full"
           alt="profile"
           style={{ width: 100, height: 100 }}
           justifyContent="center"
           alignSelf="center"
-          marginTop="10"
+          marginTop={10}
         />
-        <ScrollView>
-        <View style={{
-        height:'50%',
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        }}>        
-        <Text>Settings</Text>
-        <Button onPress={signOut}>Sign Out</Button>
-        <Input 
-          placeholder="Username" 
-          variant="underlined"
-          onChangeText={text => setName(text)}
-          />
-          <Text>{name}</Text>
-        <Button onPress={setUsername}>Save</Button>
+        </Box>
+        <VStack
+        style={{
+          width: '100%',
+          flex: 1,
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+        }}>
+        <Heading style={{marginTop: 20, marginLeft: 20}}>
+          Edit Profile
+        </Heading>
+        <Box
+          style={{
+            width: '80%',
+            flex: 2,
+            flexDirection: 'column',
+            justifyContent: 'flex-start',
+            paddingLeft: 20,
+          }}
+        >
+        <HStack space={2} alignItems="center" justifyContent="space-between" alignContent="center">
         <Input
-          placeholder="Friend ID"
-          variant="underlined"
-          onChangeText={text => setFriendID(text)}
-          />
-          <Text>{friendID}</Text>
-        <Button onPress={addFriends}>Add Friend</Button>
-      </View>
-      <View style={{
+          size="sm"
+          style={{marginTop: 20, marginLeft: 20, marginRight: 20}}
+          placeholder="Username"
+          onChangeText={(text) => setName(text)}
+          value={name}
+        />
+        <IconButton
+          variant="solid"
+          icon={<Icon as={Entypo} name="edit" size="sm"/>}
+          style={{marginTop: 20, marginRight: 20}}
+          colorScheme="success"
+          onPress={() => setUsername()}/>
+        </HStack>
+        <HStack space={2} alignItems="center" justifyContent="space-between" alignContent="center">
+        <Input
+          size="sm"
+          style={{marginTop: 20, marginLeft: 20, marginRight: 20}}
+          placeholder="Bio"
+          onChangeText={(text) => setBio(text)}
+          value={bio}
+        />
+        <IconButton
+          variant="solid"
+          icon={<Icon as={Entypo} name="edit" size="sm"/>}
+          style={{marginTop: 20, marginRight: 20}}
+          colorScheme="success"
+          onPress={() => console.log('setBio')}/>
+        </HStack>
+        </Box>
+        </VStack>
+
+
+
+
+        <View style={{
         height:'50%',
         width: '100%',
         justifyContent: 'center',
@@ -262,8 +320,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
           }} 
           />}
         </View>
-      </ScrollView>
     </View>
   )
 }
-export default UserMenu;
+export default UserMenu

@@ -8,7 +8,7 @@ import Register from './screens/Register';
 import Chat from './screens/Chat';
 import UserMenu from './screens/userMenu';
 import SubChatrooms from './screens/subChannel';
-
+import Logout from './screens/logout';
 import DEV from './screens/dev';
 
 import ChatMenu from './screens/chatMenu';
@@ -31,7 +31,6 @@ const Loader = () => {
         headerShown: false,
       }}
     >  
-        <Stack.Screen name="DEV" component={DEV} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Login" component={LoginScreen} />
@@ -43,6 +42,8 @@ const Loader = () => {
         <Stack.Screen name="SubChannel" component={SubChatrooms} />
 
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
+        <Stack.Screen name="logout" component={Logout} />
+        <Stack.Screen name="DEV" component={DEV} />
         <Stack.Screen name="UserMenu" component={UserMenu} />
       </Stack.Group>
     </Stack.Navigator>  

@@ -10,6 +10,7 @@ import {
   Heading,
   Link,
   Center,
+  Image,
 } from 'native-base'
 import { auth } from '../../firebase'
 
@@ -38,6 +39,8 @@ const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
   return (
     <Center w="100%">
       <Box safeArea p="2" py="8" w="90%" maxW="290">
+          <Image source={require('../../assets/loginmesh.png')} alt="logo" size="xl" />
+
         <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{
           color: "warmGray.50"
         }}>
