@@ -24,7 +24,9 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
   const [friendList,setFriendList] = useState([]);
 
   const [FriendRequest,setFriendRequest] = useState([]);
-  
+    useEffect(() =>{
+    subscribeFriendRequest()
+  },[])
   const setUsername = () => {
     if(name !== ''){
     auth.currentUser.updateProfile({
@@ -123,10 +125,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         console.log(error);
       });
   }
-  const handleFriendRequest = () => {
-    const currentUser = auth?.currentUser?.uid;
 
-  }
   const subscribeFriendRequest = () => {
     //if not have friend request then show no friend request 
     //if have friend request then show friend request 
@@ -143,19 +142,62 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         })
       })
   }
-
-useEffect(() =>{
-  subscribeFriendRequest()
-},[])
-
-  //return code
+  const acceptFriendHandle = (item:string) => {
+    db.collection('users').doc(auth.currentUser?.uid).update({
+      ['friendRequest.'+item]:true,
+    }).then(function() {
+        //get username of friends
+        db.collection('users').where('uid','==',item).get().then((querySnapshot)=>{
+          querySnapshot.forEach((doc)=>{
+            const friendUsername = doc.data().username
+            db.collection('users').doc(auth.currentUser?.uid).update({
+              friends: firebase.firestore.FieldValue.arrayUnion(friendUsername),
+            }).then(function() {
+                db.collection('users').doc(auth?.currentUser?.uid).get().then((doc)=>{
+                  const currentUserUsername = doc.data().username 
+                  db.collection('users').doc(item).update({
+                    friends: firebase.firestore.FieldValue.arrayUnion(currentUserUsername),
+                  }).then(function() {
+                      db.collection('users').doc(auth?.currentUser?.uid).update({
+                        ['friendRequest.'+item]:firebase.firestore.FieldValue.delete(),
+                      }).then(function() {
+                          alert('Friend request accepted')
+                          replace('Home')
+                        })
+                    })
+                })
+              })
+          })
+        })
+      })
+  }
+  const rejectFriendHandle = (item:string) => {
+     db.collection('users').doc(auth?.currentUser?.uid).update({
+      ['friendRequest.'+item]:firebase.firestore.FieldValue.delete(),
+    }).then(function() {
+          alert('Friend request rejected')
+          replace('Home')
+      })
+  }
+    //return code
   return(
-    <View style={{
-      flex: 1,
-      flexDirection: 'column',
-      justifyContent: 'flex-start',
-    }}>
-      <View style={{
+    <View
+      bg="base"
+      style={{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+      }}>
+      <Image source={{ uri: auth?.currentUser?.photoURL }} 
+          rounded="full"
+          alt="profile"
+          style={{ width: 100, height: 100 }}
+          justifyContent="center"
+          alignSelf="center"
+          marginTop="10"
+        />
+        <ScrollView>
+        <View style={{
         height:'50%',
         width: '100%',
         justifyContent: 'center',
@@ -185,6 +227,7 @@ useEffect(() =>{
         alignItems: 'center',
         }}>
         <Text>Friend Request</Text>
+        
         <ScrollView>
           {FriendRequest.map((item,index) => {
             return(
@@ -198,49 +241,11 @@ useEffect(() =>{
                 <Text>{item}</Text>
                 <Button 
                   colorScheme="success"
-                  onPress={() => {
-                    db.collection('users').doc(auth.currentUser?.uid).update({
-                      ['friendRequest.'+item]:true,
-                    }).then(function() {
-                      //get username of friend
-                      db.collection('users').where('uid','==',item).get().then((querySnapshot)=>{
-                        querySnapshot.forEach((doc)=>{
-                          const friendUsername = doc.data().username
-                          db.collection('users').doc(auth.currentUser?.uid).update({
-                            friends: firebase.firestore.FieldValue.arrayUnion(friendUsername),
-                          }).then(function() {
-                            db.collection('users').doc(auth?.currentUser?.uid).get().then((doc)=>{
-                              const currentUserUsername = doc.data().username 
-                              db.collection('users').doc(item).update({
-                                friends: firebase.firestore.FieldValue.arrayUnion(currentUserUsername),
-                              }).then(function() {
-                                 db.collection('users').doc(auth?.currentUser?.uid).update({
-                        ['friendRequest.'+item]:firebase.firestore.FieldValue.delete(),
-                      }).then(function() {
-                        alert('Friend request accepted')
-                        replace('Home')
-                      })
-                                    })
-                                  })
-                          })
-                        })
-                      })
-                    })
-                  }}
+                  onPress={() => {acceptFriendHandle(item)}}
                 >Accept</Button>
                 <Button 
                   colorScheme="secondary"
-                  onPress={() => {
-                      //delete friend Request
-                      //then navigate to chatList
-                      //then show alert friend request rejected
-                      db.collection('users').doc(auth?.currentUser?.uid).update({
-                        ['friendRequest.'+item]:firebase.firestore.FieldValue.delete(),
-                      }).then(function() {
-                        alert('Friend request rejected')
-                        replace('Home')
-                      })
-                   }}
+                  onPress={() => { rejectFriendHandle(item)}}
                   >Decline</Button>
               </HStack>
               </View>
@@ -257,6 +262,7 @@ useEffect(() =>{
           }} 
           />}
         </View>
+      </ScrollView>
     </View>
   )
 }
