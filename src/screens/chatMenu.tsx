@@ -35,24 +35,18 @@ const ChatMenu = (props:any) => {
     console.log('member',member)
     //load channel from firebase
     resloveChannel();
+    if(channel?.length === 0){
+      setChannel([])
+    }
   }, [])
 
   const resloveChannel = () => {
 	    db.collection('Chatroom').doc(chatId).collection('subChannel').get().then((querySnapshot) => {
-      if(querySnapshot.empty){
-        //setchannel to empty and show text no channel 
-        setChannel(channel=>[...channel, {label:'No Channel', value:'No Channel'}])
-        console.log('empty')
-      }
-      querySnapshot.forEach((doc) => {
-        if(doc.exists){
+        querySnapshot.forEach((doc)=>{
           let data = doc.data();
-          setChannel(channel => [...channel, data])
+          setChannel(channel=>[...channel,data])
           console.log('channel',data)
-        }
-      })
-    }).catch((error) => {
-      console.log("error getting documents: ", error);
+        })
     })
   }
 
@@ -108,7 +102,7 @@ const ChatMenu = (props:any) => {
   }
 
   const ThrowChannel = () => {
-    if(channel.length > 0){
+    if(channel?.length !== 0){
       return(
             <Select
             minWidth={200}
@@ -126,11 +120,10 @@ const ChatMenu = (props:any) => {
             ))}
           </Select>
       )
-    }else{
+    }
+    if(channel?.length === 0){
       return(
-        <Select>
-          <Select.Item label="no channel" value="no channel"/>
-        </Select>
+        <Text>no channel</Text>
       )
     }
   }

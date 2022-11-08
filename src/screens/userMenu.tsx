@@ -87,14 +87,21 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
           if(querySnapshot.empty){
             alert('User not found')
           }else{
+            //if user add user it self then alert error
+
             querySnapshot.forEach((doc) => {
-              console.log("bruh dang",doc.data().uid)
+              if(doc.data().uid == currentUser){
+                alert('You cannot add yourself')
+              }else{
+                  console.log("bruh dang",doc.data().uid)
               const friendUID = doc.data().uid;
               db.collection('users').doc(friendUID).update({
                 ['friendRequest.'+currentUser]:false,
               }).then(function() {
                 alert('Friend request sent')
               })
+
+              }
             })
           }
         })
