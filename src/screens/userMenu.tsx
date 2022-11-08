@@ -1,6 +1,10 @@
 import React,{
   useState,
   useEffect,
+
+  useRef,
+  useMemo,
+  useCallback,
 } from 'react';
 import{
   View,
@@ -18,6 +22,8 @@ import{
   Modal,
 } from 'native-base';
 import firebase from 'firebase/compat/app';
+
+import BottomSheet from '@gorhom/bottom-sheet';
 
 import {auth,db} from '../../firebase';
 import * as ImagePicker from 'expo-image-picker';
@@ -189,7 +195,6 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
   }
 
 
-
   return(
     <View
       style={{
@@ -210,7 +215,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
           leftIcon={<Icon as={Entypo} name="log-out" size="sm" />}
           style={{marginTop: 20, marginRight: 20}}
           colorScheme="secondary"
-          onPress={() => navigate('logout')}>
+          onPress={() => Logout()}>
           Sign Out
         </Button>
       </HStack>
@@ -245,6 +250,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         <HStack space={2} alignItems="center" justifyContent="space-between" alignContent="center">
         <Input
           size="sm"
+          variant="underlined"
           style={{marginTop: 20, marginLeft: 20, marginRight: 20}}
           placeholder="Username"
           onChangeText={(text) => setName(text)}
@@ -323,4 +329,33 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     </View>
   )
 }
+const Logout = () =>{
+  // ref
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  // variables
+  const snapPoints = useMemo(() => ['25%', '50%'], []);
+
+  // callbacks
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index);
+  }, []);
+  return(
+  <View style={styles.container}>
+  <BottomSheet
+        ref={bottomSheetRef}
+        index={1}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+      >
+        <View style={styles.contentContainer}>
+          <Text>Awesome 🎉</Text>
+        </View>
+      </BottomSheet>
+
+</View>
+  )
+}
+
+
 export default UserMenu
