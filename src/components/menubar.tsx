@@ -1,14 +1,23 @@
-import React from 'react';
+import React,{
+  useState,
+} from 'react';
 import {
   Button,
   HStack,
   Text,
   Box,
   IconButton,
+  Modal,
+  Input,
 } from 'native-base';
-
 import {Entypo} from '@expo/vector-icons';
+
+import addFriends from './eventHandle/addFriend';
+
 export default function Menubar(props: { navigation: { navigate: any; }; }) {
+  const [friendID,setFriendID] = useState('');
+
+  const [friendModal, setFriendModal] = React.useState(false);
   return (
     <>
       <Box
@@ -22,31 +31,7 @@ export default function Menubar(props: { navigation: { navigate: any; }; }) {
         m="15px"
         >
         <HStack m="3px" pl="21px" space={4}>
-          <IconButton
-            borderRadius="15px"
-            variant="solid"
-            bg="altbase"
-            _icon={{
-              as: Entypo,
-              name: "home",
-              size: 5,
-              color: "base",
-              }}
-            onPress={() => console.log('pressed Home')}
-          />
-            <Button
-              borderRadius="15px"
-              variant="solid"
-              bg="#979797"
-              _text={{
-                color: 'black',
-                fontSize: 'sm',
-                fontWeight: 'bold',
-              }}
-              onPress={() => console.log('pressed Home')}
-            >
-            #home
-            </Button>
+          
             <Button
               borderRadius="15px"
               variant="solid"
@@ -60,7 +45,41 @@ export default function Menubar(props: { navigation: { navigate: any; }; }) {
             >
             #Dev
             </Button>
+            <Button 
+            justifyContent="center"
+            alignContent="center"
+            leftIcon={<Entypo name="plus" size={24} color="black" />}
+              borderRadius="15px"
+              variant="solid"
+              bg="#06C755"
+              _text={{
+                color: 'black',
+                fontSize: 'sm',
+                fontWeight: 'bold',
+              }}
+              onPress={() => setFriendModal(true)}
+            >
+            AddFriends
+            </Button>
         </HStack>
+          <Modal isOpen={friendModal} onClose={() => setFriendModal(false)}>
+            <Modal.Content maxWidth="400px">
+              <Modal.CloseButton />
+              <Modal.Header>Add Friends</Modal.Header>
+              <Modal.Body>
+                <Input
+                  placeholder="Enter friend username"
+                  onChangeText={(text) => setFriendID(text)}
+                  value={friendID}
+                />
+                <Button onPress={
+                //setFriendID to addFriend
+                () => addFriends({friendID: friendID})
+              }>Add Friend</Button>
+              </Modal.Body>
+            </Modal.Content>
+          </Modal>
+
       </Box>
     </>
 

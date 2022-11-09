@@ -115,7 +115,7 @@ const ChatMenu = (props:any) => {
               endIcon: <CheckIcon size={4} />,
             }}
           >
-            {channel.map((item:any) => (
+            {channel.map((item:any,key) => (
               <Select.Item label={item.chatName} value={item.channelId}/>
             ))}
           </Select>
@@ -148,11 +148,11 @@ const ChatMenu = (props:any) => {
                 name: name,
                 email: email,
                 photoURL: photoURL,
-                navigation: props.navigation,
+                navigation: props.replace,
               }))
               
             }}>Back to regular chat</Button>
-          <ThrowChannel/>
+          <ThrowChannel />
         </VStack>
       </Center>
     </>

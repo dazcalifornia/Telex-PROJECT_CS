@@ -20,6 +20,7 @@ import{
   Box,
   IconButton,
   Modal,
+  Pressable,
 } from 'native-base';
 import firebase from 'firebase/compat/app';
 
@@ -30,20 +31,28 @@ import * as ImagePicker from 'expo-image-picker';
 import {Entypo} from '@expo/vector-icons';
 
 function UserMenu(props:{navigation:{navigate:any;};}) {
-  const {replace,navigate} = props.navigation;
+  const {replace,navigate,goBack,dispatch} = props.navigation;
   const [name,setName] = useState('');
-  const [friendID,setFriendID] = useState('');
-  const [friendList,setFriendList] = useState([]);
 
   const [bio,setBio] = useState('');
-
+  
+  const [currentUserUsername, setCurrentUserUsername] = useState('');
+  const [userPhoto, setUserPhoto] = useState('');
   const [FriendRequest,setFriendRequest] = useState([]);
-    useEffect(() =>{
+
+  useEffect(() =>{
+    db.collection('users').doc(auth.currentUser?.uid).get().then((doc) => {
+      let data = doc.data();
+      if(data?.username){
+        console.log('username',data.username)
+        setCurrentUserUsername(data.username)
+      }
+    })
     subscribeFriendRequest()
   },[])
   const setUsername = () => {
     if(name !== ''){
-    auth.currentUser.updateProfile({
+    auth?.currentUser?.updateProfile({
       username: "",
     }).then(function() {
       //if username is used by other user then alert error
@@ -51,11 +60,20 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         //then navigate to chatList
       db.collection('users').where('username','==',name).get().then((querySnapshot) => {
         if(querySnapshot.empty){
-          db.collection('users').doc(auth?.currentUser?.uid).update({
-            username: name,
-          }).then(function() {
-            replace('Home');
-          })
+          db.collection('users').doc(auth.currentUser.uid).get().then((doc) => {
+                //if username field is empty then update username 
+                
+                if(doc.data().username === ''){
+                  db.collection('users').doc(auth.currentUser.uid).update({
+                    username: name,
+                  }).then(()=>{
+                    goBack();
+                    alert('username updated')
+                  })
+                }else{
+                  alert('you already have username')
+                }
+              })
         }else{
           alert('Username is already used by other user')
         }
@@ -70,7 +88,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
   }
 
   //pick image from gallery
-  const [image, setImage] = useState(null);
+
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -84,61 +102,78 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     console.log(result);
 
     if (!result.cancelled) {
-      setImage(result.uri);
+      console.log('image',result.uri)
+
+      uploadImage(result.uri)
     }
   };
+const [isUploading, setIsUploading] = useState(false);
+//handle upload Image
+  const uploadImage = async (image) => {
+    try{
+      setIsUploading(true)
+      console.log('status',isUploading)
+      handleImage(image);
 
-
- const addFriends = () => {
-    if(friendID == ''){
-      alert('Please enter friend ID')
-    }else{
-      auth?.currentUser?.updateProfile({
-      friends: "",
-    }).then(function() {
-      const currentUser = auth?.currentUser?.uid;
-      console.log('currentUser',currentUser)
-      if(currentUser !== friendID){ 
-        db.collection('users').where('username','==',friendID).get().then((querySnapshot) => {
-          if(querySnapshot.empty){
-            alert('User not found')
-          }else{
-            //if user add user it self then alert error
-
-            querySnapshot.forEach((doc) => {
-              if(doc.data().uid == currentUser){
-                alert('You cannot add yourself')
-              }else{
-                  console.log("bruh dang",doc.data().uid)
-              const friendUID = doc.data().uid;
-              db.collection('users').doc(friendUID).update({
-                ['friendRequest.'+currentUser]:false,
-              }).then(function() {
-                alert('Friend request sent')
-              })
-
-              }
-            })
-          }
-        })
-      }
-      })
-    .catch((error) => {
-      // An error occurred
-      alert(error.message);
-    });
+      //setImage({image: imgUrl});
+    } catch(e){
+      console.log(e);
+    } finally{
+      console.log('upload success')
+      setIsUploading(false);
+      
     }
   }
 
-  const signOut = () => {
-    auth.signOut().then(() => {
-      // Sign-out successful.
-      props.navigation.replace("Login");
-    }).catch((error) => {
-        // An error happened.
-        console.log(error);
-      });
+  const handleImage = async (image) => {
+   //updateProfile photoURL in firebase
+    const uploadUri = await uploadProfileImage(image.uri);
+    console.log('uploadUri',uploadUri)
+    auth.currentUser?.updateProfile({
+      photoURL: uploadUri,
+    }).then(function() {
+      // Update successful.
+        // update photoURL in database
+        db.collection('users').doc(auth?.currentUser?.uid).update({
+          imageURL: uploadUri,
+        }).then(()=>{
+          alert('image updated')
+          setUserPhoto(uploadUri)
+        }).catch((error) => {
+          console.log(error)
+        })
+    }).catch(function(error) {
+      // An error happened.
+      console.log(error)
+
+    });
   }
+
+ async function uploadProfileImage(uri) {
+  // Why are we using XMLHttpRequest? See:
+  // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+  const blob = await new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+      resolve(xhr.response);
+    };
+    xhr.onerror = function(e) {
+      console.log(e);
+      reject(new TypeError('Network request failed'));
+    };
+    xhr.responseType = 'blob';
+    xhr.open('GET', uri, true);
+    xhr.send(null);
+  });
+
+  const ref = db.ref().child('images').child(auth.currentUser?.uid);
+  const snapshot = await ref.put(blob);
+
+  // We're done with the blob, close and release it
+  blob.close();
+
+  return await snapshot.ref.getDownloadURL();
+}
 
   const subscribeFriendRequest = () => {
     //if not have friend request then show no friend request 
@@ -156,6 +191,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         })
       })
   }
+
   const acceptFriendHandle = (item:string) => {
     db.collection('users').doc(auth.currentUser?.uid).update({
       ['friendRequest.'+item]:true,
@@ -193,33 +229,77 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
           replace('Home')
       })
   }
+  const resetPic = () => {
+    auth.currentUser?.updateProfile({
+      photoURL: 'https://cdn.discordapp.com/avatars/266199548093792256/565ebbf330d4da3dd0aeca783777052f.png?size=1024'
+    })
+  }
 
+  
+
+  //modal 
+  const [modalVisible, setModalVisible] = useState(false);
+  const initialRef = useRef(null);
+  const finalRef = useRef(null);
 
   return(
     <View
       style={{
+        height: '90%',
         flex: 1,
         flexDirection: 'column',
       }}>
+      <Button onPress={() => resetPic()} >reset</Button>
       <Box
+       bg="base"
         style={{
           flex: 1,
           flexDirection: 'column',
           justifyContent: 'flex-start',
+          
         }}>
       <HStack space={2} alignItems="center" justifyContent="space-between">
-        <Heading style={{marginTop: 20, marginLeft: 20}}>
+        <Heading style={{
+          color: 'white',
+            marginTop: 20,
+            marginLeft: 20
+          }}>
           Setttings
         </Heading>
+        <Modal isOpen={modalVisible} onClose={() => setModalVisible(false)} initialFocusRef={initialRef} finalFocusRef={finalRef}>
+        <Modal.Content>
+          <Modal.CloseButton />
+          <Modal.Header>Sign-out</Modal.Header>
+          <Modal.Body>
+                <Text>Are you sure you want to sign-out?</Text>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Group space={2}>
+              <Button variant="ghost" colorScheme="blueGray" onPress={() => {
+              setModalVisible(false);
+            }}>
+                Cancel
+              </Button>
+              <Button colorScheme="secondary" onPress={() => {
+              signOut()
+            }}>
+                sure!
+              </Button>
+            </Button.Group>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
         <Button
           leftIcon={<Icon as={Entypo} name="log-out" size="sm" />}
           style={{marginTop: 20, marginRight: 20}}
           colorScheme="secondary"
-          onPress={() => Logout()}>
+          onPress={() => setModalVisible(true)}>
           Sign Out
         </Button>
       </HStack>
-      <Image source={{ uri: auth?.currentUser?.photoURL }} 
+      <Pressable onPress={pickImage}>
+        <Image
+          source={{ uri: auth?.currentUser?.photoURL }} 
           rounded="full"
           alt="profile"
           style={{ width: 100, height: 100 }}
@@ -227,9 +307,11 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
           alignSelf="center"
           marginTop={10}
         />
+      </Pressable>
         </Box>
         <VStack
         style={{
+          marginTop: 20,
           width: '100%',
           flex: 1,
           flexDirection: 'column',
@@ -248,35 +330,28 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
           }}
         >
         <HStack space={2} alignItems="center" justifyContent="space-between" alignContent="center">
-        <Input
-          size="sm"
-          variant="underlined"
-          style={{marginTop: 20, marginLeft: 20, marginRight: 20}}
-          placeholder="Username"
-          onChangeText={(text) => setName(text)}
-          value={name}
-        />
-        <IconButton
-          variant="solid"
-          icon={<Icon as={Entypo} name="edit" size="sm"/>}
-          style={{marginTop: 20, marginRight: 20}}
-          colorScheme="success"
-          onPress={() => setUsername()}/>
-        </HStack>
-        <HStack space={2} alignItems="center" justifyContent="space-between" alignContent="center">
-        <Input
-          size="sm"
-          style={{marginTop: 20, marginLeft: 20, marginRight: 20}}
-          placeholder="Bio"
-          onChangeText={(text) => setBio(text)}
-          value={bio}
-        />
-        <IconButton
-          variant="solid"
-          icon={<Icon as={Entypo} name="edit" size="sm"/>}
-          style={{marginTop: 20, marginRight: 20}}
-          colorScheme="success"
-          onPress={() => console.log('setBio')}/>
+        {
+            currentUserUsername ? (
+              <Text style={{marginTop: 20, marginLeft: 20}}>
+                Username: {currentUserUsername}
+              </Text>
+            ):(
+              <>
+                <Input
+                  style={{marginTop: 20, marginLeft: 20}}
+                  placeholder="Username"
+                  onChangeText={(text) => setName(text)}
+                />
+                <IconButton
+                  icon={<Icon as={Entypo} name="edit" size="sm" />}
+                  style={{marginTop: 20, marginRight: 20}}
+                  colorScheme="success"
+                  onPress={() => {
+                    setUsername()
+                  }}/>
+              </>
+            )
+        }
         </HStack>
         </Box>
         </VStack>
@@ -317,43 +392,9 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
           })}
         </ScrollView>
           <Button onPress={pickImage}>image Testing</Button>
-        {image && <Image 
-          source={{ uri: image }} 
-          alt="just testing picture" 
-          style={{ 
-            width: 200, 
-            height: 200 
-          }} 
-          />}
+        
         </View>
     </View>
-  )
-}
-const Logout = () =>{
-  // ref
-  const bottomSheetRef = useRef<BottomSheet>(null);
-
-  // variables
-  const snapPoints = useMemo(() => ['25%', '50%'], []);
-
-  // callbacks
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
-  return(
-  <View style={styles.container}>
-  <BottomSheet
-        ref={bottomSheetRef}
-        index={1}
-        snapPoints={snapPoints}
-        onChange={handleSheetChanges}
-      >
-        <View style={styles.contentContainer}>
-          <Text>Awesome 🎉</Text>
-        </View>
-      </BottomSheet>
-
-</View>
   )
 }
 

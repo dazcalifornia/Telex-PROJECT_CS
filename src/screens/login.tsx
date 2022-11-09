@@ -11,6 +11,7 @@ import {
   Link,
   Center,
   Image,
+  StatusBar,
 } from 'native-base'
 import { auth } from '../../firebase'
 
@@ -37,6 +38,8 @@ const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
       });
   }
   return (
+    <>
+    <StatusBar barStyle='dark-content'/>
     <Center w="100%">
       <Box safeArea p="2" py="8" w="90%" maxW="290">
           <Image source={require('../../assets/loginmesh.png')} alt="logo" size="xl" />
@@ -100,6 +103,7 @@ const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
         </VStack>
       </Box>
     </Center>
+    </>
   )
 }
 export default LoginScreen;

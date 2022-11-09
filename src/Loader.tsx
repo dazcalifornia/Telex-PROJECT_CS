@@ -1,5 +1,14 @@
 import * as React from 'react'
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+{/*import { 
+  createNativeStackNavigator,
+  } from '@react-navigation/native-stack'; */}
+import {
+  createStackNavigator,
+  TransitionPresets
+} from '@react-navigation/stack';
+import 'react-native-gesture-handler';
+
+
 
 import HomeScreen from './screens/homepage';
 import LoginScreen from './screens/login';
@@ -12,7 +21,9 @@ import Logout from './screens/logout';
 import DEV from './screens/dev';
 
 import ChatMenu from './screens/chatMenu';
-const Stack = createNativeStackNavigator();
+
+
+const Stack = createStackNavigator();
 
 import {auth} from '../../firebase';
 
@@ -22,12 +33,9 @@ const Loader = () => {
     <Stack.Navigator
       initialRouteName="Login"
       screenOptions={{
-          mode: 'modal',
-          headerMode: 'none',
-            cardStyle:{
-              backgroundColor:"transparent",
-              opacity:0.99
-            },
+        mode: 'modal',
+        headerMode: 'none',
+        gestureEnabled: true,
         headerShown: false,
       }}
     >  
@@ -44,7 +52,14 @@ const Loader = () => {
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="logout" component={Logout} />
         <Stack.Screen name="DEV" component={DEV} />
-        <Stack.Screen name="UserMenu" component={UserMenu} />
+        <Stack.Screen name="UserMenu" 
+          screenOptions={{
+            gestureEnabled: true,
+            cardOverlayEnabled: true,
+            ...TransitionPresets.ModalSlideFromBottomIOS,
+            ...TransitionPresets.RevealFromBottomAndroid
+          }} 
+          component={UserMenu} />
       </Stack.Group>
     </Stack.Navigator>  
   )

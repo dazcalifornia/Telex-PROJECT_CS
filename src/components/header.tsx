@@ -9,7 +9,10 @@ import {
   Modal,
   Button
 } from 'native-base'
-import React from 'react'
+import React,{
+  useState,
+  useEffect,
+} from 'react'
 import { Entypo } from '@expo/vector-icons';
 
 import {auth} from '../../firebase';
@@ -21,9 +24,20 @@ import {accMenus} from './accMenus';
 const Header = (props:{navigation:{navigate:any;};}) => {
   
   const [modalVisible, setModalVisible] = React.useState(false);
-  
+
   const {navigate} = props.navigation;
 
+  //get user data from firebase
+  const [user, setUser] = useState({
+    name: '',
+    email: '',
+    photoURL: '',
+  });
+
+  useEffect(() => {
+    
+    console.log('header')
+  }, [])
   const userMenu = () => {
     return(
       <Modal 
