@@ -26,7 +26,7 @@ import firebase from 'firebase/compat/app';
 
 import BottomSheet from '@gorhom/bottom-sheet';
 
-import {auth,db} from '../../firebase';
+import {app,auth,db} from '../../firebase';
 import * as ImagePicker from 'expo-image-picker';
 import {Entypo} from '@expo/vector-icons';
 
@@ -95,85 +95,39 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [4, 4],
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.cancelled) {
       console.log('image',result.uri)
-
-      uploadImage(result.uri)
+      console.log('imageName',result.uri.split('/').pop())
+      const fileName = result.uri.split('/').pop();
+      uploadImage(fileName)
+      //uploadImage(result.uri)
     }
   };
-const [isUploading, setIsUploading] = useState(false);
+
 //handle upload Image
-  const uploadImage = async (image) => {
-    try{
-      setIsUploading(true)
-      console.log('status',isUploading)
-      handleImage(image);
-
-      //setImage({image: imgUrl});
-    } catch(e){
-      console.log(e);
-    } finally{
-      console.log('upload success')
-      setIsUploading(false);
-      
-    }
-  }
-
-  const handleImage = async (image) => {
-   //updateProfile photoURL in firebase
-    const uploadUri = await uploadProfileImage(image.uri);
-    console.log('uploadUri',uploadUri)
-    auth.currentUser?.updateProfile({
-      photoURL: uploadUri,
-    }).then(function() {
-      // Update successful.
-        // update photoURL in database
-        db.collection('users').doc(auth?.currentUser?.uid).update({
-          imageURL: uploadUri,
-        }).then(()=>{
-          alert('image updated')
-          setUserPhoto(uploadUri)
-        }).catch((error) => {
-          console.log(error)
+  const uploadImage = async (imageURI) => {
+      const response = await fetch(imageURI);
+      const blob = await response.blob();
+      const ref = app.storage().ref().child(`images/${imageURI}`);
+      const snapshot = ref.put(blob);
+      try {
+        const url = await snapshot.ref.getDownloadURL();
+        console.log('url',url)
+        setUserPhoto(url)
+        db.collection('users').doc(auth.currentUser.uid).update({
+          photoURL: url,
         })
-    }).catch(function(error) {
-      // An error happened.
-      console.log(error)
+      } catch (error) {
+        console.log(error)
+      }
 
-    });
-  }
+    }
 
- async function uploadProfileImage(uri) {
-  // Why are we using XMLHttpRequest? See:
-  // https://github.com/expo/expo/issues/2402#issuecomment-443726662
-  const blob = await new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.onload = function() {
-      resolve(xhr.response);
-    };
-    xhr.onerror = function(e) {
-      console.log(e);
-      reject(new TypeError('Network request failed'));
-    };
-    xhr.responseType = 'blob';
-    xhr.open('GET', uri, true);
-    xhr.send(null);
-  });
 
-  const ref = db.ref().child('images').child(auth.currentUser?.uid);
-  const snapshot = await ref.put(blob);
-
-  // We're done with the blob, close and release it
-  blob.close();
-
-  return await snapshot.ref.getDownloadURL();
-}
 
   const subscribeFriendRequest = () => {
     //if not have friend request then show no friend request 
