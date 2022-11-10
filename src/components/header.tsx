@@ -19,7 +19,6 @@ import {auth,db} from '../../firebase';
 
 
 //modal import 
-import {accMenus} from './accMenus';
 
 const Header = (props:{navigation:{navigate:any;};}) => {
   
@@ -51,7 +50,7 @@ const Header = (props:{navigation:{navigate:any;};}) => {
         {/*/<HStack alignItems="center" ml="24px">
           //<Text color="white" fontSize="2xl" fontWeight="bold">Logo</Text>
         </HStack>/*/}
-          <Text color="white" fontSize="2xl" fontWeight="bold">Hello "{auth?.currentUser?.displayName}"</Text>
+          <Text color="white" fontSize="2xl" fontWeight="bold">Hello "{name}"</Text>
         <IconButton
           mr="24px"
           borderRadius="15px"

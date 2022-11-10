@@ -13,11 +13,15 @@ import {
   HStack,
   Pressable,
   Center,
+  IconButton,
 } from 'native-base';
 import {auth,db} from '../../firebase'
 
 import Menubar from '../components/menubar'
 import { RefreshControl } from 'react-native';
+
+import { Entypo } from '@expo/vector-icons';
+
 function ChatList(props: { navigation: { navigate: any; }; }) {
   const {navigate} = props.navigation;
 
@@ -90,7 +94,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       
                     }
                   )}>
-                  <HStack space={4} alignItems="center" w={100}>
+                  <HStack space={4} alignItems="center" w={100} justifyContent="space-between" >
                     <Image 
                       key={i}
                       source={{ uri: userobj.photoURL }}
@@ -99,6 +103,17 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       size="65px"
                     />
                       <Text> {userobj.name} </Text>
+                      <IconButton
+                        borderRadius="15px"
+                        variant="solid"
+                        colorScheme="indigo"
+                        _icon={{
+                          as: Entypo,
+                          name:'chevron-right',
+                          color: 'white',
+                          size: 'md',
+                        }}
+                      />
                     </HStack>
                   </Pressable>
                 </Box>

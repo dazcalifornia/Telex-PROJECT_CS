@@ -35,7 +35,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
   const {replace,navigate,goBack,dispatch} = props.navigation;
   const [name,setName] = useState('');
 
-  const [bio,setBio] = useState('');
+  const [displayname,setDisplayname] = useState('');
   
   const [currentUserUsername, setCurrentUserUsername] = useState('');
   const [userPhoto, setUserPhoto] = useState('');
@@ -136,7 +136,6 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     });
   };
 
-let requestor ;
 
   const subscribeFriendRequest = () => {
     //if not have friend request then show no friend request 
@@ -144,34 +143,21 @@ let requestor ;
     //
     db.collection('users').where('uid','==',auth.currentUser?.uid).get().then((querySnapshot)=>{
       querySnapshot.forEach((doc) => {
-        console.log('friendRequest',doc.data().friendRequest)
         let loadData = doc.data().friendRequest
         const keyData = Object.keys(loadData);//uid
         const valueData = Object.values(loadData);//state 
-        requestor = keyData
-        room(keyData)
+        db.collection('users').where('uid','in',keyData).get().then((querySnapshot)=>{
+          querySnapshot.forEach((doc) => {
+            let requestorData = doc.data()
+            console.log('friendRequest',doc.data())
+            setFriendRequest((prev) => [...prev,requestorData])
+          })
+        })
         console.log('localFrienRequest',FriendRequest)
         })
-      }).then(function() {
-        db.collection('users').where('uid','==',requestor).get().then((querySnapshot)=>{ 
-          querySnapshot.forEach((doc) => {
-            console.log('Requestor:', doc.data().username)
-            setFriendRequest(doc.data().username)
-            })
-          })
-      }).catch(function(error) {
-        console.log("Error getting documents: ", error);
       })
-  }
+    }
 
-  const room = (senderId) => {
-    db.collection('users').where('uid','==',senderId).get().then((querySnapshot)=>{
-      querySnapshot.forEach((doc) => {
-        console.log('senderName',doc.data().username)
-        alert('you have friend request from '+doc.data().username)
-        })
-      })
-  }
 
 
   const acceptFriendHandle = (item:string) => {
@@ -211,11 +197,6 @@ let requestor ;
           replace('Home')
       })
   }
-  const resetPic = () => {
-    auth.currentUser?.updateProfile({
-      photoURL: 'https://cdn.discordapp.com/avatars/266199548093792256/565ebbf330d4da3dd0aeca783777052f.png?size=1024'
-    })
-  }
 
   const signOut = () => {
     auth.signOut().then(() => {
@@ -226,7 +207,25 @@ let requestor ;
         console.log(error);
       });
   }
-  
+
+  const setDisplayNameHandle = (name:string) => {
+    if(name !== ''){
+      auth.currentUser?.updateProfile({
+        displayName: name,
+      }).then(function() {
+        db.collection('users').doc(auth.currentUser?.uid).update({
+          name: name,
+        }).then(()=>{
+          alert('display name updated')
+          goBack();
+        })
+      }).catch(function(error) {
+        console.log(error)
+      });
+    }else{
+      alert('Please enter display name')
+    }
+  }
 
   //modal 
   const [modalVisible, setModalVisible] = useState(false);
@@ -237,7 +236,7 @@ let requestor ;
     <View
       style={{
         height: '90%',
-        flex: 1,
+        flex: 2,
         flexDirection: 'column',
       }}>
       
@@ -278,9 +277,9 @@ let requestor ;
               </Button>
             </Button.Group>
           </Modal.Footer>
-
         </Modal.Content>
       </Modal>
+
         <Button
           leftIcon={<Icon as={Entypo} name="log-out" size="sm" />}
           style={{marginTop: 20, marginRight: 20}}
@@ -345,12 +344,23 @@ let requestor ;
             )
         }
         </HStack>
-        </Box>
-          <Container style={{marginTop: 20, marginLeft: 20}}>
-          <Heading style={{marginTop: 20, marginLeft: 20}}>
-            Friend Requests
-          </Heading>
-          <Box
+        <HStack space={2} alignItems="center" justifyContent="space-between" alignContent="center">
+          <Input 
+            style={{marginTop: 20, marginLeft: 20}}
+            placeholder="Display Name"
+            onChangeText={(text) => setDisplayname(text)}
+          />
+          <IconButton
+            icon={<Icon as={Entypo} name="edit" size="sm" />}
+            style={{marginTop: 20, marginRight: 20}}
+            colorScheme="success"
+            onPress={() => {
+              setDisplayNameHandle(displayname)
+            }}/>
+        </HStack>
+        </Box>   
+        
+        <Box
           style={{
             width: '80%',
             flex: 2,
@@ -359,69 +369,36 @@ let requestor ;
             paddingLeft: 20,
           }}
         >
-            <ScrollView>
-              {FriendRequest.map((item, index) => {
-                return (
-                  <HStack space={2} alignItems="center" justifyContent="space-between" alignContent="center">
-                    <Text style={{marginTop: 20, marginLeft: 20}}>
-                      {item}
-                    </Text>
-                    <IconButton
-                      icon={<Icon as={Entypo} name="check" size="sm" />}
-                      style={{marginTop: 20, marginRight: 20}}
-                      colorScheme="success"
-                      onPress={() => {
-                        acceptFriendHandle(item)
-                      }}/>
-                    <IconButton
-                      icon={<Icon as={Entypo} name="cross" size="sm" />}
-                      style={{marginTop: 20, marginRight: 20}}
-                      colorScheme="danger"
-                      onPress={() => {
-                        rejectFriendHandle(item)
-                      }}/>
-                  </HStack>
-                )
-              })}
-            </ScrollView>
-        </Box>
-        </Container>
-        </VStack>
-
-
-
-        <View style={{
-        height:'50%',
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        }}>
-        <ScrollView>
-          {FriendRequest.map((item,index) => {
-            return(
-              <View key={index}>
-              <HStack
-                style={{
-                  width: '100%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Text>{item}</Text>
-                <Button 
-                  colorScheme="success"
-                  onPress={() => {acceptFriendHandle(item)}}
-                >Accept</Button>
-                <Button 
-                  colorScheme="secondary"
-                  onPress={() => { rejectFriendHandle(item)}}
-                  >Decline</Button>
-              </HStack>
-
-              </View>
-            )
-          })}
+        <Heading style={{marginTop: 20, marginLeft: 20}}>
+          Friend Requests
+        </Heading>
+        <ScrollView style={{width: '100%'}}>
+        { FriendRequest.map((item, index) => {
+          return(
+            <HStack space={2} alignItems="center" justifyContent="space-between" alignContent="center">
+              <Text key={index} style={{marginTop: 20, marginLeft: 20}}>
+                {item.name}
+              </Text>
+              <IconButton
+                icon={<Icon as={Entypo} name="check" size="sm" />}
+                style={{marginTop: 20, marginRight: 20}}
+                colorScheme="success"
+                onPress={() => {
+                  acceptFriendHandle(item.uid)
+                }}/>
+              <IconButton
+                icon={<Icon as={Entypo} name="cross" size="sm" />}
+                style={{marginTop: 20, marginRight: 20}}
+                colorScheme="danger"
+                onPress={() => {
+                  rejectFriendHandle(item.uid)
+                }}/>
+            </HStack>
+          )
+        })}
         </ScrollView>
-        </View>
+        </Box>
+        </VStack>
     </View>
   )
 }
