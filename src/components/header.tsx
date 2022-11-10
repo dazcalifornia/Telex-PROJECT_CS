@@ -15,7 +15,7 @@ import React,{
 } from 'react'
 import { Entypo } from '@expo/vector-icons';
 
-import {auth} from '../../firebase';
+import {auth,db} from '../../firebase';
 
 
 //modal import 
@@ -28,39 +28,15 @@ const Header = (props:{navigation:{navigate:any;};}) => {
   const {navigate} = props.navigation;
 
   //get user data from firebase
-  const [user, setUser] = useState({
-    name: '',
-    email: '',
-    photoURL: '',
-  });
-
+  const [profile, setProfile] = useState('')
+  const [name, setName] = useState('')
   useEffect(() => {
-    
-    console.log('header')
-  }, [])
-  const userMenu = () => {
-    return(
-      <Modal 
-        isOpen={modalVisible} 
-        onClose={() => setModalVisible(false)}
-        justifyContent="flex-end"
-        >
-        <Modal.Content maxWidth="400px">
-          <Modal.CloseButton />
-          <Modal.Header>Account</Modal.Header>
-          <Modal.Body>
-            <Text>Account</Text>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button.Group variant="ghost" space={2}>
-              <Button onPress={() => setModalVisible(false)}>Cancel</Button>
-              <Button onPress={() => setModalVisible(false)}>Save</Button>
-            </Button.Group>
-          </Modal.Footer>
-        </Modal.Content>
-    </Modal>
-    )
-  }
+    db.collection('users').doc(auth.currentUser?.uid).onSnapshot((doc) => {
+      setProfile(doc.data()?.imageURL)
+      setName(doc.data()?.name)
+    })
+  }, [profile, name])
+
 
   return (
     <>

@@ -21,12 +21,13 @@ import{
   IconButton,
   Modal,
   Pressable,
+  Container,
 } from 'native-base';
 import firebase from 'firebase/compat/app';
 
 import BottomSheet from '@gorhom/bottom-sheet';
 
-import {app,auth,db} from '../../firebase';
+import {storage,auth,db} from '../../firebase';
 import * as ImagePicker from 'expo-image-picker';
 import {Entypo} from '@expo/vector-icons';
 
@@ -60,11 +61,11 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         //then navigate to chatList
       db.collection('users').where('username','==',name).get().then((querySnapshot) => {
         if(querySnapshot.empty){
-          db.collection('users').doc(auth.currentUser.uid).get().then((doc) => {
+          db.collection('users').doc(auth.currentUser?.uid).get().then((doc) => {
                 //if username field is empty then update username 
                 
-                if(doc.data().username === ''){
-                  db.collection('users').doc(auth.currentUser.uid).update({
+                if(doc.data()?.username === ''){
+                  db.collection('users').doc(auth.currentUser?.uid).update({
                     username: name,
                   }).then(()=>{
                     goBack();
@@ -88,8 +89,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
   }
 
   //pick image from gallery
-
-
+  const [image,setImage] = useState('');
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -102,32 +102,41 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     if (!result.cancelled) {
       console.log('image',result.uri)
       console.log('imageName',result.uri.split('/').pop())
-      const fileName = result.uri.split('/').pop();
-      uploadImage(fileName)
-      //uploadImage(result.uri)
+
+      const source = {uri: result.uri};
+      setImage(source);
+      uploadImage()
     }
   };
 
 //handle upload Image
-  const uploadImage = async (imageURI) => {
-      const response = await fetch(imageURI);
-      const blob = await response.blob();
-      const ref = app.storage().ref().child(`images/${imageURI}`);
-      const snapshot = ref.put(blob);
-      try {
-        const url = await snapshot.ref.getDownloadURL();
-        console.log('url',url)
-        setUserPhoto(url)
-        db.collection('users').doc(auth.currentUser.uid).update({
-          photoURL: url,
+  const uploadImage = async () => {
+    //upload image to firebase storage
+    //get download photoURL from firebase storage
+    //update user profile with photoURL from firebase storage
+    //update user profile in database with photoURL from firebase storage
+    const response = await fetch(image.uri);
+    const blob = await response.blob();
+    const ref = storage.ref().child(`images/${auth.currentUser?.uid}`);
+    const snapshot = await ref.put(blob);
+    const downloadURL = await snapshot.ref.getDownloadURL();
+    console.log('downloadURL',downloadURL)
+    auth?.currentUser?.updateProfile({
+      photoURL: downloadURL,
+    }).then(function() {
+      db.collection('users').doc(auth.currentUser.uid).update({
+        imageURL: downloadURL,
+        }).then(()=>{
+          alert('image updated')
+           setImage('');
+            console.log('image value:',image)
         })
-      } catch (error) {
-        console.log(error)
-      }
+    }).catch(function(error) {
+      console.log(error)
+    });
+  };
 
-    }
-
-
+let requestor ;
 
   const subscribeFriendRequest = () => {
     //if not have friend request then show no friend request 
@@ -137,14 +146,33 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
       querySnapshot.forEach((doc) => {
         console.log('friendRequest',doc.data().friendRequest)
         let loadData = doc.data().friendRequest
-        const keyData = Object.keys(loadData);
-        const valueData = Object.values(loadData);
-        console.log("valueData",valueData)
-        setFriendRequest(keyData)
+        const keyData = Object.keys(loadData);//uid
+        const valueData = Object.values(loadData);//state 
+        requestor = keyData
+        room(keyData)
         console.log('localFrienRequest',FriendRequest)
+        })
+      }).then(function() {
+        db.collection('users').where('uid','==',requestor).get().then((querySnapshot)=>{ 
+          querySnapshot.forEach((doc) => {
+            console.log('Requestor:', doc.data().username)
+            setFriendRequest(doc.data().username)
+            })
+          })
+      }).catch(function(error) {
+        console.log("Error getting documents: ", error);
+      })
+  }
+
+  const room = (senderId) => {
+    db.collection('users').where('uid','==',senderId).get().then((querySnapshot)=>{
+      querySnapshot.forEach((doc) => {
+        console.log('senderName',doc.data().username)
+        alert('you have friend request from '+doc.data().username)
         })
       })
   }
+
 
   const acceptFriendHandle = (item:string) => {
     db.collection('users').doc(auth.currentUser?.uid).update({
@@ -158,7 +186,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
               friends: firebase.firestore.FieldValue.arrayUnion(friendUsername),
             }).then(function() {
                 db.collection('users').doc(auth?.currentUser?.uid).get().then((doc)=>{
-                  const currentUserUsername = doc.data().username 
+                  const currentUserUsername = doc.data()?.username 
                   db.collection('users').doc(item).update({
                     friends: firebase.firestore.FieldValue.arrayUnion(currentUserUsername),
                   }).then(function() {
@@ -189,6 +217,15 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     })
   }
 
+  const signOut = () => {
+    auth.signOut().then(() => {
+      // Sign-out successful.
+      props.navigation.replace("Login");
+    }).catch((error) => {
+        // An error happened.
+        console.log(error);
+      });
+  }
   
 
   //modal 
@@ -203,7 +240,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         flex: 1,
         flexDirection: 'column',
       }}>
-      <Button onPress={() => resetPic()} >reset</Button>
+      
       <Box
        bg="base"
         style={{
@@ -241,6 +278,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
               </Button>
             </Button.Group>
           </Modal.Footer>
+
         </Modal.Content>
       </Modal>
         <Button
@@ -308,8 +346,47 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         }
         </HStack>
         </Box>
+          <Container style={{marginTop: 20, marginLeft: 20}}>
+          <Heading style={{marginTop: 20, marginLeft: 20}}>
+            Friend Requests
+          </Heading>
+          <Box
+          style={{
+            width: '80%',
+            flex: 2,
+            flexDirection: 'column',
+            justifyContent: 'flex-start',
+            paddingLeft: 20,
+          }}
+        >
+            <ScrollView>
+              {FriendRequest.map((item, index) => {
+                return (
+                  <HStack space={2} alignItems="center" justifyContent="space-between" alignContent="center">
+                    <Text style={{marginTop: 20, marginLeft: 20}}>
+                      {item}
+                    </Text>
+                    <IconButton
+                      icon={<Icon as={Entypo} name="check" size="sm" />}
+                      style={{marginTop: 20, marginRight: 20}}
+                      colorScheme="success"
+                      onPress={() => {
+                        acceptFriendHandle(item)
+                      }}/>
+                    <IconButton
+                      icon={<Icon as={Entypo} name="cross" size="sm" />}
+                      style={{marginTop: 20, marginRight: 20}}
+                      colorScheme="danger"
+                      onPress={() => {
+                        rejectFriendHandle(item)
+                      }}/>
+                  </HStack>
+                )
+              })}
+            </ScrollView>
+        </Box>
+        </Container>
         </VStack>
-
 
 
 
@@ -319,8 +396,6 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         justifyContent: 'center',
         alignItems: 'center',
         }}>
-        <Text>Friend Request</Text>
-        
         <ScrollView>
           {FriendRequest.map((item,index) => {
             return(
@@ -341,12 +416,11 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
                   onPress={() => { rejectFriendHandle(item)}}
                   >Decline</Button>
               </HStack>
+
               </View>
             )
           })}
         </ScrollView>
-          <Button onPress={pickImage}>image Testing</Button>
-        
         </View>
     </View>
   )

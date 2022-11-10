@@ -6,6 +6,7 @@ import { useCollectionData } from 'react-firebase-hooks/firestore'
 
 import'firebase/compat/auth'
 import 'firebase/compat/firestore'
+import 'firebase/compat/storage'
 
 
 firebase.initializeApp({
@@ -28,6 +29,7 @@ if( firebase.apps.length === 0){
 
 const auth = app.auth()
 const db = app.firestore()
+const storage = app.storage()
 
-export { app, auth, db };
+export { storage, auth, db };
 
