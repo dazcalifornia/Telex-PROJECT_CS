@@ -13,9 +13,12 @@ import {
   VStack,
   Button,
   Input,
+  Modal,
 } from 'native-base';
 
 import {auth, db} from '../../firebase';
+import firebase from 'firebase/compat';
+
 const ChatMenu = (props:any) => {
 
   const {dispatch,navigate,replace} = props.navigation;
@@ -116,7 +119,7 @@ const ChatMenu = (props:any) => {
             }}
           >
             {channel.map((item:any,key) => (
-              <Select.Item label={item.chatName} value={item.channelId}/>
+              <Select.Item label={item.chatName} value={item.channelId} key={key} />
             ))}
           </Select>
       )
@@ -128,9 +131,64 @@ const ChatMenu = (props:any) => {
     }
   }
 
+  const [friendMenu, setFriendMenu] = useState(false)
+  
+  const bloackUser = (uid:string) => {
+    console.log('block',uid)
+    db.collection('users').doc(auth.currentUser?.uid).collection('block').doc(uid).get().then((doc) => {
+      if(doc.exists){
+        alert('user already block')
+      }else{
+        db.collection('users').doc(auth.currentUser?.uid).collection('block').doc(uid).set({
+          blockId: uid,
+          createdAt: new Date(),
+        }).then(() => {
+          alert('user block')
+        }).catch((error) => {
+          console.log("error getting documents: ", error);
+        })
+      }
+    })
+  }
+
+  const unFriend = (uid:string) => {
+    console.log('unFriend',uid)
+    //convert uid to username
+    db.collection('users').where('uid','==',uid).get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        let target = doc.data().username;
+        console.log('target',target)
+        db.collection('users').doc(auth.currentUser?.uid).get().then((doc) => {
+          console.log(doc.data())
+          //get friend list
+          let friendList = doc.data()?.friend;
+          console.log('friend',friendList)
+          {/*if(friends === target){
+            db.collection('users').doc(auth.currentUser?.uid).update({
+              friends: firebase.firestore.FieldValue.arrayRemove(target)
+              }).then(() => {
+                alert('unfriend success')
+              }).catch((error) => {
+                console.log("error getting documents: ", error);
+              })
+          }else{
+            alert('unfriend failed')
+          }*/}
+        })
+      })
+    })
+  }
   return (
     <>
       <Center flex={1}>
+        <Button
+          onPress={() => setFriendMenu(true)}
+          colorScheme="teal"
+          variant="outline"
+        >
+          settings
+        </Button>
+
         <Input
             placeholder="Enter chat name"
             onChangeText={(text) => setNewChat(text)}
@@ -148,11 +206,26 @@ const ChatMenu = (props:any) => {
                 name: name,
                 email: email,
                 photoURL: photoURL,
-                navigation: props.replace,
+                navigation: props.navigation,
               }))
               
             }}>Back to regular chat</Button>
           <ThrowChannel />
+          <Modal isOpen={friendMenu} onClose={() => setFriendMenu(false)}>
+            <Modal.Content>
+              <Modal.CloseButton/>
+              <Modal.Header>Friend Menu</Modal.Header>
+                <Modal.Body>
+                        <Button 
+                          onPress={() => bloackUser(userId)}
+                          colorScheme="red"
+                        >Block</Button>
+                        <Button
+                          onPress={() => unFriend(userId)}
+                        >Remove</Button>
+                      </Modal.Body>
+                    </Modal.Content>
+                  </Modal>
         </VStack>
       </Center>
     </>

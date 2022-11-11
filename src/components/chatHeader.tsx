@@ -1,4 +1,7 @@
-import React,{useEffect} from 'react';
+import React,{
+  useEffect,
+  useState,
+} from 'react';
 import {
   Text,
   View,
@@ -17,13 +20,18 @@ import {auth} from '../../firebase';
 export default function ChatHeader(props:any) {
   const {userId, name, email, photoURL} = props.route.params;
   const { navigate,replace,dispatch } = props.navigation;
+  const {chatName} = props.route.params;
+
+  console.log ('chatName',chatName)
+  const chatState = chatName ? chatName : 'Regular'
    return (
     <View>
       <StatusBar barStyle="light-content"/>
-      <HStack safeAreaTop bg="base" px="1" py="3" 
+      <VStack safeAreaTop bg="base" px="1" py="7" 
       justifyContent="space-between"
       alignItems="center" w="100%" h="134px"
        >
+        <HStack space={4} alignItems="center" w="100%" justifyContent="space-between">
         <IconButton
           ml="34px"
           _icon={{
@@ -38,14 +46,14 @@ export default function ChatHeader(props:any) {
             }
           }
         />
+        <HStack space={4} alignItems="center">
         <Image source={{
           uri: photoURL
         }} alt="Profile image" ml="24px" size={54} rounded="full" />
-          <VStack>
             <Heading color="white" fontSize="2xl" fontWeight="bold">{name}</Heading>
-            <Text color="subbase" fontSize="sm" fontWeight="bold">Online</Text>
-          </VStack>
-        <IconButton
+          </HStack>
+            
+          <IconButton
           mr="34px"
           _icon={{
             as: Entypo,
@@ -61,7 +69,9 @@ export default function ChatHeader(props:any) {
             navigation: props.navigation,
           })}
           />
-      </HStack>
+        </HStack>
+          <Text color="altbase" fontSize="sm" fontWeight="bold" py="1.5">You're chat on #{chatState} Channel</Text>
+      </VStack>
     </View>
   );
 }

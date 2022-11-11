@@ -47,10 +47,12 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
       if(data?.username){
         console.log('username',data.username)
         setCurrentUserUsername(data.username)
+        setUserPhoto(data.imageURL)
       }
     })
+    console.log('userPhoto',userPhoto)
     subscribeFriendRequest()
-  },[])
+  },[currentUserUsername,userPhoto])
   const setUsername = () => {
     if(name !== ''){
     auth?.currentUser?.updateProfile({
@@ -87,9 +89,31 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     }
     console.log(name);
   }
+//handle upload Image
+  const uploadImage = async (uri) => {
+    const imageUri  = uri;
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        resolve(xhr.response);
+      }
+      xhr.onerror = function(e) {
+        reject(new TypeError('Network request failed'));
+      }
+      xhr.responseType = 'blob';
+      xhr.open('GET', imageUri, true);
+      xhr.send(null);
+    });
+    const ref = storage.ref().child(`images/${auth.currentUser?.uid}`);
+    const snapshot = await ref.put(blob);
+    blob.close();
+    const url = await snapshot.ref.getDownloadURL();
+    console.log('url',url)
+    return url;
+  };
+
 
   //pick image from gallery
-  const [image,setImage] = useState('');
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -103,38 +127,24 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
       console.log('image',result.uri)
       console.log('imageName',result.uri.split('/').pop())
 
-      const source = {uri: result.uri};
-      setImage(source);
-      uploadImage()
-    }
-  };
-
-//handle upload Image
-  const uploadImage = async () => {
-    //upload image to firebase storage
-    //get download photoURL from firebase storage
-    //update user profile with photoURL from firebase storage
-    //update user profile in database with photoURL from firebase storage
-    const response = await fetch(image.uri);
-    const blob = await response.blob();
-    const ref = storage.ref().child(`images/${auth.currentUser?.uid}`);
-    const snapshot = await ref.put(blob);
-    const downloadURL = await snapshot.ref.getDownloadURL();
-    console.log('downloadURL',downloadURL)
-    auth?.currentUser?.updateProfile({
-      photoURL: downloadURL,
-    }).then(function() {
-      db.collection('users').doc(auth.currentUser.uid).update({
-        imageURL: downloadURL,
+      const source = await uploadImage(result.uri);
+      auth?.currentUser?.updateProfile({
+        photoURL: source,
+      }).then(function() {
+        // Update successful.
+          // Update photoURL in database
+        db.collection('users').doc(auth.currentUser?.uid).update({
+          imageURL: source,
         }).then(()=>{
+          auth?.currentUser?.reload()
           alert('image updated')
-           setImage('');
-            console.log('image value:',image)
         })
-    }).catch(function(error) {
-      console.log(error)
-    });
-  };
+      }).catch(function(error) {
+        console.log(error)
+      });    
+      console.log ('source',source)
+    };
+  }
 
 
   const subscribeFriendRequest = () => {
@@ -201,7 +211,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
   const signOut = () => {
     auth.signOut().then(() => {
       // Sign-out successful.
-      props.navigation.replace("Login");
+      replace("Login");
     }).catch((error) => {
         // An error happened.
         console.log(error);
@@ -234,13 +244,14 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
 
   return(
     <View
+      bg='subbase'
       style={{
-        height: '90%',
         flex: 2,
         flexDirection: 'column',
       }}>
       
       <Box
+        height="175px"
        bg="base"
         style={{
           flex: 1,
@@ -290,7 +301,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
       </HStack>
       <Pressable onPress={pickImage}>
         <Image
-          source={{ uri: auth?.currentUser?.photoURL }} 
+          source={{uri: auth?.currentUser?.photoURL}}
           rounded="full"
           alt="profile"
           style={{ width: 100, height: 100 }}
@@ -304,6 +315,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         style={{
           marginTop: 20,
           width: '100%',
+          height: '95%',
           flex: 1,
           flexDirection: 'column',
           justifyContent: 'flex-start',
@@ -361,8 +373,8 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         </Box>   
         
         <Box
+          height="100%"
           style={{
-            width: '80%',
             flex: 2,
             flexDirection: 'column',
             justifyContent: 'flex-start',

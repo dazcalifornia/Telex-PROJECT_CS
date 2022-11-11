@@ -10,7 +10,8 @@ const colors = {
     base:"#111111",
     subbase: "#FCFBFC",
     altsub: "#A57AED",
-    altbase:"#2DD7A6"
+    altbase:"#2DD7A6",
+    subalt: "#06C755",
 }
 
 export default extendTheme({config,colors});

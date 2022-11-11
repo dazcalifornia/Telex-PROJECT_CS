@@ -14,6 +14,8 @@ import {
   Pressable,
   Center,
   IconButton,
+  Button,
+  Modal,
 } from 'native-base';
 import {auth,db} from '../../firebase'
 
@@ -45,7 +47,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
   }, []);
 
   const getUser = async () => {
-        console.log('onloadUser',onloadUser)
+    console.log('onloadUser',onloadUser)
     db.collection('users').where('uid','==',onloadUser).get('friends').then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const friendListed = doc.data().friends
@@ -63,13 +65,27 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
     }).catch((error) => {
       console.log("Error getting documents: ", error);
       })
+  }
 
+  const dataLog = () => {
+    console.log('users',users)
   }
 
   useEffect(() => {
     getUser()
   }, [])
+
+  const bloackUser = (userId) => {
+    console.log('userId',userId)
+  }
+  const deleteFriend = (userId) => {
+    console.log('userId',userId)
+  }
+
   function ListedUser () {
+
+    const [friendMenu, setFriendMenu] = useState(false)
+
     console.log("Hello")
     if(users.length > 0){
     return(
@@ -94,9 +110,13 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       
                     }
                   )}>
-                  <HStack space={4} alignItems="center" w={100} justifyContent="space-between" >
+                  <HStack 
+                    space={4} 
+                    alignItems="center" 
+                    w= "100%"
+                    justifyContent="space-between"
+                  >
                     <Image 
-                      key={i}
                       source={{ uri: userobj.photoURL }}
                       alt="Friend picture"
                       borderRadius={100}
@@ -105,23 +125,23 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       <Text> {userobj.name} </Text>
                       <IconButton
                         borderRadius="15px"
-                        variant="solid"
-                        colorScheme="indigo"
+                        variant="ghost"
+                        onPress={() => setFriendMenu(true)}
                         _icon={{
                           as: Entypo,
-                          name:'chevron-right',
-                          color: 'white',
+                          name:'dots-three-vertical',
+                          color: 'base',
                           size: 'md',
                         }}
                       />
                     </HStack>
                   </Pressable>
+
                 </Box>
               )
             })
             }
           </VStack>
-
     )
     }else{
       return(
