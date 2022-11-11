@@ -17,7 +17,7 @@ import {
 } from 'native-base';
 
 import {auth, db} from '../../firebase';
-import firebase from 'firebase/compat';
+import firebase from 'firebase/compat/app';
 
 const ChatMenu = (props:any) => {
 
@@ -161,19 +161,24 @@ const ChatMenu = (props:any) => {
         db.collection('users').doc(auth.currentUser?.uid).get().then((doc) => {
           console.log(doc.data())
           //get friend list
-          let friendList = doc.data()?.friend;
+          let friendList = doc.data()?.friends;
           console.log('friend',friendList)
-          {/*if(friends === target){
+          //remove target from friend friendList
+          let newFriendList = friendList.filter((item:any) => item !== target);
+          console.log('newFriend',newFriendList)
+          //if traget is in friendList Remove
+          if(friendList.includes(target)){
             db.collection('users').doc(auth.currentUser?.uid).update({
               friends: firebase.firestore.FieldValue.arrayRemove(target)
               }).then(() => {
+                replace('Home')
                 alert('unfriend success')
               }).catch((error) => {
                 console.log("error getting documents: ", error);
               })
           }else{
             alert('unfriend failed')
-          }*/}
+          }
         })
       })
     })
