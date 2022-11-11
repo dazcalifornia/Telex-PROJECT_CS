@@ -387,9 +387,9 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         <ScrollView style={{width: '100%'}}>
         { FriendRequest.map((item, index) => {
           return(
-            <HStack space={2} alignItems="center" justifyContent="space-between" alignContent="center">
-              <Text key={index} style={{marginTop: 20, marginLeft: 20}}>
-                {item.name}
+            <HStack key={index} space={2} alignItems="center" justifyContent="space-between" alignContent="center">
+              <Text  style={{marginTop: 20, marginLeft: 20}}>
+                {item.name ? item.name : item.username}
               </Text>
               <IconButton
                 icon={<Icon as={Entypo} name="check" size="sm" />}
