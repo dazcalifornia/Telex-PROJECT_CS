@@ -29,8 +29,7 @@ export default function ChatHeader(props:any) {
       <StatusBar barStyle="light-content"/>
       <VStack safeAreaTop bg="base" px="1" py="7" 
       justifyContent="space-between"
-      alignItems="center" w="100%" h="134px"
-       >
+      alignItems="center" w="100%" h="160">
         <HStack space={4} alignItems="center" w="100%" justifyContent="space-between">
         <IconButton
           ml="34px"
