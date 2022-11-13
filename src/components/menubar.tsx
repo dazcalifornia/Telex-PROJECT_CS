@@ -6,7 +6,7 @@ import {
   HStack,
   Text,
   Box,
-  IconButton,
+  ScrollView,
   Modal,
   Input,
 } from 'native-base';
@@ -30,9 +30,12 @@ export default function Menubar(props: { navigation: { navigate: any; }; }) {
         h="45px"
         m="15px"
         >
-        <HStack m="3px" pl="21px" space={4}>
-          
+        <HStack m="3px" px="21px" space={4}>
+        <ScrollView 
+          horizontal={true}  
+          showsHorizontalScrollIndicator={false}> 
             <Button
+              px = "10px"
               borderRadius="15px"
               variant="solid"
               bg="#979797"
@@ -43,9 +46,10 @@ export default function Menubar(props: { navigation: { navigate: any; }; }) {
               }}
               onPress={() => props.navigation.navigate('DEV')}
             >
-            #Dev
+            Create Group
             </Button>
             <Button 
+            px = "10px"
             justifyContent="center"
             alignContent="center"
             leftIcon={<Entypo name="plus" size={24} color="black" />}
@@ -61,6 +65,21 @@ export default function Menubar(props: { navigation: { navigate: any; }; }) {
             >
             AddFriends
             </Button>
+            <Button
+              px = "10px"
+              borderRadius="15px"
+              variant="solid"
+              bg="#979797"
+              _text={{
+                color: 'black',
+                fontSize: 'sm',
+                fontWeight: 'bold',
+              }}
+              onPress={() => props.navigation.navigate('DEV')}
+            >
+            Stations Section
+            </Button>
+            </ScrollView>
         </HStack>
           <Modal isOpen={friendModal} onClose={() => setFriendModal(false)}>
             <Modal.Content maxWidth="400px">

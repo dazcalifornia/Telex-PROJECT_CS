@@ -2,19 +2,15 @@ import React, { useState, useEffect, useLayoutEffect,useCallback } from 'react';
 import {auth, db} from '../../firebase';
 
 import {
-  Text,
-  Box,
-  Heading,
-  ScrollView,
-  VStack,
-  Button,
-  Image,
-  Input,
-  Select,
-  CheckIcon,
+  View
 } from 'native-base';
 
-import { GiftedChat } from 'react-native-gifted-chat';
+import { 
+  GiftedChat,
+  InputToolbar,
+  RenderMessageImage,
+
+  } from 'react-native-gifted-chat';
 import ChatHeader from '../components/chatHeader';
 
 
@@ -62,24 +58,58 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
     })
   }, [])
 
+  //render image in chat 
+  const renderCustomView = (props) => {
+    return (
+      <RenderMessageImage
+        {...props}
+        imageStyle={{
+          width: 150,
+          height: 150,
+          borderRadius: 13,
+          margin: 3,
+        }}
+      />
+    )
+  }
+
+
+  const customInputToolbar = (props:any) => {
+    return(
+      <InputToolbar
+        {...props}
+        containerStyle={{
+          backgroundColor: 'white',
+          borderTopWidth: 1,
+          borderTopColor: 'lightgrey',
+          height: 50,
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingHorizontal: 10,
+        }}
+      />
+    )
+  }
+
   return (
-    <>
+    <View style={{flex:1, backgroundColor:'#1D1E24'}}>
       <ChatHeader {...props}/>
+     
       <GiftedChat
         isTyping={true}
         isAnimated={true}
         messages={message}
         showUserAvatar={true}
+        renderInputToolbar={props => customInputToolbar(props)}
         onSend={messages => onSend(messages)}
         user={{
           _id: auth?.currentUser?.uid,
           name: auth?.currentUser?.displayName,
           avatar: auth?.currentUser?.photoURL
         }
-        //
       }
       />
-    </>
+    </View>
   );
 }
 export default Chat;

@@ -53,7 +53,23 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
       }
     })
     console.log('userPhoto',userPhoto)
-    subscribeFriendRequest()
+
+    //fix FriendRequest fix retrieve data from database >> then update to state >> then render to screen
+    db.collection('users').where('uid','==',auth.currentUser?.uid).get().then((querySnapshot)=>{
+      querySnapshot.forEach((doc) => {
+        let loadData = doc.data().friendRequest
+        const keyData = Object.keys(loadData);//uid
+        const valueData = Object.values(loadData);//state 
+        db.collection('users').where('uid','in',keyData).get().then((querySnapshot)=>{
+          querySnapshot.forEach((doc) => {
+            let requestorData = doc.data()
+            console.log('friendRequest',doc.data())
+            setFriendRequest((prev) => [...prev,requestorData])
+          })
+        })
+        })
+      })
+    
   },[currentUserUsername,userPhoto])
 
   const setUsername = () => {
@@ -154,21 +170,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     //if not have friend request then show no friend request 
     //if have friend request then show friend request 
     //
-    db.collection('users').where('uid','==',auth.currentUser?.uid).get().then((querySnapshot)=>{
-      querySnapshot.forEach((doc) => {
-        let loadData = doc.data().friendRequest
-        const keyData = Object.keys(loadData);//uid
-        const valueData = Object.values(loadData);//state 
-        db.collection('users').where('uid','in',keyData).get().then((querySnapshot)=>{
-          querySnapshot.forEach((doc) => {
-            let requestorData = doc.data()
-            console.log('friendRequest',doc.data())
-            setFriendRequest((prev) => [...prev,requestorData])
-          })
-        })
-        })
-      })
-    }
+        }
 
 
 
@@ -373,6 +375,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
                     base: '75%',
                     md: '25%'
                   }}
+                  onChangeText={(text) => setDisplayname(text)}
                   placeholder="set Display name"
                 />
                 <IconButton
@@ -380,7 +383,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
                   style={{ marginRight: 20 }}
                   colorScheme="success"
                   onPress={() => {
-                    setUsername()
+                    setDisplayNameHandle(displayname)
                   }}
                 />
           </HStack>

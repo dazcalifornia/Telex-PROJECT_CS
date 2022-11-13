@@ -13,8 +13,7 @@ const AppContainer = (props: Props) => {
   return (
     <NavigationContainer>
         <NativeBaseProvider 
-        theme={theme}
-      
+        theme={theme} 
         >{props.children}
       </NativeBaseProvider>
     </NavigationContainer>

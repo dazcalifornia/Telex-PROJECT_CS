@@ -46,7 +46,6 @@ function SubChatrooms (props:any) {
   return (
     <>
       <ChatHeader {...props}/>
-      <Text>you are in : {chatName}</Text>
       <GiftedChat
         isTyping={true}
         isAnimated={true}

@@ -126,7 +126,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       <IconButton
                         borderRadius="15px"
                         variant="ghost"
-                        onPress={() => setFriendMenu(true)}
+                        onPress={() => alert(`userID: ${userobj.userId}`)}
                         _icon={{
                           as: Entypo,
                           name:'dots-three-vertical',
@@ -160,7 +160,13 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
   return (
     <>
       <Menubar {...props}/>
-      <Box shadow={2} mt="10px" flex={1} bg="white" roundedTop="30px" bg="#FCFBFC">
+      <Box 
+        shadow={2} 
+        mt="10px" 
+        flex={1} 
+        bg="white" 
+        roundedTop="30px" 
+        >
         <Heading size="xl" pt="7px" pl="14px" fontSize="40" color="black">Friend List</Heading>
         <ScrollView 
           pt="18px"
