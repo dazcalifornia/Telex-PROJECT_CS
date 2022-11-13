@@ -37,6 +37,9 @@ const Loader = () => {
         headerMode: 'none',
         gestureEnabled: true,
         headerShown: false,
+        modalPresentationStyle: 'formSheet',
+        cardStyle:{
+          },
       }}
     >  
         <Stack.Screen name="Home" component={HomeScreen} />
@@ -54,6 +57,7 @@ const Loader = () => {
         <Stack.Screen name="DEV" component={DEV} />
         <Stack.Screen name="UserMenu" 
           screenOptions={{
+            //make it half the screens
             gestureEnabled: true,
             cardOverlayEnabled: true,
             ...TransitionPresets.ModalSlideFromBottomIOS,

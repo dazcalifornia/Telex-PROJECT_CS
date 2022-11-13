@@ -1,7 +1,6 @@
 import React,{
   useState,
   useEffect,
-
   useRef,
   useMemo,
   useCallback,
@@ -23,6 +22,7 @@ import{
   Pressable,
   Container,
   Flex,
+  FlatList,
 } from 'native-base';
 import firebase from 'firebase/compat/app';
 
@@ -33,6 +33,7 @@ import * as ImagePicker from 'expo-image-picker';
 import {Entypo} from '@expo/vector-icons';
 
 function UserMenu(props:{navigation:{navigate:any;};}) {
+  //get name from props
   const {replace,navigate,goBack,dispatch} = props.navigation;
   const [name,setName] = useState('');
 
@@ -54,6 +55,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     console.log('userPhoto',userPhoto)
     subscribeFriendRequest()
   },[currentUserUsername,userPhoto])
+
   const setUsername = () => {
     if(name !== ''){
     auth?.currentUser?.updateProfile({
@@ -164,7 +166,6 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
             setFriendRequest((prev) => [...prev,requestorData])
           })
         })
-        console.log('localFrienRequest',FriendRequest)
         })
       })
     }
@@ -246,115 +247,232 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
   return (
     <View>
       {/* header */}
-      <Box bg="base" height={165} px={4} py={2} shadow={1} roundedTop="lg">
+      <Box bg="base" height={165} px={4} py={2} shadow={1} >
         <Flex justifyContent="flex-start" alignItems="center">
-        <HStack space={2} alignItems="center" justifyContent="space-between">
-          <Heading
-            style={{
-              color: 'white',
-              marginTop: 20,
-              marginLeft: 20
-            }}
-          >
-            Setttings
-          </Heading>
-          <Modal
-            isOpen={modalVisible}
-            onClose={() => setModalVisible(false)}
-            initialFocusRef={initialRef}
-            finalFocusRef={finalRef}
-          >
-            <Modal.Content>
-              <Modal.CloseButton />
-              <Modal.Header>Sign-out</Modal.Header>
-              <Modal.Body>
-                <Text>Are you sure you want to sign-out?</Text>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button.Group space={2}>
-                  <Button
-                    variant="ghost"
-                    colorScheme="blueGray"
-                    onPress={() => {
-                      setModalVisible(false)
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    colorScheme="secondary"
-                    onPress={() => {
-                      signOut()
-                    }}
-                  >
-                    sure!
-                  </Button>
-                </Button.Group>
-              </Modal.Footer>
-            </Modal.Content>
-          </Modal>
+          <HStack space={2} alignItems="center" justifyContent="space-between">
+            <Heading
+              style={{
+                color: 'white',
+                marginTop: 20,
+                marginLeft: 20
+              }}
+            >
+              Setttings
+            </Heading>
+            <Modal
+              isOpen={modalVisible}
+              onClose={() => setModalVisible(false)}
+              initialFocusRef={initialRef}
+              finalFocusRef={finalRef}
+            >
+              <Modal.Content>
+                <Modal.CloseButton />
+                <Modal.Header>Sign-out</Modal.Header>
+                <Modal.Body>
+                  <Text>Are you sure you want to sign-out?</Text>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button.Group space={2}>
+                    <Button
+                      variant="ghost"
+                      colorScheme="blueGray"
+                      onPress={() => {
+                        setModalVisible(false)
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      colorScheme="secondary"
+                      onPress={() => {
+                        signOut()
+                      }}
+                    >
+                      sure!
+                    </Button>
+                  </Button.Group>
+                </Modal.Footer>
+              </Modal.Content>
+            </Modal>
 
-          <Button
-            leftIcon={<Icon as={Entypo} name="log-out" size="sm" />}
-            style={{ marginTop: 20, marginRight: 20 }}
-            colorScheme="secondary"
-            onPress={() => setModalVisible(true)}
-          >
-            Sign Out
-          </Button>
-        </HStack>
-        <Pressable onPress={pickImage}>
-          <Image
-            source={{ uri: auth?.currentUser?.photoURL }}
-            rounded="full"
-            alt="profile"
-            style={{ width: 100, height: 100 }}
-            justifyContent="center"
-            alignSelf="center"
-            marginTop={10}
-          />
-        </Pressable>
+            <Button
+              leftIcon={<Icon as={Entypo} name="log-out" size="sm" />}
+              style={{ marginTop: 20, marginRight: 20 }}
+              colorScheme="secondary"
+              onPress={() => setModalVisible(true)}
+            >
+              Sign Out
+            </Button>
+          </HStack>
+          <Pressable onPress={pickImage}>
+            <Image
+              source={{ uri: auth?.currentUser?.photoURL }}
+              rounded="full"
+              alt="profile"
+              style={{ width: 100, height: 100 }}
+              justifyContent="center"
+              alignSelf="center"
+              marginTop={10}
+            />
+          </Pressable>
         </Flex>
       </Box>
       {/* body */}
-      <Box height={1000} px={4} py={2} shadow={1} roundedBottom="lg">
-        <VStack space={2} alignItems="flex-start" justifyContent="space-between">
+      <Box height={100} px={4} py={10} >
+        <VStack
+          space={2}
+          alignItems="flex-start"
+          justifyContent="space-between"
+        >
           <Heading
             style={{
-
               marginTop: 20,
               marginLeft: 20
             }}
           >
             Account
           </Heading>
-          <HStack space={2} alignItems="center" justifyContent="space-between">
-            <Text style={{  marginLeft: 20 }}>Display Name</Text>
-            <Button
-              leftIcon={<Icon as={Entypo} name="edit" size="sm" />}
-              style={{ marginTop: 20, marginRight: 20 }}
-              colorScheme="secondary"
-              onPress={() => replace('EditDisplayName')}
-            >
-              Edit
-            </Button>
+          <HStack
+            space={2}
+            alignItems="center"
+            justifyContent={'space-between'}
+          >
+            {currentUserUsername ? (
+              <Text
+                style={{
+                  marginTop: 20,
+                  marginLeft: 20
+                }}
+              >
+                Username: {currentUserUsername}
+              </Text>
+            ) : (
+              <HStack alignItems="center" space={4} w="100%">
+                <Input
+                  w={{
+                    base: '75%',
+                    md: '25%'
+                  }}
+                  placeholder="Set useranme"
+                />
+                <IconButton
+                  icon={<Icon as={Entypo} name="edit" size="sm" />}
+                  style={{ marginRight: 20 }}
+                  colorScheme="success"
+                  onPress={() => {
+                    setUsername()
+                  }}
+                />
+              </HStack>
+            )}
           </HStack>
-          <Text style={{ color: 'white', marginLeft: 20 }}>
-            {auth?.currentUser?.displayName}
-          </Text>
-          <HStack space={2} alignItems="center" justifyContent="space-between">
-            <Text style={{ color: 'white', marginLeft: 20 }}>Email</Text>
-            <Button
-              leftIcon={<Icon as={Entypo} name="edit" size="sm" />}
-              style={{ marginTop: 20, marginRight: 20 }}
-              colorScheme="secondary"
-              onPress={() => replace('EditEmail')}
-            >
-              Edit
-            </Button>
+          <Heading>Set displayname</Heading>
+          <HStack alignItems="center" space={4} w="100%">
+                <Input
+                  w={{
+                    base: '75%',
+                    md: '25%'
+                  }}
+                  placeholder="set Display name"
+                />
+                <IconButton
+                  icon={<Icon as={Entypo} name="edit" size="sm" />}
+                  style={{ marginRight: 20 }}
+                  colorScheme="success"
+                  onPress={() => {
+                    setUsername()
+                  }}
+                />
           </HStack>
+          <Heading>
+            Friend Request
+          </Heading>
+          {FriendRequest.map((item, index) => {
+            return (
+            <FlatList
+              data={item}
+              key={index}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <HStack alignItems="center" space={4} w="100%">
+                  <Text>{item}</Text>
+                  <IconButton
+                    icon={<Icon as={Entypo} name="check" size="sm" />}
+                    style={{ marginRight: 20 }}
+                    colorScheme="success"
+                    onPress={() => {
+                      acceptFriendHandle(item)
+                    }}
+                  />
+                  <IconButton
+                    icon={<Icon as={Entypo} name="cross" size="sm" />}
+                    style={{ marginRight: 20 }}
+                    colorScheme="danger"
+                    onPress={() => {
+                      rejectFriendHandle(item)
+                    }}
+                  />
+                </HStack>
+              )}
+            />
+
+
+              // <Text key={index}>
+              //   {item.username}
+              //   <IconButton
+              //     icon={<Icon as={Entypo} name="check" size="sm" />}
+              //     style={{ marginRight: 20 }}
+              //     colorScheme="success"
+              //     onPress={() => {
+              //       acceptFriendHandle(item.uid)
+              //     }}
+              //   />
+              //   <IconButton
+              //     icon={<Icon as={Entypo} name="cross" size="sm" />}
+              //     style={{ marginRight: 20 }}
+              //     colorScheme="danger"
+              //     onPress={() => {
+              //       rejectFriendHandle(item.uid)
+              //     }}
+              //   />
+              // </Text>
+            )
+          })}
+           <ScrollView style={{ width: '100%' }}>
+            {FriendRequest.map((item, index) => {
+              return (
+                <HStack
+                  key={index}
+                  space={2}
+                  alignItems="center"
+                  justifyContent="space-between"
+                  alignContent="center"
+                >
+                  <Text style={{ marginTop: 20, marginLeft: 20 }}>
+                    {item.name ? item.name : item.username}
+                  </Text>
+                  <IconButton
+                    icon={<Icon as={Entypo} name="check" size="sm" />}
+                    style={{ marginTop: 20, marginRight: 20 }}
+                    colorScheme="success"
+                    onPress={() => {
+                      acceptFriendHandle(item.uid)
+                    }}
+                  />
+                  <IconButton
+                    icon={<Icon as={Entypo} name="cross" size="sm" />}
+                    style={{ marginTop: 20, marginRight: 20 }}
+                    colorScheme="danger"
+                    onPress={() => {
+                      rejectFriendHandle(item.uid)
+                    }}
+                  />
+                </HStack>
+              )
+            })}
+          </ScrollView>
         </VStack>
-        </Box>
+      </Box>
     </View>
   )
 }
