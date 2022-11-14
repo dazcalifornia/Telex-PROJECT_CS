@@ -16,6 +16,7 @@ import {
   IconButton,
   Button,
   Modal,
+  Divider,
 } from 'native-base';
 import {auth,db} from '../../firebase'
 
@@ -58,6 +59,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
             userId: doc.data().uid,
             name: doc.data().name,
             email: doc.data().email,
+            status: doc.data().status,
             photoURL: doc.data().imageURL,
           })))
         ))
@@ -120,9 +122,12 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       source={{ uri: userobj.photoURL }}
                       alt="Friend picture"
                       borderRadius={100}
-                      size="65px"
+                      size="90px"
                     />
-                      <Text> {userobj.name} </Text>
+                      <VStack>
+                      <Text fontSize="lg" fontWeight="bold"> {userobj.name} </Text>
+                      <Text> {userobj.status} </Text>
+                      </VStack>
                       <IconButton
                         borderRadius="15px"
                         variant="ghost"
@@ -136,7 +141,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       />
                     </HStack>
                   </Pressable>
-
+                  <Divider my={2} bg='rgba(17,17,17,0.05)' />
                 </Box>
               )
             })
@@ -161,13 +166,30 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
     <>
       <Menubar {...props}/>
       <Box 
-        shadow={2} 
+        shadow={2}
+        h="100%" 
         mt="10px" 
         flex={1} 
         bg="white" 
-        roundedTop="30px" 
-        >
-        <Heading size="xl" pt="7px" pl="14px" fontSize="40" color="black">Friend List</Heading>
+        roundedTop="30px"
+        _light={{
+          bg: 'rgba(255,255,255,0.5)',
+        }}
+        _dark={{
+          bg: 'rgba(17,17,17,0.5)',
+        }}>
+        <Heading 
+          size="xl"
+          my="4"
+          mx="4"
+          fontSize="40"
+          _light={{
+            color:'black',
+          }}
+          _dark={{
+            color:'base',
+          }}
+        >Friend List</Heading>
         <ScrollView 
           pt="18px"
           refreshControl={

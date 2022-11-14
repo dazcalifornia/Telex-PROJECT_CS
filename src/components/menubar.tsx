@@ -9,10 +9,12 @@ import {
   ScrollView,
   Modal,
   Input,
+  Heading
 } from 'native-base';
 import {Entypo} from '@expo/vector-icons';
 
 import addFriends from './eventHandle/addFriend';
+import Bruh from './eventHandle/bruh';
 
 export default function Menubar(props: { navigation: { navigate: any; }; }) {
   const [friendID,setFriendID] = useState('');
@@ -22,18 +24,19 @@ export default function Menubar(props: { navigation: { navigate: any; }; }) {
     <>
       <Box
         space={4}
-        justifyContent="center"
-        alignItems="start"
+        justifyContent="space-between"
+        alignItems="flex-start"
         bg="#D9D9D9"
         borderRadius="10px"
         w="auto"
         h="45px"
         m="15px"
         >
-        <HStack m="3px" px="21px" space={4}>
-        <ScrollView 
+        <ScrollView
+          w="100%"
           horizontal={true}  
           showsHorizontalScrollIndicator={false}> 
+          <HStack m="3px" px="21px" space={4}>
             <Button
               px = "10px"
               borderRadius="15px"
@@ -75,26 +78,36 @@ export default function Menubar(props: { navigation: { navigate: any; }; }) {
                 fontSize: 'sm',
                 fontWeight: 'bold',
               }}
-              onPress={() => props.navigation.navigate('DEV')}
+              onPress={() => alert('thois for global group')}
             >
-            Stations Section
+            Select Stations
             </Button>
-            </ScrollView>
-        </HStack>
+            </HStack>
+           
+          </ScrollView>
           <Modal isOpen={friendModal} onClose={() => setFriendModal(false)}>
             <Modal.Content maxWidth="400px">
               <Modal.CloseButton />
               <Modal.Header>Add Friends</Modal.Header>
               <Modal.Body>
+                <Heading py="3">Enter your friend's ID</Heading>
+                
                 <Input
                   placeholder="Enter friend username"
                   onChangeText={(text) => setFriendID(text)}
                   value={friendID}
                 />
-                <Button onPress={
-                //setFriendID to addFriend
-                () => addFriends({friendID: friendID})
-              }>Add Friend</Button>
+                <Button
+                  my="3"
+                  alignSelf="center"
+                  width="50%"
+                  size="lg"
+                onPress={
+                //add friend and reset friendID to empty string
+                () => {
+                  addFriends(friendID);
+                  setFriendID('');
+                }}>Add Friend</Button>
               </Modal.Body>
             </Modal.Content>
           </Modal>

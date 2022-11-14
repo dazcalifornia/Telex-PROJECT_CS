@@ -40,7 +40,9 @@ const Header = (props:{navigation:{navigate:any;};}) => {
   return (
     <>
     <StatusBar barStyle="light-content" />
-    <HStack safeAreaTop px="1" py="3"
+    <HStack 
+        roundedBottom="lg"
+        safeAreaTop px="1" py="3"
         bg="base"
         justifyContent="space-between" 
         alignItems="center" w="100%" h="165px">

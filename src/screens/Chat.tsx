@@ -79,15 +79,21 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
       <InputToolbar
         {...props}
         containerStyle={{
+          //make it blur and adjust it to center screen
+          //text white
           backgroundColor: 'white',
-          borderTopWidth: 1,
-          borderTopColor: 'lightgrey',
-          height: 50,
+          borderRadius: 10,
+          borderWidth: 1,
+          borderColor: 'white',
+          marginHorizontal: 10,
+
+        
+          borderTopWidth: 0,
+          borderBottomWidth: 0,
           justifyContent: 'center',
           alignItems: 'center',
-          paddingHorizontal: 10,
         }}
-      />
+        />
     )
   }
 

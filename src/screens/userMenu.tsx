@@ -58,6 +58,8 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     subscribeFriendRequest()
   },[currentUserUsername,userPhoto])
 
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
   const setUsername = () => {
     if(name !== ''){
     auth?.currentUser?.updateProfile({
@@ -155,7 +157,6 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
   const subscribeFriendRequest = () => {
     //if not have friend request then show no friend request 
     //if have friend request then show friend request 
-    //
     db.collection('users').where('uid','==',auth.currentUser?.uid).get().then((querySnapshot)=>{
       querySnapshot.forEach((doc) => {
         let loadData = doc.data().friendRequest
@@ -245,334 +246,89 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
   const [modalVisible, setModalVisible] = useState(false);
   const initialRef = useRef(null);
   const finalRef = useRef(null);
-
+  
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index);
+  }, []);
   return (
-    <View>
-      {/* header */}
-      <Box bg="base" height={165} px={4} py={2} shadow={1} >
-        <Flex justifyContent="flex-start" alignItems="center">
-          <HStack space={2} alignItems="center" justifyContent="space-between">
-            <Heading
-              style={{
-                color: 'white',
-                marginTop: 20,
-                marginLeft: 20
-              }}
-            >
-              Setttings
-            </Heading>
-            <Modal
-              isOpen={modalVisible}
-              onClose={() => setModalVisible(false)}
-              initialFocusRef={initialRef}
-              finalFocusRef={finalRef}
-            >
-              <Modal.Content>
-                <Modal.CloseButton />
-                <Modal.Header>Sign-out</Modal.Header>
-                <Modal.Body>
-                  <Text>Are you sure you want to sign-out?</Text>
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button.Group space={2}>
-                    <Button
-                      variant="ghost"
-                      colorScheme="blueGray"
-                      onPress={() => {
-                        setModalVisible(false)
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      colorScheme="secondary"
-                      onPress={() => {
-                        signOut()
-                      }}
-                    >
-                      sure!
-                    </Button>
-                  </Button.Group>
-                </Modal.Footer>
-              </Modal.Content>
-            </Modal>
-
-            <Button
-              leftIcon={<Icon as={Entypo} name="log-out" size="sm" />}
-              style={{ marginTop: 20, marginRight: 20 }}
-              colorScheme="secondary"
-              onPress={() => setModalVisible(true)}
-            >
-              Sign Out
-            </Button>
-          </HStack>
-          <Pressable onPress={pickImage}>
-            <Image
-              source={{ uri: auth?.currentUser?.photoURL }}
-              rounded="full"
-              alt="profile"
-              style={{ width: 100, height: 100 }}
-              justifyContent="center"
-              alignSelf="center"
-              marginTop={10}
-            />
-          </Pressable>
-        </Flex>
-      </Box>
-      {/* body */}
-      <Box height={100} px={4} py={10} >
-        <VStack
-          space={2}
-          alignItems="flex-start"
-          justifyContent="space-between"
-        >
-          <Heading
-            style={{
-              marginTop: 20,
-              marginLeft: 20
-            }}
-          >
-            Account
-          </Heading>
-          <HStack
-            space={2}
-            alignItems="center"
-            justifyContent={'space-between'}
-          >
-            {currentUserUsername ? (
-              <Text
-                style={{
-                  marginTop: 20,
-                  marginLeft: 20
-                }}
-              >
-                Username: {currentUserUsername}
-              </Text>
-            ) : (
-              <HStack alignItems="center" space={4} w="100%">
-                <Input
-                  w={{
-                    base: '75%',
-                    md: '25%'
-                  }}
-                  placeholder="Set useranme"
-                />
-                <IconButton
-                  icon={<Icon as={Entypo} name="edit" size="sm" />}
-                  style={{ marginRight: 20 }}
-                  colorScheme="success"
-                  onPress={() => {
-                    setUsername()
-                  }}
-                />
-              </HStack>
-            )}
-          </HStack>
-          <Heading>Set displayname</Heading>
-          <HStack alignItems="center" space={4} w="100%">
-                <Input
-                  w={{
-                    base: '75%',
-                    md: '25%'
-                  }}
-                  onChangeText={(text) => setDisplayname(text)}
-                  placeholder="set Display name"
-                />
-                <IconButton
-                  icon={<Icon as={Entypo} name="edit" size="sm" />}
-                  style={{ marginRight: 20 }}
-                  colorScheme="success"
-                  onPress={() => {
-                    setDisplayNameHandle(displayname)
-                  }}
-                />
-          </HStack>
-          <Heading>
-            Friend Request
-          </Heading>
-          {FriendRequest.map((item, index) => {
-            return (
-            <FlatList
-              data={item}
-              key={index}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <HStack alignItems="center" space={4} w="100%">
-                  <Text>{item}</Text>
-                  <IconButton
-                    icon={<Icon as={Entypo} name="check" size="sm" />}
-                    style={{ marginRight: 20 }}
-                    colorScheme="success"
-                    onPress={() => {
-                      acceptFriendHandle(item)
-                    }}
-                  />
-                  <IconButton
-                    icon={<Icon as={Entypo} name="cross" size="sm" />}
-                    style={{ marginRight: 20 }}
-                    colorScheme="danger"
-                    onPress={() => {
-                      rejectFriendHandle(item)
-                    }}
-                  />
-                </HStack>
-              )}
-            />
-
-
-              // <Text key={index}>
-              //   {item.username}
-              //   <IconButton
-              //     icon={<Icon as={Entypo} name="check" size="sm" />}
-              //     style={{ marginRight: 20 }}
-              //     colorScheme="success"
-              //     onPress={() => {
-              //       acceptFriendHandle(item.uid)
-              //     }}
-              //   />
-              //   <IconButton
-              //     icon={<Icon as={Entypo} name="cross" size="sm" />}
-              //     style={{ marginRight: 20 }}
-              //     colorScheme="danger"
-              //     onPress={() => {
-              //       rejectFriendHandle(item.uid)
-              //     }}
-              //   />
-              // </Text>
-            )
-          })}
-           <ScrollView style={{ width: '100%' }}>
-            {FriendRequest.map((item, index) => {
-              return (
-                <HStack
-                  key={index}
-                  space={2}
-                  alignItems="center"
-                  justifyContent="space-between"
-                  alignContent="center"
-                >
-                  <Text style={{ marginTop: 20, marginLeft: 20 }}>
-                    {item.name ? item.name : item.username}
-                  </Text>
-                  <IconButton
-                    icon={<Icon as={Entypo} name="check" size="sm" />}
-                    style={{ marginTop: 20, marginRight: 20 }}
-                    colorScheme="success"
-                    onPress={() => {
-                      acceptFriendHandle(item.uid)
-                    }}
-                  />
-                  <IconButton
-                    icon={<Icon as={Entypo} name="cross" size="sm" />}
-                    style={{ marginTop: 20, marginRight: 20 }}
-                    colorScheme="danger"
-                    onPress={() => {
-                      rejectFriendHandle(item.uid)
-                    }}
-                  />
-                </HStack>
-              )
-            })}
-          </ScrollView>
-        </VStack>
-      </Box>
-    </View>
-  )
-}
-
-
-export default UserMenu
-
-
-const Backup = () => {
-  return (
-    <View>
+    <View
+      bg='subbase'
+      style={{
+        flex: 2,
+        flexDirection: 'column',
+      }}>
+      
       <Box
-        bg="base"
+        height="175px"
+       bg="base"
         style={{
           flex: 1,
           flexDirection: 'column',
-          justifyContent: 'flex-start'
-        }}
-      >
-        <HStack space={2} alignItems="center" justifyContent="space-between">
-          <Heading
-            style={{
-              color: 'white',
-              marginTop: 20,
-              marginLeft: 20
-            }}
-          >
-            Setttings
-          </Heading>
-          <Modal
-            isOpen={modalVisible}
-            onClose={() => setModalVisible(false)}
-            initialFocusRef={initialRef}
-            finalFocusRef={finalRef}
-          >
-            <Modal.Content>
-              <Modal.CloseButton />
-              <Modal.Header>Sign-out</Modal.Header>
-              <Modal.Body>
+          justifyContent: 'flex-start',
+          
+        }}>
+      <HStack space={2} alignItems="center" justifyContent="space-between">
+        <Heading style={{
+          color: 'white',
+            marginTop: 20,
+            marginLeft: 20
+          }}>
+          Setttings
+        </Heading>
+        <Modal isOpen={modalVisible} onClose={() => setModalVisible(false)} initialFocusRef={initialRef} finalFocusRef={finalRef}>
+        <Modal.Content>
+          <Modal.CloseButton />
+          <Modal.Header>Sign-out</Modal.Header>
+          <Modal.Body>
                 <Text>Are you sure you want to sign-out?</Text>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button.Group space={2}>
-                  <Button
-                    variant="ghost"
-                    colorScheme="blueGray"
-                    onPress={() => {
-                      setModalVisible(false)
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    colorScheme="secondary"
-                    onPress={() => {
-                      signOut()
-                    }}
-                  >
-                    sure!
-                  </Button>
-                </Button.Group>
-              </Modal.Footer>
-            </Modal.Content>
-          </Modal>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Group space={2}>
+              <Button variant="ghost" colorScheme="blueGray" onPress={() => {
+              setModalVisible(false);
+            }}>
+                Cancel
+              </Button>
+              <Button colorScheme="secondary" onPress={() => {
+              signOut()
+            }}>
+                sure!
+              </Button>
+            </Button.Group>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
 
-          <Button
-            leftIcon={<Icon as={Entypo} name="log-out" size="sm" />}
-            style={{ marginTop: 20, marginRight: 20 }}
-            colorScheme="secondary"
-            onPress={() => setModalVisible(true)}
-          >
-            Sign Out
-          </Button>
-        </HStack>
-        <Pressable onPress={pickImage}>
-          <Image
-            source={{ uri: auth?.currentUser?.photoURL }}
-            rounded="full"
-            alt="profile"
-            style={{ width: 100, height: 100 }}
-            justifyContent="center"
-            alignSelf="center"
-            marginTop={10}
-          />
-        </Pressable>
-      </Box>
-      <VStack
+        <Button
+          leftIcon={<Icon as={Entypo} name="log-out" size="sm" />}
+          style={{marginTop: 20, marginRight: 20}}
+          colorScheme="secondary"
+          onPress={() => setModalVisible(true)}>
+          Sign Out
+        </Button>
+      </HStack>
+      <Pressable onPress={pickImage}>
+        <Image
+          source={{uri: auth?.currentUser?.photoURL}}
+          rounded="full"
+          alt="profile"
+          style={{ width: 100, height: 100 }}
+          justifyContent="center"
+          alignSelf="center"
+          marginTop={10}
+        />
+      </Pressable>
+        </Box>
+        <VStack
         style={{
           marginTop: 20,
           width: '100%',
           height: '95%',
           flex: 1,
           flexDirection: 'column',
-          justifyContent: 'flex-start'
-        }}
-      >
-        <Heading style={{ marginTop: 20, marginLeft: 20 }}>
+          justifyContent: 'flex-start',
+        }}>
+        <Heading style={{marginTop: 20, marginLeft: 20}}>
           Edit Profile
         </Heading>
         <Box
@@ -581,106 +337,92 @@ const Backup = () => {
             flex: 2,
             flexDirection: 'column',
             justifyContent: 'flex-start',
-            paddingLeft: 20
+            paddingLeft: 20,
           }}
         >
-          <HStack
-            space={2}
-            alignItems="center"
-            justifyContent="space-between"
-            alignContent="center"
-          >
-            {currentUserUsername ? (
-              <Text style={{ marginTop: 20, marginLeft: 20 }}>
+        <HStack space={2} alignItems="center" justifyContent="space-between" alignContent="center">
+        {
+            currentUserUsername ? (
+              <Text style={{marginTop: 20, marginLeft: 20}}>
                 Username: {currentUserUsername}
               </Text>
-            ) : (
+            ):(
               <>
                 <Input
-                  style={{ marginTop: 20, marginLeft: 20 }}
+                  style={{marginTop: 20, marginLeft: 20}}
                   placeholder="Username"
-                  onChangeText={text => setName(text)}
+                  onChangeText={(text) => setName(text)}
                 />
                 <IconButton
                   icon={<Icon as={Entypo} name="edit" size="sm" />}
-                  style={{ marginTop: 20, marginRight: 20 }}
+                  style={{marginTop: 20, marginRight: 20}}
                   colorScheme="success"
                   onPress={() => {
                     setUsername()
-                  }}
-                />
+                  }}/>
               </>
-            )}
-          </HStack>
-          <HStack
-            space={2}
-            alignItems="center"
-            justifyContent="space-between"
-            alignContent="center"
-          >
-            <Input
-              style={{ marginTop: 20, marginLeft: 20 }}
-              placeholder="Display Name"
-              onChangeText={text => setDisplayname(text)}
-            />
-            <IconButton
-              icon={<Icon as={Entypo} name="edit" size="sm" />}
-              style={{ marginTop: 20, marginRight: 20 }}
-              colorScheme="success"
-              onPress={() => {
-                setDisplayNameHandle(displayname)
-              }}
-            />
-          </HStack>
-        </Box>
-
+            )
+        }
+        </HStack>
+        <HStack space={2} alignItems="center" justifyContent="space-between" alignContent="center">
+          <Input 
+            style={{marginTop: 20, marginLeft: 20}}
+            placeholder="Display Name"
+            onChangeText={(text) => setDisplayname(text)}
+          />
+          <IconButton
+            icon={<Icon as={Entypo} name="edit" size="sm" />}
+            style={{marginTop: 20, marginRight: 20}}
+            colorScheme="success"
+            onPress={() => {
+              setDisplayNameHandle(displayname)
+            }}/>
+        </HStack>
+        </Box>   
+        
         <Box
           height="100%"
           style={{
             flex: 2,
             flexDirection: 'column',
             justifyContent: 'flex-start',
-            paddingLeft: 20
+            paddingLeft: 20,
           }}
         >
-          <Heading style={{ marginTop: 20, marginLeft: 20 }}>
-            Friend Requests
-          </Heading>
-          <ScrollView style={{ width: '100%' }}>
-            {FriendRequest.map((item, index) => {
-              return (
-                <HStack
-                  key={index}
-                  space={2}
-                  alignItems="center"
-                  justifyContent="space-between"
-                  alignContent="center"
-                >
-                  <Text style={{ marginTop: 20, marginLeft: 20 }}>
-                    {item.name ? item.name : item.username}
-                  </Text>
-                  <IconButton
-                    icon={<Icon as={Entypo} name="check" size="sm" />}
-                    style={{ marginTop: 20, marginRight: 20 }}
-                    colorScheme="success"
-                    onPress={() => {
-                      acceptFriendHandle(item.uid)
-                    }}
-                  />
-                  <IconButton
-                    icon={<Icon as={Entypo} name="cross" size="sm" />}
-                    style={{ marginTop: 20, marginRight: 20 }}
-                    colorScheme="danger"
-                    onPress={() => {
-                      rejectFriendHandle(item.uid)
-                    }}
-                  />
-                </HStack>
-              )
-            })}
-          </ScrollView>
+        <Heading style={{marginTop: 20, marginLeft: 20}}>
+          Friend Requests
+        </Heading>
+        <ScrollView style={{width: '100%'}}>
+        { FriendRequest.map((item, index) => {
+          return(
+            <HStack space={2} alignItems="center" justifyContent="space-between" alignContent="center">
+              <Text key={index} style={{marginTop: 20, marginLeft: 20}}>
+                {item.name}
+              </Text>
+              <IconButton
+                icon={<Icon as={Entypo} name="check" size="sm" />}
+                style={{marginTop: 20, marginRight: 20}}
+                colorScheme="success"
+                onPress={() => {
+                  acceptFriendHandle(item.uid)
+                }}/>
+              <IconButton
+                icon={<Icon as={Entypo} name="cross" size="sm" />}
+                style={{marginTop: 20, marginRight: 20}}
+                colorScheme="danger"
+                onPress={() => {
+                  rejectFriendHandle(item.uid)
+                }}/>
+            </HStack>
+          )
+        })}
+        </ScrollView>
         </Box>
-      </VStack>
+        </VStack>
     </View>
   )
 }
+
+
+export default UserMenu
+
