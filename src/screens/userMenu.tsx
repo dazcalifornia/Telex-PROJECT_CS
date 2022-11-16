@@ -255,7 +255,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
       {/* header */}
       <Box height={165} px={4} py={2} shadow={1} >
         <LinearGradient
-          colors={['#00416A', '#E4E5E6']}
+          colors={['#ACB6E5','#86FDE8']}
           start={[0, 0]}
           end={[1, 1]}
           style={{
@@ -322,14 +322,12 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
               Sign Out
             </Button>
           </HStack>
-          <Pressable onPress={pickImage} marginTop={10}>
+          <Pressable onPress={pickImage} marginTop={10} h={100} w={100} alignSelf="center" justifyContent="center">
             <Image
               source={{ uri: auth?.currentUser?.photoURL }}
               rounded="full"
               alt="profile"
-              style={{ width: 100, height: 100 }}
-              justifyContent="center"
-              alignSelf="center"
+              size={100}
             />
           </Pressable>
         </Flex>
@@ -349,40 +347,23 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
           >
             Account Settings
           </Heading>
-          <Text>Display Name</Text>
           <HStack
             space={2}
             alignItems="center"
             justifyContent={'space-between'}
           >
-            {currentUserUsername ? (
-              <Text
-                style={{
-                  marginTop: 20,
-                  marginLeft: 20
-                }}
-              >
-                Username: {currentUserUsername}
+            {/*UserName */}
+            { currentUserUsername ? (
+              <Text style={{ marginLeft: 20, fontSize: 20 }}>
+                {currentUserUsername}
               </Text>
-            ) : (
-              <HStack alignItems="center" space={4} w="100%">
-                <Input
-                  w={{
-                    base: '75%',
-                    md: '25%'
-                  }}
-                  placeholder="Set useranme"
-                />
-                <IconButton
-                  icon={<Icon as={Entypo} name="edit" size="sm" />}
-                  style={{ marginRight: 20 }}
-                  colorScheme="success"
-                  onPress={() => {
-                    setUsername()
-                  }}
-                />
-              </HStack>
-            )}
+            ):(
+              <Text style={{ marginLeft: 20, fontSize: 20 }}>
+                {auth?.currentUser?.displayName}
+              </Text>
+            )   
+          }
+           
           </HStack>
           <Heading>Set displayname</Heading>
           <HStack alignItems="center" space={4} w="100%">
