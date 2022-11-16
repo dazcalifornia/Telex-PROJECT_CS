@@ -26,6 +26,8 @@ import { RefreshControl } from 'react-native';
 
 import { Entypo } from '@expo/vector-icons';
 
+import firebase from 'firebase/compat/app';
+
 
 function ChatList(props: { navigation: { navigate: any; }; }) {
   const {navigate} = props.navigation;
@@ -79,11 +81,55 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
     getUser()
   }, [])
 
-  const bloackUser = (userId) => {
-    console.log('userId',userId)
+  const bloackUser = (uid:string) => {
+    console.log('block',uid)
+    db.collection('users').doc(auth.currentUser?.uid).collection('block').doc(uid).get().then((doc) => {
+      if(doc.exists){
+        alert('user already block')
+      }else{
+        db.collection('users').doc(auth.currentUser?.uid).collection('block').doc(uid).set({
+          blockId: uid,
+          createdAt: new Date(),
+        }).then(() => {
+          alert('user block')
+        }).catch((error) => {
+          console.log("error getting documents: ", error);
+        })
+      }
+    })
   }
-  const deleteFriend = (userId) => {
-    console.log('userId',userId)
+
+  const unFriend = (uid:string) => {
+    console.log('unFriend',uid)
+    //convert uid to username
+    db.collection('users').where('uid','==',uid).get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        let target = doc.data().username;
+        console.log('target',target)
+        db.collection('users').doc(auth.currentUser?.uid).get().then((doc) => {
+          console.log(doc.data())
+          //get friend list
+          let friendList = doc.data()?.friends;
+          console.log('friend',friendList)
+          //remove target from friend friendList
+          let newFriendList = friendList.filter((item:any) => item !== target);
+          console.log('newFriend',newFriendList)
+          //if traget is in friendList Remove
+          if(friendList.includes(target)){
+            db.collection('users').doc(auth.currentUser?.uid).update({
+              friends: firebase.firestore.FieldValue.arrayRemove(target)
+              }).then(() => {
+                replace('Home')
+                alert('unfriend success')
+              }).catch((error) => {
+                console.log("error getting documents: ", error);
+              })
+          }else{
+            alert('unfriend failed')
+          }
+        })
+      })
+    })
   }
 
   function ListedUser () {
@@ -134,7 +180,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       <IconButton
                         borderRadius="15px"
                         variant="ghost"
-                        onPress={() => alert(`userID: ${userobj.userId}`)}
+                        onPress={() => setFriendMenu(true)}
                         _icon={{
                           as: Entypo,
                           name:'dots-three-vertical',
@@ -142,6 +188,22 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                           size: 'md',
                         }}
                       />
+                      <Modal isOpen={friendMenu} onClose={() => setFriendMenu(false)}>
+            <Modal.Content>
+              <Modal.CloseButton/>
+              <Modal.Header>Friend Menu</Modal.Header>
+                <Modal.Body>
+                <Button 
+                  onPress={() => bloackUser(userobj.userId)}
+                  colorScheme="red"
+                >Block</Button>
+                <Button
+                  onPress={() => unFriend(userobj.userId)}
+                >Remove</Button>
+              </Modal.Body>
+            </Modal.Content>
+          </Modal>
+
                     </HStack>
                   </Pressable>
                   <Badge colorScheme="green" variant="solid" size="sm" >Online</Badge>
@@ -150,10 +212,9 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                   <Divider my={2} bg='rgba(17,17,17,0.05)' />
                 </Box>
               )
-            })
-            }
-          </VStack>
-    )
+            })}
+        </VStack>
+      )
     }else{
       return(
       <Center>

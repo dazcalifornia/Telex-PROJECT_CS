@@ -105,8 +105,10 @@ export default function Menubar(props: { navigation: { navigate: any; }; }) {
                 onPress={
                 //add friend and reset friendID to empty string
                 () => {
-                  addFriends(friendID);
+                  addFriends({friendID: friendID});
                   setFriendID('');
+                  setFriendModal(false);
+                  console.log('log',friendID);
                 }}>Add Friend</Button>
               </Modal.Body>
             </Modal.Content>

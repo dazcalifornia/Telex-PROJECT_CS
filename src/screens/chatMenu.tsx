@@ -221,16 +221,16 @@ const ChatMenu = (props:any) => {
               <Modal.CloseButton/>
               <Modal.Header>Friend Menu</Modal.Header>
                 <Modal.Body>
-                        <Button 
-                          onPress={() => bloackUser(userId)}
-                          colorScheme="red"
-                        >Block</Button>
-                        <Button
-                          onPress={() => unFriend(userId)}
-                        >Remove</Button>
-                      </Modal.Body>
-                    </Modal.Content>
-                  </Modal>
+                <Button 
+                  onPress={() => bloackUser(userId)}
+                  colorScheme="red"
+                >Block</Button>
+                <Button
+                  onPress={() => unFriend(userId)}
+                >Remove</Button>
+              </Modal.Body>
+            </Modal.Content>
+          </Modal>
         </VStack>
       </Center>
     </>

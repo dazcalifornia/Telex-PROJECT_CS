@@ -37,7 +37,8 @@
     "react-native-web": "~0.18.7",
     "styled-components": "^5.3.6",
     "styled-system": "^5.1.5",
-    "@react-native-masked-view/masked-view": "0.2.7"
+    "@react-native-masked-view/masked-view": "0.2.7",
+    "@expo/webpack-config": "^0.17.0"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",

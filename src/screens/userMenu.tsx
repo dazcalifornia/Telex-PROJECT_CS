@@ -24,6 +24,7 @@ import{
   Flex,
   FlatList,
   Divider,
+  Avatar,
 } from 'native-base';
 import firebase from 'firebase/compat/app';
 
@@ -37,7 +38,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 function UserMenu(props:{navigation:{navigate:any;};}) {
   //get name from props
 
-  console.log("userMenu ", props);
   const {replace,navigate,goBack,dispatch} = props.navigation;
   const [name,setName] = useState('');
 
@@ -156,27 +156,28 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     };
   }
 
-
-{/*  const subscribeFriendRequest = () => {
-    //if not have friend request then show no friend request 
-    //if have friend request then show friend request 
-    db.collection('users').where('uid','==',auth.currentUser?.uid).get().then((querySnapshot)=>{
-      querySnapshot.forEach((doc) => {
-        let loadData = doc.data().friendRequest
-        const keyData = Object.keys(loadData);//uid
-        const valueData = Object.values(loadData);//state 
-        db.collection('users').where('uid','in',keyData).get().then((querySnapshot)=>{
+  const subscribeFriendRequest = async () => {
+    db.collection('users').doc(auth.currentUser?.uid).get().then((doc) => {
+      let data = doc.data();
+      if(data?.friendRequest){
+        let requestor = Object.keys(data.friendRequest);
+        console.log('requestor',requestor)
+        db.collection('users').where('uid','in',requestor).get().then((querySnapshot)=>{
           querySnapshot.forEach((doc) => {
             let requestorData = doc.data()
-            console.log('friendRequest',doc.data())
+            console.log('friendRequest',doc.data()?.username)
             setFriendRequest((prev) => [...prev,requestorData])
           })
         })
-        })
-      }) 
-    } */}
+      }
+    }).catch((error) => {
+      console.log(error)
+    })
+  }
 
-
+  useEffect(() => {
+    subscribeFriendRequest();
+  },[])
 
   const acceptFriendHandle = (item:string) => {
     db.collection('users').doc(auth.currentUser?.uid).update({
@@ -245,6 +246,8 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
     }
   }
 
+
+
   //modal 
   const [modalVisible, setModalVisible] = useState(false);
   const initialRef = useRef(null);
@@ -253,6 +256,25 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
   }, []);
+
+
+  const [status,setStatus] = useState('')
+
+  const setStatusHandle = (status:string) => {
+    if(status !== ''){
+      db.collection('users').doc(auth.currentUser?.uid).update({
+        status: status,
+      }).then(()=>{
+        alert('status updated')
+        goBack();
+      })
+    }else{
+      alert('Please enter status')
+    }
+  }
+
+
+
   return (
    <View>
       {/* header */}
@@ -336,7 +358,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         </Flex>
       </Box>
       {/* body */}
-      <Box height={100} px={4} py={10} >
+      <Box height='100%' px={4} py={10} width="100%" >
         <VStack
           space={2}
           alignItems="flex-start"
@@ -382,7 +404,6 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
               </HStack>
             )   
           }
-           
           </HStack>
           <Heading>Set displayname</Heading>
           <HStack alignItems="center" space={4} w="100%">
@@ -403,12 +424,68 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
                   }}
                 />
           </HStack>
+          <Heading>Set status</Heading>
+          <HStack alignItems="center" space={4} w="100%">
+            <Input
+              w={{
+                base: '75%',
+                md: '25%'
+              }}
+              onChangeText={(text) => setStatus(text)}
+              placeholder="set status"
+              />
+            <IconButton
+              icon={<Icon as={Entypo} name="edit" size="sm" />}
+              style={{ marginRight: 20 }}
+              colorScheme="success"
+              onPress={() => {
+                setStatusHandle(status)
+              }}
+            />
+          </HStack>
           <Heading>
             Friend Request
           </Heading>
-           <ScrollView style={{ width: '100%' }}>
-           <Text>Friend Request</Text>
-          </ScrollView>
+            <ScrollView
+              style={{
+                height: '200%',
+                width: '100%',
+              }}
+            >
+            {FriendRequest.map((item, index) => (
+              <HStack alignItems="center" justifyContent="space-between" space={4} w="100%" key={index}
+                style={{
+                  padding: 10,
+                }}
+              >
+                <Avatar
+                  source={{
+                    uri: item.imageURL,
+                  }}
+                  size="md"
+                />
+                <Text>{item.name}</Text>
+              <Button
+                colorScheme="success"
+                onPress={() => {
+                  acceptFriendHandle(item.uid)
+                }}
+              >
+                Accept
+              </Button>
+              <Button 
+                colorScheme="danger"
+                onPress={() => {
+                  rejectFriendHandle(item.uid)
+                }}
+              >
+                reject
+              </Button>
+
+              </HStack>
+            ))}
+
+            </ScrollView>
         </VStack>
       </Box>
     </View>
