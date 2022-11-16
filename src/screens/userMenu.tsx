@@ -355,7 +355,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
             {/*UserName */}
             { currentUserUsername ? (
               <Text style={{ marginLeft: 20, fontSize: 20 }}>
-                {currentUserUsername}
+                Your username is: {currentUserUsername} 
               </Text>
             ):(
               <Text style={{ marginLeft: 20, fontSize: 20 }}>

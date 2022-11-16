@@ -7,7 +7,8 @@ import {
   IconButton,
   Image,
   Modal,
-  Button
+  Button,
+  VStack
 } from 'native-base'
 import React,{
   useState,
@@ -52,7 +53,10 @@ const Header = (props:{navigation:{navigate:any;};}) => {
         {/*/<HStack alignItems="center" ml="24px">
           //<Text color="white" fontSize="2xl" fontWeight="bold">Logo</Text>
         </HStack>/*/}
+        <VStack alignItems="center" mr="24px">
           <Text color="white" fontSize="2xl" fontWeight="bold">Hello "{name}"</Text>
+          <Text color="subalt" fontSize="md" fontWeight="bold">Today is friday in california</Text>
+        </VStack>
         <IconButton
           mr="24px"
           borderRadius="15px"

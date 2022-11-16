@@ -122,7 +122,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       source={{ uri: userobj.photoURL }}
                       alt="Friend picture"
                       borderRadius={100}
-                      size="90px"
+                      size="85px"
                     />
                       <VStack>
                       <Text fontSize="lg" fontWeight="bold"> {userobj.name} </Text>
