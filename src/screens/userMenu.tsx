@@ -23,6 +23,7 @@ import{
   Container,
   Flex,
   FlatList,
+  Divider,
 } from 'native-base';
 import firebase from 'firebase/compat/app';
 
@@ -35,6 +36,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 function UserMenu(props:{navigation:{navigate:any;};}) {
   //get name from props
+
+  console.log("userMenu ", props);
   const {replace,navigate,goBack,dispatch} = props.navigation;
   const [name,setName] = useState('');
 
@@ -347,6 +350,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
           >
             Account Settings
           </Heading>
+          <Divider orientation="horizontal" />
           <HStack
             space={2}
             alignItems="center"
@@ -355,12 +359,27 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
             {/*UserName */}
             { currentUserUsername ? (
               <Text style={{ marginLeft: 20, fontSize: 20 }}>
-                Your username is: {currentUserUsername} 
+                Your username is: {currentUserUsername}
               </Text>
             ):(
-              <Text style={{ marginLeft: 20, fontSize: 20 }}>
-                {auth?.currentUser?.displayName}
-              </Text>
+              <HStack alignItems="center" space={4} w="100%" ml="30" >
+                <Input
+                  w={{
+                    base: '75%',
+                    md: '25%'
+                  }}
+                  onChangeText={(text) => setName(text)}
+                  placeholder="set Username"
+                />
+                <IconButton
+                  icon={<Icon as={Entypo} name="edit" size="sm" />}
+                  style={{ marginRight: 20 }}
+                  colorScheme="success"
+                  onPress={() => {
+                    setUsername()
+                    }}
+                />
+              </HStack>
             )   
           }
            
@@ -373,7 +392,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
                     md: '25%'
                   }}
                   onChangeText={(text) => setDisplayname(text)}
-                  placeholder="set Display name"
+                  placeholder={auth?.currentUser?.displayName}
                 />
                 <IconButton
                   icon={<Icon as={Entypo} name="edit" size="sm" />}

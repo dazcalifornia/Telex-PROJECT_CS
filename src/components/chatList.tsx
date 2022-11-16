@@ -17,6 +17,7 @@ import {
   Button,
   Modal,
   Divider,
+  Badge,
 } from 'native-base';
 import {auth,db} from '../../firebase'
 
@@ -24,6 +25,7 @@ import Menubar from '../components/menubar'
 import { RefreshControl } from 'react-native';
 
 import { Entypo } from '@expo/vector-icons';
+
 
 function ChatList(props: { navigation: { navigate: any; }; }) {
   const {navigate} = props.navigation;
@@ -118,6 +120,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                     w= "100%"
                     justifyContent="space-between"
                   >
+                 
                     <Image 
                       source={{ uri: userobj.photoURL }}
                       alt="Friend picture"
@@ -125,8 +128,8 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       size="85px"
                     />
                       <VStack>
-                      <Text fontSize="lg" fontWeight="bold"> {userobj.name} </Text>
-                      <Text> {userobj.status} </Text>
+                        <Text fontSize="lg" fontWeight="bold"> {userobj.name} </Text>
+                        <Text> {userobj.status} </Text>
                       </VStack>
                       <IconButton
                         borderRadius="15px"
@@ -141,6 +144,9 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       />
                     </HStack>
                   </Pressable>
+                  <Badge colorScheme="green" variant="solid" size="sm" >Online</Badge>
+                  <Badge colorScheme="coolGray" variant="solid" size="sm" >Offline</Badge>
+                  <Badge colorScheme="info" variant="solid" size="sm" >noti : 2</Badge>
                   <Divider my={2} bg='rgba(17,17,17,0.05)' />
                 </Box>
               )
