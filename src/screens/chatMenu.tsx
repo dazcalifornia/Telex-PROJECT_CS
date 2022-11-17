@@ -70,7 +70,8 @@ const ChatMenu = (props:any) => {
     }))
     console.log('channelID',itemValue)
   };
-
+  
+  const [chatcategory, setChatcategory] = useState('')
   const [newChat, setNewChat] = useState('') //create new chat 
   const createSubChannel =()=>{
     //subchannelID generate
@@ -78,10 +79,11 @@ const ChatMenu = (props:any) => {
     //subchannel is a collection of chatId
     //if subChannel exist no create subChannel
     const newChatname = newChat.replace(/\s/g, '');
-    if(newChatname){
+    if(newChatname&&chatcategory){
       db.collection('Chatroom').doc(chatId).collection('subChannel').where('chatName','==',newChatname).get().then((querySnapshot) => {
         if(querySnapshot.empty){
           db.collection('Chatroom').doc(chatId).collection('subChannel').doc(subChannelId).set({
+            catagory: chatcategory,
             channelId: subChannelId,
             chatName: newChatname,
             createdAt: new Date(),
@@ -90,6 +92,7 @@ const ChatMenu = (props:any) => {
               alert('subchannel created')
               //reload channel 
               setChannel([]);
+              setChatcategory('');
               resloveChannel();
             }).catch((error) => {
               console.log("error getting documents: ", error);
@@ -100,7 +103,7 @@ const ChatMenu = (props:any) => {
           console.log("error getting documents: ", error);
         })
       }else{
-        alert('please enter chat name')
+        alert('invalid chant name or category')
       }
   }
 
@@ -199,6 +202,22 @@ const ChatMenu = (props:any) => {
             onChangeText={(text) => setNewChat(text)}
             value={newChat}
           />
+          <Select
+            minWidth={200}
+            accessibilityLabel="Select a category"
+            placeholder="Select category"
+            selectedValue={chatcategory}
+            onValueChange={(itemValue) => setChatcategory(itemValue)}
+            _selectedItem={{
+              bg: "teal.600",
+              endIcon: <CheckIcon size={4} />,
+            }}
+          >
+            <Select.Item label="General" value="General" />
+            <Select.Item label="Game" value="Game" />
+            <Select.Item label="Study" value="Study" />
+            <Select.Item label="Work" value="Work" />
+          </Select>
           <Button onPress={createSubChannel}>Create newChat</Button>
         <VStack space={2} alignItems="center">
           <Text fontSize="lg" bold>

@@ -347,13 +347,16 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
               Sign Out
             </Button>
           </HStack>
-          <Pressable onPress={pickImage} marginTop={10} h={100} w={100} alignSelf="center" justifyContent="center">
-            <Image
-              source={{ uri: auth?.currentUser?.photoURL }}
-              rounded="full"
-              alt="profile"
-              size={100}
-            />
+          <Pressable onPress={pickImage} paddingTop="10" h={100} w={100} alignSelf="center" justifyContent="center">
+            <Avatar
+              size="xl"
+              source={{
+                uri: auth.currentUser?.photoURL,
+              }}
+            >
+              <Avatar.Badge bg="teal.50"/>
+            </Avatar>
+
           </Pressable>
         </Flex>
       </Box>

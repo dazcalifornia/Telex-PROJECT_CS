@@ -188,7 +188,15 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                           size: 'md',
                         }}
                       />
-                      <Modal isOpen={friendMenu} onClose={() => setFriendMenu(false)}>
+                      
+
+                    </HStack>
+                  </Pressable>
+                  <Badge colorScheme="green" variant="solid" size="sm" >Online</Badge>
+                  <Badge colorScheme="coolGray" variant="solid" size="sm" >Offline</Badge>
+                  <Badge colorScheme="info" variant="solid" size="sm" >noti : 2</Badge>
+                  <Divider my={2} bg='rgba(17,17,17,0.05)' />
+                <Modal isOpen={friendMenu} onClose={() => setFriendMenu(false)}>
             <Modal.Content>
               <Modal.CloseButton/>
               <Modal.Header>Friend Menu</Modal.Header>
@@ -203,13 +211,6 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
               </Modal.Body>
             </Modal.Content>
           </Modal>
-
-                    </HStack>
-                  </Pressable>
-                  <Badge colorScheme="green" variant="solid" size="sm" >Online</Badge>
-                  <Badge colorScheme="coolGray" variant="solid" size="sm" >Offline</Badge>
-                  <Badge colorScheme="info" variant="solid" size="sm" >noti : 2</Badge>
-                  <Divider my={2} bg='rgba(17,17,17,0.05)' />
                 </Box>
               )
             })}
