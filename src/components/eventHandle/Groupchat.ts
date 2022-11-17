@@ -22,12 +22,13 @@ const Groupchat = () => {
 }
 
 
-const CreateGroup = (props:{name:string}) => {
-  const {name} = props;
+const CreateGroup = (props:{name:string,category:string}) => {
+  const {name,category} = props;
   if(name){
     console.log(`createGroup Progress ${name}`)
     db.collection('group').add({
       name: name,
+      category: category,
       members: [auth?.currentUser?.uid],
       createdAt: new Date(),
       groupOwner: auth?.currentUser?.uid,

@@ -276,7 +276,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
 
 
   return (
-   <View>
+   <View bg="rgba(29, 30, 36,1)" >
       {/* header */}
       <Box height={165} px={4} py={2} shadow={1} >
         <LinearGradient
@@ -361,7 +361,16 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
         </Flex>
       </Box>
       {/* body */}
-      <Box height='100%' px={4} py={10} width="100%" >
+      <Box
+        mt={10}
+        px={4} 
+        py={10} 
+        width="100%" 
+        bg="rgba(255,255,255,0.8)"
+        borderTopRadius={30}
+        shadow={1}
+
+      >
         <VStack
           space={2}
           alignItems="flex-start"
@@ -408,7 +417,7 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
             )   
           }
           </HStack>
-          <Heading>Set displayname</Heading>
+          <Heading >Set displayname</Heading>
           <HStack alignItems="center" space={4} w="100%">
                 <Input
                   w={{
