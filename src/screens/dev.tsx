@@ -47,6 +47,8 @@ export default  function DEV () {
   }, [])
 
   const [chatroom, setChatroom] = useState([]);
+  const [keyword, setKeyword] = useState('');
+  const [messageroom, setMessageroom] = useState([]);
 
   function loadChatData(){
     //load chatroom data from uid 
@@ -57,17 +59,28 @@ export default  function DEV () {
       //get message collection from chatroom 
       chatroom.map((chatroom,index) => {
         db.collection('Chatroom').doc(chatroom.chatId).collection('messages').orderBy('createdAt', 'desc').get().then((snapshot) => {
-          console.log('message:',snapshot.docs.map((doc) => doc.data()?.text))
+          setMessageroom(snapshot.docs.map((doc) => doc.data()?.text))
+          console.log('messageroom:',messageroom)
         })
       })
-
     }) 
+  }
+
+  const findMessage = (keyword:string) => {
+    //find message from messageroom 
+    const result = messageroom.filter((message) => message.includes(keyword))
+    console.log('result:',result)
   }
 
   return (
     <Center flex={1}>
       <VStack space={2} alignItems="center">
         <Button onPress={() => loadChatData()}>Load Chatroom Data</Button>
+        <Input
+          placeholder="Search Message"
+          onChangeText={(text) => setKeyword(text)}
+        />
+        <Button onPress={() => findMessage(keyword)}>Search</Button>
         <Text fontSize="lg" bold>
           Select a setService
         </Text>
