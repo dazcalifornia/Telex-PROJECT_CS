@@ -12,7 +12,7 @@ import {
   Input,
   Button
 } from "native-base";
-
+import {auth,db} from '../../firebase'
 
 import {CreateGroup, Groupchat} from "../components/eventHandle/Groupchat";
 
@@ -20,8 +20,17 @@ export default  function DEV () {
   const [service, setService] = useState('');
   const [category, setCategory] = useState('');
 
-  const groupData =  Groupchat();
-  console.log(groupData);
+  //get datagrom Groupchat() component 
+  const [groupchat, setGroupchat] = useState([]);
+  
+  const userId = auth?.currentUser?.uid;
+  const fetchGroupchat = async (userId:string):Promise<T> => {
+    const {groupchat} = await Groupchat(userId);
+    setGroupchat(groupchat);
+  }
+  console.log('groupchat',groupchat)
+
+
   return (
     <Center flex={1}>
       <VStack space={2} alignItems="center">

@@ -7,17 +7,16 @@ import React,{
 import { auth, db } from '../../../firebase';
 
 
-const Groupchat = () => {
+const Groupchat = (props:{userId:string}) => {
+  const {userId} = props;
   const [groupchat, setGroupchat] = useState([]);
-  useEffect(() => {
-    db.collection('group').doc().get().then((doc) => {
-      setGroupchat(doc.data()?.groupchat)
-    })
-      .catch((error) => {
-      console.log("Error getting documents: ", error);
-    })
+  db.collection('group').where('members', 'array-contains', userId).onSnapshot((snapshot) => {
+    setGroupchat(snapshot.docs.map((doc) => ({
+      id: doc.id,
+      data: doc.data()
+    })))
+  })
 
-  }, [])
   return groupchat
 }
 

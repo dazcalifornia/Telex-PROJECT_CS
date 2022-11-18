@@ -18,6 +18,7 @@ import {
   Modal,
   Divider,
   Badge,
+  Avatar,
 } from 'native-base';
 import {auth,db} from '../../firebase'
 
@@ -166,14 +167,15 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                     w= "100%"
                     justifyContent="space-between"
                   >
-                 
-                    <Image 
-                      source={{ uri: userobj.photoURL }}
-                      alt="Friend picture"
-                      borderRadius={100}
-                      size="85px"
-                    />
-                      <VStack>
+                    <Avatar
+                      size="65px"
+                      source={{
+                        uri: userobj.photoURL,
+                      }}
+                    >
+                      <Avatar.Badge bg="green.500" />
+                    </Avatar>
+                    <VStack>
                         <Text fontSize="lg" fontWeight="bold"> {userobj.name} </Text>
                         <Text> {userobj.status} </Text>
                       </VStack>
@@ -192,9 +194,8 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
 
                     </HStack>
                   </Pressable>
-                  <Badge colorScheme="green" variant="solid" size="sm" >Online</Badge>
-                  <Badge colorScheme="coolGray" variant="solid" size="sm" >Offline</Badge>
-                  <Badge colorScheme="info" variant="solid" size="sm" >noti : 2</Badge>
+
+                  <Badge colorScheme="info" variant="solid" size="sm" >notification : 2 </Badge>
                   <Divider my={2} bg='rgba(17,17,17,0.05)' />
                 <Modal isOpen={friendMenu} onClose={() => setFriendMenu(false)}>
             <Modal.Content>
