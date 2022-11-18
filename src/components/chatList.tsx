@@ -132,6 +132,44 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
     })
   }
 
+  //read and unread message
+  const [read, setRead] = useState(false)
+  const [unread, setUnread] = useState(false)
+  //conut unread message
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [message,setMessage] = useState([])
+
+  useEffect(() => {
+    db.collection('Chatroom').where('member','array-contains',auth.currentUser?.uid).get().then((querySnapshot) => {
+      if(!querySnapshot.empty){
+        querySnapshot.forEach((doc) => {
+          db.collection('Chatroom').doc(doc.id).collection('messages').orderBy('createdAt','desc').limit(1).onSnapshot(snapshot => (
+            setMessage(snapshot.docs.map(doc => ({
+              id: doc.id,
+              data: doc.data(),
+            })))
+          ))
+        })
+      }
+      console.log('message',message)
+    })
+  }, [])
+
+  useEffect(() => {
+    const countUnread = async () => {
+      let count = 0 
+      message.map((item:any) => {
+        if(item.data.read === false){
+          count = count + 1 
+        }
+      })
+      setUnreadCount(count)
+    }
+    countUnread()
+  }, [message])
+
+
+
   function ListedUser () {
 
     const [friendMenu, setFriendMenu] = useState(false)
@@ -185,7 +223,10 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       <IconButton
                         borderRadius="15px"
                         variant="ghost"
-                        onPress={() => setFriendMenu(true)}
+                        onPress={() => { 
+                          setFriendMenu(true)
+                          console.log('data',message)
+                        }}
                         _icon={{
                           as: Entypo,
                           name:'dots-three-vertical',
@@ -198,7 +239,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                     </HStack>
                   </Pressable>
 
-                  <Badge colorScheme="info" variant="solid" size="sm" >notification : 2 </Badge>
+                  <Badge colorScheme="info" variant="solid" size="sm" >{unreadCount} </Badge>
                   <Divider my={2} bg='rgba(17,17,17,0.05)' />
                 <Modal isOpen={friendMenu} onClose={() => setFriendMenu(false)}>
             <Modal.Content>
@@ -234,6 +275,8 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
       )
     }
   }
+
+
   return (
     <>
       <Menubar {...props}/>

@@ -49,16 +49,24 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
       text, 
       user 
     } = messages[0]
+    const docId = Math.random().toString(36).substring(7);
     db.collection('Chatroom').doc(chatId).set({
       chatId: chatId,
       member: member,
       chatName: "Regular",
+      recentMessage: {
+        _id: _id,
+        createdAt: createdAt,
+        text: text,
+        user: user
+      }
     }).then(() => {
       db.collection('Chatroom').doc(chatId).collection('messages').add({
         _id: _id,
         createdAt,
         text,
         user,
+        delivered: false,
       })
     })
   }, [])
