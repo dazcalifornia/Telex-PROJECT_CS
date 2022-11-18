@@ -65,7 +65,7 @@ const Header = (props:{navigation:{navigate:any;};}) => {
         </HStack>/*/}
         <VStack alignItems="center" >
           <Text color="white" fontSize="2xl" fontWeight="bold">Hello "{name}"</Text>
-          <Text color="subalt" fontSize="md" fontWeight="bold">{userStatus}</Text>
+          <Text isTruncated color="subalt" maxW={230} fontSize="md" fontWeight="bold">{userStatus}</Text>
         </VStack>
         <IconButton
           mr="24px"

@@ -15,15 +15,27 @@ import {
 } from 'native-base';
 import { Entypo } from '@expo/vector-icons';
 
-import {auth} from '../../firebase';
+import {auth,db} from '../../firebase';
 
-export default function ChatHeader(props:any) {
+//recieve chatId from chat.tsx
+export default function ChatHeader(props:{chatId:string, navigation:any, route:any}) {
   const {userId, name, email, photoURL} = props.route.params;
   const { navigate,replace,dispatch } = props.navigation;
-  const {chatName} = props.route.params;
 
-  console.log ('chatName',chatName)
-  const chatState = chatName ? chatName : 'Regular'
+  const {chatName} = props.route.params;
+  //get Object value chatId in props 
+  const chatId = props.chatId;
+  const [room, setRoom] = useState('');
+  useEffect(() => {
+    db.collection('Chatroom').doc(chatId).get().then((snapshot) => {
+      setRoom(snapshot.data()?.chatName)
+    }).catch((error) => {
+      console.log('may be it load on sub room',error)
+    })
+  }, [])
+      
+
+  const chatState = chatName ? chatName : room
    return (
     <View>
       <StatusBar barStyle="light-content"/>
@@ -70,7 +82,7 @@ export default function ChatHeader(props:any) {
           })}
           />
         </HStack>
-          <Text color="altbase" fontSize="sm" fontWeight="bold" py="1.5">You're chat on #{chatState} Channel</Text>
+          <Text color="altbase" fontSize="sm" fontWeight="bold" py="1.5">You're chat on #{chatState} </Text>
       </VStack>
     </View>
   );

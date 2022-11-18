@@ -9,7 +9,6 @@ import {
   Heading,
   ScrollView,
   VStack,
-  Image,
   HStack,
   Pressable,
   Center,
@@ -175,9 +174,13 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                     >
                       <Avatar.Badge bg="green.500" />
                     </Avatar>
-                    <VStack>
+                    <VStack 
+                      space={1}
+                      alignItems="center"
+                      w="auto"
+                    >
                         <Text fontSize="lg" fontWeight="bold"> {userobj.name} </Text>
-                        <Text> {userobj.status} </Text>
+                        <Text isTruncated maxW={200} fontSize="sm" > {userobj.status} </Text>
                       </VStack>
                       <IconButton
                         borderRadius="15px"

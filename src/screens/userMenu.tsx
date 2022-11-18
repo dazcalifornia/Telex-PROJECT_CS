@@ -354,7 +354,9 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
                 uri: auth.currentUser?.photoURL,
               }}
             >
-              <Avatar.Badge bg="teal.50"/>
+              <Avatar.Badge bg="white" alignItems="center" pt={0.5}>
+                <Icon as={Entypo} name="edit" size="sm" />
+              </Avatar.Badge>
             </Avatar>
 
           </Pressable>

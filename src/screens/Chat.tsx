@@ -20,7 +20,6 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
 
   const [message, setMessage] = useState([])  //loadmessage from firebase specific to user 
 
-
   const [channel, setChannel] = useState([]) //load subroom from firebase
 
   const [chatName, setChatName] = useState('') //load chat name from firebase specific to userId
@@ -50,11 +49,17 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
       text, 
       user 
     } = messages[0]
-    db.collection('Chatroom').doc(chatId).collection('messages').add({
-      _id: _id,
-      createdAt,
-      text,
-      user,
+    db.collection('Chatroom').doc(chatId).set({
+      chatId: chatId,
+      member: member,
+      chatName: "Regular",
+    }).then(() => {
+      db.collection('Chatroom').doc(chatId).collection('messages').add({
+        _id: _id,
+        createdAt,
+        text,
+        user,
+      })
     })
   }, [])
 
@@ -99,7 +104,7 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
 
   return (
     <View style={{flex:1, backgroundColor:'#1D1E24'}}>
-      <ChatHeader {...props}/>
+      <ChatHeader chatId={chatId} navigation={props.navigation} route={props.route}/>
      
       <GiftedChat
         isTyping={true}
