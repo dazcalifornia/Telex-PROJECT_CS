@@ -119,6 +119,7 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
             db.collection('users').doc(auth.currentUser?.uid).update({
               friends: firebase.firestore.FieldValue.arrayRemove(target)
               }).then(() => {
+                replace('Home')
                 alert('unfriend success')
               }).catch((error) => {
                 console.log("error getting documents: ", error);

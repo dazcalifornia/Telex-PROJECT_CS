@@ -12,6 +12,9 @@ import {
   Input,
   Button,
   ScrollView,
+  Avatar,
+  HStack,
+  Heading,
 } from "native-base";
 import {auth,db} from '../../firebase'
 
@@ -67,13 +70,44 @@ export default  function DEV () {
   }
 
   const findMessage = (keyword:string) => {
-    //find message from messageroom 
-    const result = messageroom.filter((message) => message.includes(keyword))
-    console.log('result:',result)
+    //find message from message in chatroom 
+    db.collection('Chatroom').where('member', 'array-contains', auth.currentUser?.uid).get().then((snapshot) => {
+      snapshot.docs.map((doc) => {
+        console.log('message found in chatroom:',doc.data().chatId)
+
+        db.collection('Chatroom').doc(doc.data().chatId).collection('messages').where('text', '==', keyword).orderBy('createdAt','desc').get().then((snapshot) => {
+          snapshot.docs.map((doc) => {
+            setMessageroom(snapshot.docs.map((doc) => doc.data()))
+            console.log('message:',doc.data())
+          })
+        })
+      })
+    })
   }
+  const findInsubChannel = (keyword:string) => {
+    db.collection('Chatroom').where('member', 'array-contains', auth.currentUser?.uid).get().then((snapshot) => {
+      snapshot.docs.map((doc) => {
+        console.log('message found in chatroom:',doc.data().chatId)
+        //get message collection from subchatroom
+        db.collection('Chatroom').doc(doc.data().chatId).collection('subChannel').where('member', 'array-contains', auth.currentUser?.uid).get().then((snapshot) => {
+          snapshot.docs.map((doc) => {
+            console.log('message found in subchatroom:',doc.data().channelId)
+            db.collection('Chatroom').doc(doc.data().channelId).collection('messages').where('text', '==', keyword).orderBy('createdAt','desc').get().then((snapshot) => {
+              snapshot.docs.map((doc) => {
+                console.log('message:',doc.data())
+              })
+            })
+            
+          })
+        })
+      })
+    })
+  }
+      
 
   return (
     <Center flex={1}>
+      <ScrollView>
       <VStack space={2} alignItems="center">
         <Button onPress={() => loadChatData()}>Load Chatroom Data</Button>
         <Input
@@ -81,6 +115,10 @@ export default  function DEV () {
           onChangeText={(text) => setKeyword(text)}
         />
         <Button onPress={() => findMessage(keyword)}>Search</Button>
+        <Button onPress={() => findInsubChannel(keyword)}>Search in subChannel</Button>
+          {messageroom.map((messageroom,index) => (
+            <Text key={index}>{messageroom.text}</Text>
+          ))}
         <Text fontSize="lg" bold>
           Select a setService
         </Text>
@@ -163,7 +201,7 @@ export default  function DEV () {
                 <Text>Name:{item.name}</Text>
                 <Text>Owner{item.groupOwner}</Text>
                 <Text>ID:{item.groupId}</Text>
-                <Text>Memeber{item.members}</Text>
+                <Text>Memeber{item.members},</Text>
                 <Button
                   onPress={() => {
                     leaveGroup({groupId: item.groupId})
@@ -174,6 +212,7 @@ export default  function DEV () {
           </Box>
           </ScrollView>
       </VStack>
+      </ScrollView>
     </Center>
   );
 };
