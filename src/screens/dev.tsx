@@ -89,11 +89,26 @@ export default  function DEV () {
       snapshot.docs.map((doc) => {
         console.log('message found in chatroom:',doc.data().chatId)
         //get message collection from subchatroom
-        db.collection('Chatroom').doc(doc.data().chatId).collection('subChannel').where('member', 'array-contains', auth.currentUser?.uid).get().then((snapshot) => {
+        var mainchatId = doc.data().chatId
+        db.collection('Chatroom').doc(doc.data().chatId).collection('subChannel').get().then((snapshot) => {
+          console.log('mainchatId:',mainchatId)
           snapshot.docs.map((doc) => {
-            console.log('message found in subchatroom:',doc.data().channelId)
-            db.collection('Chatroom').doc(doc.data().chatId).collection('subChannel').doc(doc.data().channelId).get().then((snapshot) => {
-              console.log('subchatroom:',snapshot.data())
+            var subchatId = doc.data().channelId
+            console.log('subchatId:',subchatId)
+            db.collection('Chatroom').doc(mainchatId).collection('subChannel').doc(subchatId).collection('messages').where('text', '==', keyword).get().then((snapshot) => {
+              //if message found in subchatroom console log chatroom Name and message 
+              //if not found console log chatroom Name and message not found
+              if(snapshot.docs.length > 0){
+                snapshot.docs.map((doc) => {
+                  setMessageroom(next => [...next, doc.data()])
+                  //bring subchatroom name from subchatId
+                  db.collection('Chatroom').doc(mainchatId).collection('subChannel').doc(subchatId).get().then((snapshot) => {
+                    console.log('subchatroom Name:',snapshot.data()?.chatName)
+                  })
+                })
+              }else{
+                console.log('message not found in subchatroom')
+              }
             })
           })
         })
@@ -104,6 +119,11 @@ export default  function DEV () {
 
   return (
     <Center flex={1}>
+      <VStack space={4} alignItems="center">
+        <Heading>開発者向けオプション</Heading>
+        <Text fontSize="xs" color="gray.500" >Kaihatsushamukike opushon</Text>
+
+      </VStack>
       <ScrollView>
       <VStack space={2} alignItems="center">
         <Button onPress={() => loadChatData()}>Load Chatroom Data</Button>
@@ -113,12 +133,31 @@ export default  function DEV () {
         />
         <Button onPress={() => findMessage(keyword)}>Search</Button>
         <Button onPress={() => findInsubChannel(keyword)}>Search in subChannel</Button>
+        <Text>Message:</Text>
+        <ScrollView>
           {messageroom.map((messageroom,index) => (
-            <Box key={index} w="90%" p={2} my={2} bg="cyan.200" rounded="md">
-              <Text>{messageroom.text}</Text>
-              <Text>{messageroom.user}</Text>
+            <Box key={index} w="90%" p={2} my={2} bg="cyan.200">
+              <HStack space={2}>
+                <Avatar
+                  size="sm"
+                  source={{ uri: messageroom?.user?.avatar }}
+                />
+                <VStack space={1}>
+                  <Text fontSize="sm" bold>
+                    {messageroom?.user?.name}
+                  </Text>
+                  <Text fontSize="xs" color="gray.500">
+                    {messageroom?.createdAt?.toDate().toUTCString()}
+                  </Text>
+                </VStack>
+              </HStack>
+              <Text fontSize="sm" mt={1}>
+                {messageroom?.text}
+              </Text>
             </Box>
           ))}
+        </ScrollView>
+       
         <Text fontSize="lg" bold>
           Select a setService
         </Text>

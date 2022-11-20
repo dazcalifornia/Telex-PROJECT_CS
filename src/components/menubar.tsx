@@ -41,7 +41,7 @@ export default function Menubar(props: { navigation: { navigate: any; }; }) {
               px = "10px"
               borderRadius="15px"
               variant="solid"
-              bg="#979797"
+              bg="#06C755"
               _text={{
                 color: 'black',
                 fontSize: 'sm',
@@ -49,7 +49,7 @@ export default function Menubar(props: { navigation: { navigate: any; }; }) {
               }}
               onPress={() => props.navigation.navigate('DEV')}
             >
-            Create Group
+             開発者向けオプション
             </Button>
             <Button 
             px = "10px"
