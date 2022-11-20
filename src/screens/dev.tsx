@@ -75,7 +75,7 @@ export default  function DEV () {
       snapshot.docs.map((doc) => {
         console.log('message found in chatroom:',doc.data().chatId)
 
-        db.collection('Chatroom').doc(doc.data().chatId).collection('messages').where('text', '==', keyword).orderBy('createdAt','desc').get().then((snapshot) => {
+        db.collection('Chatroom').doc(doc.data().chatId).collection('messages').where('text', '==', keyword).get().then((snapshot) => {
           snapshot.docs.map((doc) => {
             setMessageroom(snapshot.docs.map((doc) => doc.data()))
             console.log('message:',doc.data())
@@ -92,12 +92,9 @@ export default  function DEV () {
         db.collection('Chatroom').doc(doc.data().chatId).collection('subChannel').where('member', 'array-contains', auth.currentUser?.uid).get().then((snapshot) => {
           snapshot.docs.map((doc) => {
             console.log('message found in subchatroom:',doc.data().channelId)
-            db.collection('Chatroom').doc(doc.data().channelId).collection('messages').where('text', '==', keyword).orderBy('createdAt','desc').get().then((snapshot) => {
-              snapshot.docs.map((doc) => {
-                console.log('message:',doc.data())
-              })
+            db.collection('Chatroom').doc(doc.data().chatId).collection('subChannel').doc(doc.data().channelId).get().then((snapshot) => {
+              console.log('subchatroom:',snapshot.data())
             })
-            
           })
         })
       })
@@ -117,7 +114,10 @@ export default  function DEV () {
         <Button onPress={() => findMessage(keyword)}>Search</Button>
         <Button onPress={() => findInsubChannel(keyword)}>Search in subChannel</Button>
           {messageroom.map((messageroom,index) => (
-            <Text key={index}>{messageroom.text}</Text>
+            <Box key={index} w="90%" p={2} my={2} bg="cyan.200" rounded="md">
+              <Text>{messageroom.text}</Text>
+              <Text>{messageroom.user}</Text>
+            </Box>
           ))}
         <Text fontSize="lg" bold>
           Select a setService
