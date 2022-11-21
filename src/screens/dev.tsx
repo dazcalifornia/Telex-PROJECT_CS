@@ -16,6 +16,7 @@ import {
   HStack,
   Heading,
   View,
+  IconButton,
 } from "native-base";
 import {auth,db} from '../../firebase'
 
@@ -37,6 +38,9 @@ export default  function DEV () {
   const [adduser, setAdduser] = useState('');
 
   const [currentUsergroup, setCurrentUsergroup] = useState([]);
+
+  const [grouInvite, setGroupInvite] = useState([]);
+
   useEffect(() => {
       db.collection('group').where('groupOwner', '==', auth.currentUser?.uid).get().then((snapshot) => {
         setCurrentUsergroup(snapshot.docs.map((doc) => doc.data()))
@@ -47,6 +51,9 @@ export default  function DEV () {
         setGroupchat(snapshot.docs.map((doc) => doc.data()))
       }).finally(() => {
         console.log('group that you are member:',groupchat)
+      })
+      db.collection('users').doc(auth.currentUser?.uid).get().then((doc) => {
+        console.log('user data:',doc.data())
       })
   }, [])
 
@@ -193,26 +200,6 @@ export default  function DEV () {
             console.log(service);
             CreateGroup({name: service, category: category});
           }}
-        >Send Data</Button>
-        <Box w="100%" p={2} my={2} bg="cyan.200">
-          <Text fontSize="lg" bold>
-            groupInvite
-          </Text>    
-              {groupRequest.map((groupRequest,index) => (
-                <Box key={index} w="90%" p={2} my={2} bg="cyan.200">
-                  <HStack space={2}>
-                    <Text fontSize="sm" bold>
-                      {groupRequest?.name}
-                    </Text>
-                    <Text fontSize="sm" bold>
-                      {groupRequest?.category}
-                    </Text>
-                  </HStack>
-                  <Button onPress={() => {
-                  where
-
-
-
         >Send Data</Button>
         <ScrollView>
           <Box>
