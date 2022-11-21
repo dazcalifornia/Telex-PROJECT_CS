@@ -17,8 +17,12 @@ import {
   Heading,
   View,
   IconButton,
+  Icon,
+  Divider,
 } from "native-base";
 import {auth,db} from '../../firebase'
+
+import {Entypo} from '@expo/vector-icons'
 
 import {
   CreateGroup,
@@ -26,6 +30,7 @@ import {
   removeMember,
   deleteGroup,
   leaveGroup,
+  AcceptInvite,
 } from "../components/eventHandle/Groupchat";
 
 export default  function DEV () {
@@ -39,7 +44,9 @@ export default  function DEV () {
 
   const [currentUsergroup, setCurrentUsergroup] = useState([]);
 
-  const [grouInvite, setGroupInvite] = useState([]);
+  const [groupInvite, setGroupInvite] = useState([]);
+  
+  const [whereMessagefrom, setWhereMessagefrom] = useState([]);
 
   useEffect(() => {
       db.collection('group').where('groupOwner', '==', auth.currentUser?.uid).get().then((snapshot) => {
@@ -52,10 +59,34 @@ export default  function DEV () {
       }).finally(() => {
         console.log('group that you are member:',groupchat)
       })
-      db.collection('users').doc(auth.currentUser?.uid).get().then((doc) => {
-        console.log('user data:',doc.data())
+      //get group invite from user collection
+      db.collection('users').doc(auth.currentUser?.uid).get().then((snapshot) => {
+        //map user data
+        const data = snapshot.data()?.groupInvite
+        const inviteKey = Object.keys(data)
+        db.collection('group').where('groupId', 'in', inviteKey).get().then((snapshot) => {
+          snapshot.docs.map((doc) => {
+            const data = doc.data()
+            setGroupInvite((prev) => [...prev, data])
+          })
+        })
+        console.log('group invite:',groupInvite)
+      }).catch((error) => {
+        console.log(error)
       })
+      if(whereMessagefrom.length > 0){
+        console.log('whereMessagefrom:',whereMessagefrom)
+      }else{
+        messageroom.forEach((item) => {
+          if(item.groupId === groupchat[0].groupId){
+            setWhereMessagefrom(item)
+            console.log('whereMessagefrom:',whereMessagefrom)
+          }
+        })
+      }
+
   }, [])
+
 
   const [chatroom, setChatroom] = useState([]);
   const [keyword, setKeyword] = useState('');
@@ -109,6 +140,7 @@ export default  function DEV () {
               if(snapshot.docs.length > 0){
                 snapshot.docs.map((doc) => {
                   setMessageroom(next => [...next, doc.data()])
+                  console.log('message:',doc.data())
                   //bring subchatroom name from subchatId
                   db.collection('Chatroom').doc(mainchatId).collection('subChannel').doc(subchatId).get().then((snapshot) => {
                     console.log('subchatroom Name:',snapshot.data()?.chatName)
@@ -116,6 +148,7 @@ export default  function DEV () {
                 })
               }else{
                 console.log('message not found in subchatroom')
+
               }
             })
           })
@@ -201,6 +234,38 @@ export default  function DEV () {
             CreateGroup({name: service, category: category});
           }}
         >Send Data</Button>
+            {/*group in invite */}
+          <Text fontSize="lg" bold>
+            Group in invite 
+          </Text>
+          <ScrollView>
+          {groupInvite.map((groupInvite,index) => (
+            <Box key={index} w="90%" p={2} my={2} bg="cyan.200">
+              <HStack space={2}>
+                <Text fontSize="sm" bold>
+                  {groupInvite.name}
+                </Text>
+              </HStack>
+              <IconButton
+                icon={<Icon as={<Entypo name="cross" />} size="sm" />}
+                onPress={() => {
+                  //delete groupInvite 
+                  console.log(groupInvite);
+                  db.collection('users').doc(auth.currentUser?.uid).update({
+                    groupInvite: firebase.firestore.FieldValue.arrayRemove(groupInvite)
+                  })
+                }}
+              />
+              <IconButton
+                icon={<Icon as={<Entypo name="check" />} size="sm" />}
+                onPress={() => {
+                  //add groupInvite to group
+                  AcceptInvite({groupId: groupInvite.groupId})
+                }}
+              />
+            </Box>
+          ))}
+        </ScrollView>
         <ScrollView>
           <Box>
             <Text>your Group</Text>

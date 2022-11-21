@@ -44,7 +44,7 @@ const addMember = (props:{groupId:string,username:string}) => {
   db.collection('users').where('username', '==', username).get().then((snapshot) => {
     snapshot.forEach((doc) => {
       db.collection('users').doc(doc.id).update({
-        ['groupInvitation.' + groupId]: false,
+        ['groupInvite.' + groupId]: false,
       })
     })
   })
@@ -86,5 +86,30 @@ const leaveGroup = (props:{groupId:string}) => {
   }
 }
 
+const AcceptInvite = (props:{groupId:string}) => {
+  const {groupId} = props;
+  console.log(groupId)
+  //put groupId to string from array 
+  const groupIdString = groupId.toString();
+  if(auth?.currentUser?.uid){
+    db.collection('group').doc(groupIdString).get().then((doc) => {
+      if(doc.exists){
+        db.collection('group').doc(groupIdString).update({
+          members: firebase.firestore.FieldValue.arrayUnion(auth?.currentUser?.uid)
+        }).then(function () {
+          console.log('Document successfully updated!');
+        }).catch(function (error) {
+          console.error('Error updating document: ', error);
+        }).finally(function () {
+          db.collection('users').doc(auth?.currentUser?.uid).update({
+            groupInvite: firebase.firestore.FieldValue.delete()
+          })
+        })
+      }
+    })
+  }
+}
 
-export {Groupchat,CreateGroup,addMember,removeMember,deleteGroup,leaveGroup}
+
+
+export {Groupchat,CreateGroup,addMember,removeMember,deleteGroup,leaveGroup,AcceptInvite}
