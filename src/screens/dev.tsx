@@ -15,6 +15,7 @@ import {
   Avatar,
   HStack,
   Heading,
+  View,
 } from "native-base";
 import {auth,db} from '../../firebase'
 
@@ -118,14 +119,14 @@ export default  function DEV () {
       
 
   return (
-    <Center flex={1}>
+    <View style={{flex:1}} w="100%" h="100%">
       <VStack space={4} alignItems="center">
         <Heading>開発者向けオプション</Heading>
         <Text fontSize="xs" color="gray.500" >Kaihatsushamukike opushon</Text>
 
       </VStack>
       <ScrollView>
-      <VStack space={2} alignItems="center">
+      <VStack space={2} alignItems="center" w="100%">
         <Button onPress={() => loadChatData()}>Load Chatroom Data</Button>
         <Input
           placeholder="Search Message"
@@ -193,6 +194,26 @@ export default  function DEV () {
             CreateGroup({name: service, category: category});
           }}
         >Send Data</Button>
+        <Box w="100%" p={2} my={2} bg="cyan.200">
+          <Text fontSize="lg" bold>
+            groupInvite
+          </Text>    
+              {groupRequest.map((groupRequest,index) => (
+                <Box key={index} w="90%" p={2} my={2} bg="cyan.200">
+                  <HStack space={2}>
+                    <Text fontSize="sm" bold>
+                      {groupRequest?.name}
+                    </Text>
+                    <Text fontSize="sm" bold>
+                      {groupRequest?.category}
+                    </Text>
+                  </HStack>
+                  <Button onPress={() => {
+                  where
+
+
+
+        >Send Data</Button>
         <ScrollView>
           <Box>
             <Text>your Group</Text>
@@ -201,7 +222,12 @@ export default  function DEV () {
                 <Text>Name:{item.name}</Text>
                 <Text>Owner{item.groupOwner}</Text>
                 <Text>ID:{item.groupId}</Text>
-                <Text>Memeber{item.members}</Text>
+                <VStack space={2} alignItems="center">
+                  {item.members.map((member,index) => (
+                    <Text key={index}>{member}</Text>
+                  ))}
+                </VStack>
+
                 <Input 
                   placeholder="Enter username to add"
                   onChangeText={(text) => setAdduser(text)}
@@ -240,7 +266,12 @@ export default  function DEV () {
                 <Text>Name:{item.name}</Text>
                 <Text>Owner{item.groupOwner}</Text>
                 <Text>ID:{item.groupId}</Text>
-                <Text>Memeber{item.members},</Text>
+                <Text>Memeber: </Text>
+                <VStack space={2} alignItems="center">
+                  {item.members.map((member,index) => (
+                    <Text key={index}>{member}</Text>
+                  ))}
+                </VStack>
                 <Button
                   onPress={() => {
                     leaveGroup({groupId: item.groupId})
@@ -252,7 +283,7 @@ export default  function DEV () {
           </ScrollView>
       </VStack>
       </ScrollView>
-    </Center>
+    </View>
   );
 };
 

@@ -43,8 +43,8 @@ const addMember = (props:{groupId:string,username:string}) => {
   const {groupId,username} = props;
   db.collection('users').where('username', '==', username).get().then((snapshot) => {
     snapshot.forEach((doc) => {
-      db.collection('group').doc(groupId).update({
-        members: firebase.firestore.FieldValue.arrayUnion(doc.id)
+      db.collection('users').doc(doc.id).update({
+        ['groupInvitation.' + groupId]: false,
       })
     })
   })
