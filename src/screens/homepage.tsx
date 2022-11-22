@@ -6,7 +6,7 @@ import {
   View,
   } from 'native-base';
 import {LinearGradient} from 'expo-linear-gradient';
-import Bruh from '../components/eventHandle/bruh';
+
 const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
   return(
     <View

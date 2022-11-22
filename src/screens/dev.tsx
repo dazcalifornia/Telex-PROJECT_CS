@@ -46,7 +46,6 @@ export default  function DEV () {
 
   const [groupInvite, setGroupInvite] = useState([]);
   
-  const [whereMessagefrom, setWhereMessagefrom] = useState([]);
 
   useEffect(() => {
       db.collection('group').where('groupOwner', '==', auth.currentUser?.uid).get().then((snapshot) => {
@@ -62,8 +61,8 @@ export default  function DEV () {
       //get group invite from user collection
       db.collection('users').doc(auth.currentUser?.uid).get().then((snapshot) => {
         //map user data
-        const data = snapshot.data()?.groupInvite
-        const inviteKey = Object.keys(data)
+        const data = snapshot.data()
+        let inviteKey = Object.keys(data?.groupInvite)
         db.collection('group').where('groupId', 'in', inviteKey).get().then((snapshot) => {
           snapshot.docs.map((doc) => {
             const data = doc.data()
@@ -74,17 +73,7 @@ export default  function DEV () {
       }).catch((error) => {
         console.log(error)
       })
-      if(whereMessagefrom.length > 0){
-        console.log('whereMessagefrom:',whereMessagefrom)
-      }else{
-        messageroom.forEach((item) => {
-          if(item.groupId === groupchat[0].groupId){
-            setWhereMessagefrom(item)
-            console.log('whereMessagefrom:',whereMessagefrom)
-          }
-        })
-      }
-
+      
   }, [])
 
 
@@ -92,6 +81,7 @@ export default  function DEV () {
   const [keyword, setKeyword] = useState('');
   const [messageroom, setMessageroom] = useState([]);
 
+  const [whereMessagefrom, setWhereMessagefrom] = useState([]);// tell where the message is from
   function loadChatData(){
     //load chatroom data from uid 
     db.collection('Chatroom').where('member', 'array-contains', auth.currentUser?.uid).get().then((snapshot) => {
@@ -101,27 +91,58 @@ export default  function DEV () {
       //get message collection from chatroom 
       chatroom.map((chatroom,index) => {
         db.collection('Chatroom').doc(chatroom.chatId).collection('messages').orderBy('createdAt', 'desc').get().then((snapshot) => {
-          setMessageroom(snapshot.docs.map((doc) => doc.data()?.text))
-          console.log('messageroom:',messageroom)
-        })
-      })
-    }) 
-  }
-
-  const findMessage = (keyword:string) => {
-    //find message from message in chatroom 
-    db.collection('Chatroom').where('member', 'array-contains', auth.currentUser?.uid).get().then((snapshot) => {
-      snapshot.docs.map((doc) => {
-        console.log('message found in chatroom:',doc.data().chatId)
-
-        db.collection('Chatroom').doc(doc.data().chatId).collection('messages').where('text', '==', keyword).get().then((snapshot) => {
           snapshot.docs.map((doc) => {
-            setMessageroom(snapshot.docs.map((doc) => doc.data()))
-            console.log('message:',doc.data())
+            const data = doc.data()
+            setMessageroom((prev) => [...prev, data])
+            setWhereMessagefrom((prev) => [...prev, index])
           })
         })
+        
+        })
+      }) 
+  }
+
+  const findMessage = (keyword: string) => {
+    //find message from message in chatroom
+    db.collection('Chatroom')
+      .where('member', 'array-contains', auth.currentUser?.uid)
+      .get()
+      .then(snapshot => {
+        snapshot.docs.map(doc => {
+          console.log('message found in chatroom:', doc.data().chatId) //where they knowed the message is from
+          //find message from message in each chatroom and show chat room name
+          db.collection('Chatroom')
+            .where('chatId','==', doc.data().chatId)
+            .get().then(snapshot => {
+              snapshot.docs.map(doc => {
+                setWhereMessagefrom(prev => [...prev, doc.data().chatName])
+              })
+            })
+          db.collection('Chatroom')
+            .doc(doc.data().chatId)
+            .collection('messages')
+            .orderBy('createdAt', 'desc')
+            .get()
+            .then(snapshot => {
+              snapshot.docs.map(doc => {
+                const data = doc.data()
+                if (data.text.includes(keyword)) {
+                  db.collection('Chatroom')
+                    .doc(doc.data().chatId)
+                    .get()
+                    .then(snapshot => {
+                      setMessageroom(prev => [...prev, data])
+                      //if message _id is found in whereMessagefrom array, then show chatroom name
+                      let messagefound = data._id
+                      console.log('room', whereMessagefrom)
+                      console.info('index:',messagefound)
+                      console.log('message found:', data)
+                    })
+                }
+              })
+            })
+        })
       })
-    })
   }
   const findInsubChannel = (keyword:string) => {
     db.collection('Chatroom').where('member', 'array-contains', auth.currentUser?.uid).get().then((snapshot) => {
