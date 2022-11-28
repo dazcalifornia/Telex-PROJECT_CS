@@ -47,6 +47,8 @@ export default  function DEV () {
   const [groupInvite, setGroupInvite] = useState([]);
   
   const [messageGroup, setMessageGroup] = useState([]);
+
+
   useEffect(() => {
       db.collection('group').where('groupOwner', '==', auth.currentUser?.uid).get().then((snapshot) => {
         setCurrentUsergroup(snapshot.docs.map((doc) => doc.data()))
@@ -74,14 +76,14 @@ export default  function DEV () {
         console.log(error)
       })
       
-  }, [])
+  }, [locationMsg])
 
 
   const [chatroom, setChatroom] = useState([]);
   const [keyword, setKeyword] = useState('');
   const [messageroom, setMessageroom] = useState([]);
+  
 
-  const [whereMessagefrom, setWhereMessagefrom] = useState([]);// tell where the message is from
   function loadChatData(){
     //load chatroom data from uid 
     db.collection('Chatroom').where('member', 'array-contains', auth.currentUser?.uid).get().then((snapshot) => {
@@ -94,7 +96,7 @@ export default  function DEV () {
           snapshot.docs.map((doc) => {
             const data = doc.data()
             setMessageroom((prev) => [...prev, data])
-            setWhereMessagefrom((prev) => [...prev, index])
+            //setWhereMessagefrom((prev) => [...prev, index])
           })
         })
         
@@ -105,36 +107,53 @@ export default  function DEV () {
   const [locationMsg, setLocationMsg] = useState([]);
 
   const findMessage = (keyword: string) => {
-    //find message from message in chatroom
-    db.collection('Chatroom')
-      .where('member', 'array-contains', auth.currentUser?.uid)
-      .get()
-      .then(snapshot => {
-        snapshot.docs.map(doc => {
-          //console.log('message found in chatroom:', doc.data()) //where they knowed the message is from
-          setWhereMessagefrom((prev) => [...prev, doc.data().chatId])
-          db.collection('Chatroom').doc(doc.data().chatId).collection('messages').orderBy('createdAt', 'desc').get().then(snapshot => {
-              snapshot.docs.map(doc => {
+    db.collection('Chatroom').where('member', 'array-contains', auth.currentUser?.uid).get().then((snapshot) => {
+      snapshot.docs.map((doc) => {
+        const data = doc.data()
+        db.collection('Chatroom').doc(data.chatId).collection('messages').where('text', '==', keyword).get().then((snapshot) => {
+          console.log('find message:',snapshot.docs.map((doc) => doc.data()))
+          snapshot.docs.map((doc) => {
+            //get chatname from chatroom with data.address 
+            let ref = doc.data().address
+            setMessageroom((prev) => [...prev, doc.data()])
+            console.log('ref:',ref)
+            db.collection('Chatroom').where('chatId', '==', ref).get().then((snapshot) => {
+              console.log('chatname:',snapshot.docs.map((doc) => doc.data()))
+              snapshot.docs.map((doc) => {
                 const data = doc.data()
-                if (data.text.includes(keyword)) {
-                  db.collection('Chatroom').doc(doc.data().chatId).get().then(snapshot => {
-                    console.log('message found in chatroom:', snapshot.data())
-                      setMessageroom(prev => [...prev, data])
-                      //if message _id is found in whereMessagefrom array, then show chatroom name
-                      let messagefound = data._id
-                      //console.log('room', whereMessagefrom)
-                      //console.info('index:',messagefound)
-                      //console.log('message found:', data)
-                      if (whereMessagefrom.includes(messagefound)) {
-                        setLocationMsg(prev => [...prev, snapshot.data()])
-                        //console.log('message found in chatroom:',snapshot.data().chatName)//they knowed the message is from
-                      }
-                    })
-                }
+                //push chanName to messageroom
+                let chatname = data.chatName
+                //add chatname to messageroom 
+                messageroom = [...messageroom, {chatname: chatname}]
+
               })
             })
+          })
+        }).then(() => {
+            console.log('message:',messageroom)
+        }).catch((error) => {
+          console.log(error)
         })
       })
+    })
+        
+
+  
+
+
+    // db.collection('Chatroom').where('member', 'array-contains', auth.currentUser?.uid).get().then((snapshot) => {
+    //   snapshot.docs.map((doc) => {
+    //     const chatdata = doc.data()
+    //     setLocationMsg((prev) => [...prev, chatdata])
+    //     db.collection('Chatroom').doc(chatdata.chatId).collection('messages').where('text','==',keyword).get().then((snapshot) => {
+    //       snapshot.docs.map((doc) => {
+    //         const data = doc.data()
+    //         console.log('data:',data)
+    //         setMessageroom((prev) => [...prev, data])
+    //       })
+    //     })
+    //   })
+    // })
   }
 
   const findInsubChannel = (keyword:string) => {
@@ -189,11 +208,11 @@ export default  function DEV () {
         <Button onPress={() => findMessage(keyword)}>Search</Button>
         <Button onPress={() => findInsubChannel(keyword)}>Search in subChannel</Button>
         <Text>Message:</Text>
-        <ScrollView>
+        <ScrollView> 
+          {/* show message and where message from  */}
           {messageroom.map((messageroom,index) => (
             <Box key={index} w="90%" p={2} my={2} bg="cyan.200">
               <HStack space={2}>
-                  {locationMsg[index]?.chatName ? <Text>Chatroom Name: {locationMsg[index]?.chatName}</Text> : <Text>Chatroom Name: {chatroom[index]?.chatName}</Text>}
                 <Avatar
                   size="sm"
                   source={{ uri: messageroom?.user?.avatar }}
@@ -205,7 +224,11 @@ export default  function DEV () {
                   <Text fontSize="xs" color="gray.500">
                     {messageroom?.createdAt?.toDate().toUTCString()}
                   </Text>
+                  <Text fontSize="sm" color="gray.500">
+                    {messageroom?.chatname}
+                  </Text>
                 </VStack>
+                
               </HStack>
               <Text fontSize="sm" mt={1}>
                 {messageroom?.text}

@@ -64,6 +64,7 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
       db.collection('Chatroom').doc(chatId).collection('messages').add({
         _id: _id,
         createdAt,
+        address: chatId,
         text,
         user,
         delivered: false,
