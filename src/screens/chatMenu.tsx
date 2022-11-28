@@ -19,6 +19,12 @@ import {
 import {auth, db} from '../../firebase';
 import firebase from 'firebase/compat/app';
 
+// import { 
+//   Search,
+//   searchInSubCollection 
+// } from "../components/eventHandle/search";
+
+
 const ChatMenu = (props:any) => {
 
   const {dispatch,navigate,replace} = props.navigation;
@@ -31,7 +37,8 @@ const ChatMenu = (props:any) => {
   
   const member = [auth.currentUser?.uid, userId];
   const chatId = member.sort().join('_');
-
+  
+  const [keyword, setKeyword] = useState('');
   
   useEffect(() => {
     console.log('chatId',chatId)
@@ -186,9 +193,55 @@ const ChatMenu = (props:any) => {
       })
     })
   }
+
+const [messages, setMessages] = useState([])
+const Search = (keyword: string, chatId: string) => {
+  db.collection('Chatroom')
+    .doc(chatId)
+    .collection('messages')
+    .where('text', '==', keyword)
+    .get()
+    .then(snapshot => {
+      snapshot.docs.forEach(doc => {
+        setMessages(doc.data())
+      })
+    })
+  console.log(messages)
+}
+
+const searchInSubCollection = (keyword: string, chatId: string) => {
+  db.collection('Chatroom')
+    .doc(chatId)
+    .collection('subChannel')
+    .get()
+    .then(snapshot => {
+      snapshot.docs.forEach(doc => {
+        db.collection('Chatroom')
+          .doc(chatId)
+          .collection('subChannel')
+          .doc(doc.id)
+          .collection('messages')
+          .where('text', '==', keyword)
+          .get()
+          .then(snapshot => {
+            snapshot.docs.forEach(doc => {
+              setMessages(doc.data())
+              console.log(doc.data())
+            })
+          })
+      })
+    })
+  console.log(messages)
+} 
   return (
     <>
       <Center flex={1}>
+        <Input
+          placeholder="Search Message"
+          onChangeText={(text) => setKeyword(text)}
+        />
+        <Button onPress={() => Search(keyword,chatId)}>Search</Button>
+        <Button onPress={() => searchInSubCollection(keyword)}>Search in subChannel</Button>
         <Button
           onPress={() => setFriendMenu(true)}
           colorScheme="teal"
