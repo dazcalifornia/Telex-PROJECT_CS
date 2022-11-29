@@ -1,6 +1,9 @@
 import React,{
   useEffect,
   useState,
+  useRef,
+  useMemo,
+  useCallback,
 } from 'react';
 import {
   Text,
@@ -17,7 +20,10 @@ import { Entypo } from '@expo/vector-icons';
 
 import {auth,db} from '../../firebase';
 
-import menuDrawer from './drawer';
+import BottomSheet,{
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
 //recieve chatId from chat.tsx
 export default function ChatHeader(props:{chatId:string, navigation:any, route:any}) {
   const {userId, name, email, photoURL} = props.route.params;
@@ -34,6 +40,64 @@ export default function ChatHeader(props:{chatId:string, navigation:any, route:a
       console.log('may be it load on sub room',error)
     })
   }, [])
+
+  //bottomSheetRef set close and open
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index);
+  }, []);
+
+
+
+ const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  // variables
+  const snapPoints = useMemo(() => ['25%', '50%'], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const RenderBtmSheet = () => {
+    return (
+      <BottomSheetModalProvider>
+        <BottomSheetModal 
+          ref={bottomSheetModalRef}
+          index={1}
+          snapPoints={snapPoints}
+          onChange={handleSheetChanges}
+        >
+          <View style={{backgroundColor: 'white', height: '100%'}}>
+            <Text>Bottom Sheet Modal</Text>
+          </View>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
+    )    
+  }
+  const RenderBottom = () => {
+    return (
+      <View
+        style={{
+          backgroundColor: 'white',
+          padding: 16,
+          flex: 1,
+        }}
+      >
+        <BottomSheet
+          ref={bottomSheetRef}
+          index={1}
+          snapPoints={snapPoints}
+          onChange={handleSheetChanges}>
+          <View style={{flex:1,alignItems:'center'}}>
+            <Text>BottomSheet</Text>
+          </View>
+        </BottomSheet>
+      </View>
+    );
+  }
+
       
 
   const chatState = chatName ? chatName : room
@@ -74,11 +138,13 @@ export default function ChatHeader(props:{chatId:string, navigation:any, route:a
             size: 5,
             color: "subbase",
           }}
-          onPress={() =>navigate('MenuDrawer')}
+          onPress={handlePresentModalPress}
           />
         </HStack>
-          <Text color="altbase" fontSize="sm" fontWeight="bold" py="1.5">You're chat on #{chatState} </Text>
+          {chatState ? 
+            <Text color="altbase" fontSize="sm" fontWeight="bold" py="1.5">You're chat on #{chatState} </Text> : null}
       </VStack>
+      <RenderBtmSheet />
     </View>
   );
 }

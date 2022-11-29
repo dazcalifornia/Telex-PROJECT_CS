@@ -2,18 +2,21 @@ import React, { useState, useEffect, useLayoutEffect,useCallback } from 'react';
 import {auth, db} from '../../firebase';
 
 import {
-  View
+  View,
+  IconButton,
+  Icon
 } from 'native-base';
 
 import { 
   GiftedChat,
   InputToolbar,
   RenderMessageImage,
+  Actions,
 
   } from 'react-native-gifted-chat';
 import ChatHeader from '../components/chatHeader';
 
-
+import { Entypo } from '@expo/vector-icons';
 function Chat (props:{userId:string,name:string, email:string, photoURL:string,navigation:any}) {
 
   const {userId, name, email, photoURL} = props.route.params;
@@ -87,11 +90,54 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
     )
   }
 
+  const renderActions = (props) => {
+    return (
+      <Actions
+        {...props}
+        containerStyle={{
+          width: 44,
+          height: 44,
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginLeft: 4,
+          marginBottom: 0,
+        }}
+        icon={() => (
+          <Icon
+            as={<Entypo name="plus" />}
+            size="sm"
+            color="muted.400"
+          />
+        )}
+        options={{
+          'Choose From Library': () => {
+            console.log('Choose From Library')
+          },
+          'Take Picture': () => {
+            console.log('Take Picture')
+          },
+          'Send Location': () => {
+            console.log('Send Location')
+          },
+
+          Cancel: () => {
+            console.log('Cancel')
+          },
+        }}
+        optionTintColor="#222B45"
+      />
+
+    )
+  }
+
 
   const customInputToolbar = (props:any) => {
     return(
+      
       <InputToolbar
         {...props}
+        renderActions={() => renderActions(props)}
+        //renderComposer={() => renderComposer(props)}
         containerStyle={{
           //make it blur and adjust it to center screen
           //text white
@@ -108,6 +154,7 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
           alignItems: 'center',
         }}
         />
+
     )
   }
 
