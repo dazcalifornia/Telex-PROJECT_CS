@@ -17,6 +17,7 @@ import { Entypo } from '@expo/vector-icons';
 
 import {auth,db} from '../../firebase';
 
+import menuDrawer from './drawer';
 //recieve chatId from chat.tsx
 export default function ChatHeader(props:{chatId:string, navigation:any, route:any}) {
   const {userId, name, email, photoURL} = props.route.params;
@@ -73,13 +74,7 @@ export default function ChatHeader(props:{chatId:string, navigation:any, route:a
             size: 5,
             color: "subbase",
           }}
-          onPress={() => navigate('ChatMenu',{
-            userId: userId,
-            name: name,
-            email: email,
-            photoURL: photoURL,
-            navigation: props.navigation,
-          })}
+          onPress={() =>navigate('MenuDrawer')}
           />
         </HStack>
           <Text color="altbase" fontSize="sm" fontWeight="bold" py="1.5">You're chat on #{chatState} </Text>

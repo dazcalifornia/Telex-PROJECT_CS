@@ -7,14 +7,14 @@ import {LinearGradient} from 'expo-linear-gradient';
 type Props = {
     children: React.ReactNode;
 }
-
-
 const AppContainer = (props: Props) => {
   return (
     <NavigationContainer>
+        
         <NativeBaseProvider 
         theme={theme} 
-        >{props.children}
+        >
+        {props.children}
       </NativeBaseProvider>
     </NavigationContainer>
 

@@ -22,6 +22,7 @@ import DEV from './screens/dev';
 
 import ChatMenu from './screens/chatMenu';
 
+import MenuDrawer from './components/drawer';
 
 const Stack = createStackNavigator();
 
@@ -49,6 +50,7 @@ const Loader = () => {
 
 
         <Stack.Screen name="Chat" component={Chat} />
+        <Stack.Screen name="MenuDrawer" component={MenuDrawer} options={{headerShown:false}}/>
         <Stack.Screen name="ChatMenu" component={ChatMenu} />
         <Stack.Screen name="SubChannel" component={SubChatrooms} />
 
@@ -65,7 +67,8 @@ const Loader = () => {
           }} 
           component={UserMenu} />
       </Stack.Group>
-    </Stack.Navigator>  
+    </Stack.Navigator>
+    
   )
 }
 
