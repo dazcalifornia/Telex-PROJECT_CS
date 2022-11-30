@@ -1,10 +1,18 @@
-import React, { useState, useEffect, useLayoutEffect,useCallback } from 'react';
+import React, { 
+  useState,
+  useEffect, 
+  useLayoutEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from 'react';
 import {auth, db} from '../../firebase';
 
 import {
   View,
   IconButton,
-  Icon
+  Icon,
+  Text,
 } from 'native-base';
 
 import { 
@@ -12,11 +20,15 @@ import {
   InputToolbar,
   RenderMessageImage,
   Actions,
-
-  } from 'react-native-gifted-chat';
+} from 'react-native-gifted-chat';
 import ChatHeader from '../components/chatHeader';
 
 import { Entypo } from '@expo/vector-icons';
+
+import {
+    BtmSheet,
+   
+  } from '../components/Sheets'
 function Chat (props:{userId:string,name:string, email:string, photoURL:string,navigation:any}) {
 
   const {userId, name, email, photoURL} = props.route.params;
@@ -158,6 +170,7 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
     )
   }
 
+
   return (
     <View style={{flex:1, backgroundColor:'#1D1E24'}}>
       <ChatHeader chatId={chatId} navigation={props.navigation} route={props.route}/>
@@ -167,6 +180,7 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
         isAnimated={true}
         messages={message}
         showUserAvatar={true}
+        RenderMessageImage={props => renderCustomView(props)}
         renderInputToolbar={props => customInputToolbar(props)}
         onSend={messages => onSend(messages)}
         user={{
@@ -176,6 +190,7 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
         }
       }
       />
+      <BtmSheet/>
     </View>
   );
 }
