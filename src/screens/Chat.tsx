@@ -180,7 +180,6 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
         isAnimated={true}
         messages={message}
         showUserAvatar={true}
-        RenderMessageImage={props => renderCustomView(props)}
         renderInputToolbar={props => customInputToolbar(props)}
         onSend={messages => onSend(messages)}
         user={{

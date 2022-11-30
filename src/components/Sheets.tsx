@@ -19,14 +19,12 @@ import {
 
 const BtmSheet = (trigger:boolean) => {
 
-  if(trigger===true){
-    const handlePresentModalPress = useCallback(() => {
-      bottomSheetModalRef.current?.present();
-    }, []);
-  }
-
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  if(trigger===true){
+      bottomSheetModalRef.current?.present();
+  }
+
 
   // variables
   const snapPoints = useMemo(() => ['25%', '50%'], []);
