@@ -51,7 +51,13 @@ const Loader = () => {
 
         <Stack.Screen name="Chat" component={Chat} />
         <Stack.Screen name="MenuDrawer" component={MenuDrawer} options={{headerShown:false}}/>
-        <Stack.Screen name="ChatMenu" component={ChatMenu} />
+        <Stack.Group screenOptions={{
+          presentation: 'modal',
+          headerShown: false,
+        }}>
+          <Stack.Screen name="ChatMenu" component={ChatMenu} />
+        </Stack.Group>
+          
         <Stack.Screen name="SubChannel" component={SubChatrooms} />
 
       <Stack.Group screenOptions={{ presentation: 'modal' }}>

@@ -25,11 +25,10 @@ import ChatHeader from '../components/chatHeader';
 
 import { Entypo } from '@expo/vector-icons';
 
-import {
-    BtmSheet,
-   
-  } from '../components/Sheets'
 function Chat (props:{userId:string,name:string, email:string, photoURL:string,navigation:any}) {
+
+
+  console.log('BtmSheet',props.btmSheet)
 
   const {userId, name, email, photoURL} = props.route.params;
 
@@ -42,6 +41,9 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
 
   const chatId = member.sort().join('_');
  
+
+
+
   useLayoutEffect(() => {
     const loadChat = db.collection('Chatroom').doc(chatId).collection('messages')
     .orderBy('createdAt', 'desc').onSnapshot(snapshot => (
@@ -158,8 +160,6 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
           borderWidth: 1,
           borderColor: 'white',
           marginHorizontal: 10,
-
-        
           borderTopWidth: 0,
           borderBottomWidth: 0,
           justifyContent: 'center',
@@ -189,7 +189,8 @@ function Chat (props:{userId:string,name:string, email:string, photoURL:string,n
         }
       }
       />
-      <BtmSheet/>
+
+
     </View>
   );
 }

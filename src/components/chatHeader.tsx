@@ -19,11 +19,11 @@ import {
 import { Entypo } from '@expo/vector-icons';
 
 import {auth,db} from '../../firebase';
-
-import {BtmSheet} from './Sheets';
+import Chat from '../screens/Chat';
 
 //recieve chatId from chat.tsx
 export default function ChatHeader(props:{chatId:string, navigation:any, route:any}) {
+
   const {userId, name, email, photoURL} = props.route.params;
   const { navigate,replace,dispatch } = props.navigation;
 
@@ -31,6 +31,7 @@ export default function ChatHeader(props:{chatId:string, navigation:any, route:a
   //get Object value chatId in props 
   const chatId = props.chatId;
   const [room, setRoom] = useState('');
+
   useEffect(() => {
     db.collection('Chatroom').doc(chatId).get().then((snapshot) => {
       setRoom(snapshot.data()?.chatName)
@@ -38,8 +39,8 @@ export default function ChatHeader(props:{chatId:string, navigation:any, route:a
       console.log('may be it load on sub room',error)
     })
   }, [])
-      
-  const trigger = true;
+
+
   const chatState = chatName ? chatName : room
    return (
     <View>
@@ -78,10 +79,15 @@ export default function ChatHeader(props:{chatId:string, navigation:any, route:a
             size: 5,
             color: "subbase",
           }}
-          onPress={() =>
-          //send trigger to bottom Sheets
-          BtmSheet({trigger})
-          }
+            onPress={() => {
+              navigate('ChatMenu', {
+                userId: userId,
+                name: name,
+                email: email,
+                photoURL: photoURL,
+                navigation: props.navigation,
+              })
+            }}
           />
         </HStack>
           {chatState ? 

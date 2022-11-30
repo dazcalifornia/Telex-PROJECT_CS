@@ -14,17 +14,23 @@ import {
   Button,
   Input,
   Modal,
+  View,
+  Icon,
+  Heading,
+  HStack,
+  Pressable
 } from 'native-base';
 
 import {auth, db} from '../../firebase';
 import firebase from 'firebase/compat/app';
 
+import { Entypo } from '@expo/vector-icons';
 // import { 
 //   Search,
 //   searchInSubCollection 
 // } from "../components/eventHandle/search";
 
-
+import {LinearGradient} from 'expo-linear-gradient';
 const ChatMenu = (props:any) => {
 
   const {dispatch,navigate,replace} = props.navigation;
@@ -234,78 +240,51 @@ const searchInSubCollection = (keyword: string, chatId: string) => {
   console.log(messages)
 } 
   return (
-    <>
-      <Center flex={1}>
-        <Input
-          placeholder="Search Message"
-          onChangeText={(text) => setKeyword(text)}
-        />
-        <Button onPress={() => Search(keyword,chatId)}>Search</Button>
-        <Button onPress={() => searchInSubCollection(keyword)}>Search in subChannel</Button>
-        <Button
-          onPress={() => setFriendMenu(true)}
-          colorScheme="teal"
-          variant="outline"
-        >
-          settings
-        </Button>
+    <View
+      flex={1}
+    >
+      <LinearGradient
+        colors={['#4c669f', '#3b5998', '#192f6a']}
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 0,
+          height: '100%',
+        }}
+      />
+        {/*header*/}
+      <Box>
+        <HStack
+          px={2}
+          py={2}
+          shadow={2}
+          rounded="md"
+          alignItems="center"
+          justifyContent="flex-start"
 
-        <Input
-            placeholder="Enter chat name"
-            onChangeText={(text) => setNewChat(text)}
-            value={newChat}
-          />
-          <Select
-            minWidth={200}
-            accessibilityLabel="Select a category"
-            placeholder="Select category"
-            selectedValue={chatcategory}
-            onValueChange={(itemValue) => setChatcategory(itemValue)}
-            _selectedItem={{
-              bg: "teal.600",
-              endIcon: <CheckIcon size={4} />,
-            }}
-          >
-            <Select.Item label="General" value="General" />
-            <Select.Item label="Game" value="Game" />
-            <Select.Item label="Study" value="Study" />
-            <Select.Item label="Work" value="Work" />
-          </Select>
-          <Button onPress={createSubChannel}>Create newChat</Button>
-        <VStack space={2} alignItems="center">
-          <Text fontSize="lg" bold>
-            Select a channel
-          </Text>
-            <Button 
-              onPress={() => {
-              dispatch(navigate('Chat',{
-                userId: userId,
-                name: name,
-                email: email,
-                photoURL: photoURL,
-                navigation: props.navigation,
-              }))
-              
-            }}>Back to regular chat</Button>
-          <ThrowChannel />
-          <Modal isOpen={friendMenu} onClose={() => setFriendMenu(false)}>
-            <Modal.Content>
-              <Modal.CloseButton/>
-              <Modal.Header>Friend Menu</Modal.Header>
-                <Modal.Body>
-                <Button 
-                  onPress={() => bloackUser(userId)}
-                  colorScheme="red"
-                >Block</Button>
-                <Button
-                  onPress={() => unFriend(userId)}
-                >Remove</Button>
-              </Modal.Body>
-            </Modal.Content>
-          </Modal>
-        </VStack>
-      </Center>
-    </>
+        >
+          <IconButton
+          ml="34px"
+          _icon={{
+            as: Entypo,
+            name: "chevron-left",
+            size: 5,
+            color: "subbase",
+          }}
+          onPress={() =>{ 
+            console.log('go Back')
+            props.navigation.goBack()
+            }
+          }
+        />
+          <Heading size="md" color="white">
+            ChatOptions
+          </Heading>
+        </HStack>
+
+      </Box> 
+    </View>
   )
 }
 
