@@ -1,9 +1,11 @@
 import React,{
   useState,
   useEffect,
+  useRef,
 } from 'react';
 import {
-  Platform
+  Platform,
+  Keyboard
 } from 'react-native';
 
 import {
@@ -26,7 +28,7 @@ import {
   FormControl,
   Actionsheet,
   useDisclose,
-  KeyboardAvoidingView
+  TextField
 } from 'native-base';
 
 import {auth, db} from '../../firebase';
@@ -96,21 +98,20 @@ const ChatMenu = (props:any) => {
       navigation: props.navigation,
     }))
     console.log('channelID',itemValue)
-  };
+  }
   
-  const [chatcategory, setChatcategory] = useState('')
-  const [newChat, setNewChat] = useState('') //create new chat 
+
   const createSubChannel =()=>{
     //subchannelID generate
     const subChannelId = Math.random().toString(36).substring(7);
     //subchannel is a collection of chatId
     //if subChannel exist no create subChannel
-    const newChatname = newChat.replace(/\s/g, '');
-    if(newChatname&&chatcategory){
+    const newChatname = channelName.replace(/\s/g, '');
+    if(channelName && channelCategory){
       db.collection('Chatroom').doc(chatId).collection('subChannel').where('chatName','==',newChatname).get().then((querySnapshot) => {
         if(querySnapshot.empty){
           db.collection('Chatroom').doc(chatId).collection('subChannel').doc(subChannelId).set({
-            catagory: chatcategory,
+            catagory: channelCategory,
             channelId: subChannelId,
             chatName: newChatname,
             createdAt: new Date(),
@@ -133,6 +134,125 @@ const ChatMenu = (props:any) => {
         alert('invalid chant name or category')
       }
   }
+  const ActSheet = () => {
+    const [channelCategory, setChannelCategory] = useState('')
+    const [channelName, setChannelName] = useState('')
+    const createSubChannel =()=>{
+      //subchannelID generate
+      const subChannelId = Math.random().toString(36).substring(7);
+      //subchannel is a collection of chatId
+      //if subChannel exist no create subChannel
+      const newChatname = channelName.replace(/\s/g, '');
+      if(channelName && channelCategory){
+        db.collection('Chatroom').doc(chatId).collection('subChannel').where('chatName','==',newChatname).get().then((querySnapshot) => {
+          if(querySnapshot.empty){
+            db.collection('Chatroom').doc(chatId).collection('subChannel').doc(subChannelId).set({
+              catagory: channelCategory,
+              channelId: subChannelId,
+              chatName: newChatname,
+              createdAt: new Date(),
+              member: member,
+            }).then(() => {
+                alert('subchannel created')
+                //reload channel 
+                setChannel([]);
+                setChannelCategory('');
+                resloveChannel();
+              }).catch((error) => {
+                console.log("error getting documents: ", error);
+              })
+          }else{
+            alert('subChannel exist')
+          }}).catch((error) => {
+            console.log("error getting documents: ", error);
+          })
+        }else{
+          alert('invalid chant name or category')
+        }
+    }
+      const bottomInset = useKeyboardBottomInset();
+      return (
+          <Center flex={1}>
+                   <Actionsheet isOpen={isOpen} onClose={onClose}>
+                    <Actionsheet.Content bottom={bottomInset}>
+                      <FormControl mb={5}>
+                        <FormControl.Label>Channel-Name</FormControl.Label>
+                        <Input
+                          w="75%"
+                          ml="10%"
+                          placeholder="Enter your channel name"
+                          onChangeText={text => setChannelName(text)}
+                        />
+                        <FormControl.Label>Channel-Category</FormControl.Label>
+                        <Select
+                          w="75%"
+                          ml="10%"
+                          placeholder="Select your channel category"
+                          selectedValue={channelCategory}
+                          onValueChange={itemValue => setChannelCategory(itemValue)}
+                          _selectedItem={{
+                            bg: 'teal.600',
+                            endIcon: <CheckIcon size={4} />
+                          }}
+                        >
+                          <Select.Item label="Study" value="Study" />
+                          <Select.Item label="Work" value="Work" />
+                          <Select.Item label="Social" value="Social" />
+                          <Select.Item label="Others" value="Others" />
+                        </Select>
+                        <Button
+                          w="75%"
+                          ml="10%"
+                          mt={5}
+                          colorScheme="teal"
+                          onPress={() => {
+                            createSubChannel();
+                            onClose();
+                            setChannelName('');
+                          }}
+                        >
+                          Create Channel
+                        </Button>
+                      </FormControl>
+                    </Actionsheet.Content>
+                  </Actionsheet>
+  
+          </Center>
+      );
+  };
+  const useKeyboardBottomInset = () => {
+  const [bottom, setBottom] = useState(0);
+  const subscriptions = useRef([]);
+
+  useEffect(() => {
+    function onKeyboardChange(e) {
+      if (
+        e.startCoordinates &&
+        e.endCoordinates.screenY < e.startCoordinates.screenY
+      )
+        setBottom(e.endCoordinates.height);
+      else setBottom(0);
+    }
+
+    if (Platform.OS === 'ios') {
+      subscriptions.current = [
+        Keyboard.addListener('keyboardWillChangeFrame', onKeyboardChange),
+      ];
+    } else {
+      subscriptions.current = [
+        Keyboard.addListener('keyboardDidHide', onKeyboardChange),
+        Keyboard.addListener('keyboardDidShow', onKeyboardChange),
+      ];
+    }
+    return () => {
+      subscriptions.current.forEach((subscription) => {
+        subscription.remove();
+      });
+    };
+  }, [setBottom, subscriptions]);
+
+  return bottom;
+  };
 
   const ThrowChannel = () => {
     if(channel?.length !== 0){
@@ -181,6 +301,16 @@ const ChatMenu = (props:any) => {
               <Select.Item label={item.chatName} value={item.channelId} key={key} />
             ))}
           </Select>
+          <Button
+            w="75%"
+            ml="10%"
+            mt={5}
+            colorScheme="teal"
+            onPress={onOpen}
+          >
+            Create Channel
+          </Button>
+          <ActSheet />
         </Box>
       )
     }
@@ -192,71 +322,26 @@ const ChatMenu = (props:any) => {
               You didn't create any channel yet 🥲
             </Heading>
           </HStack>
-          <Divider bg="white" my={1} ml={4} w="90%" />
           <Box>
-            <Text color="white" ml="10%" my={2} size="md">
-              Create your channel now
-              <IconButton
-                ml="1"
-                icon={<Entypo name="plus" />}
-                size="md"
-                color="white"
-                onPress={onOpen}
-              />
-            </Text>
-            <KeyboardAvoidingView
-                h={{
-                  base: '400px',
-                  lg: 'auto'
-                }}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              >
-                <Actionsheet isOpen={isOpen} onClose={onClose}>
-                  <Actionsheet.Content>
-                    <FormControl mb={5}>
-                      <FormControl.Label>Channel-Name</FormControl.Label>
-                      <Input
-                        w="75%"
-                        ml="10%"
-                        placeholder="Enter your channel name"
-                        onChangeText={text => setNewChat(text)}
-                      />
-                      <FormControl.Label>Channel-Category</FormControl.Label>
-                      <Select
-                        w="75%"
-                        ml="10%"
-                        placeholder="Select your channel category"
-                        selectedValue={chatcategory}
-                        onValueChange={itemValue => setChatcategory(itemValue)}
-                        _selectedItem={{
-                          bg: 'teal.600',
-                          endIcon: <CheckIcon size={4} />
-                        }}
-                      >
-                        <Select.Item label="Study" value="Study" />
-                        <Select.Item label="Work" value="Work" />
-                        <Select.Item label="Social" value="Social" />
-                        <Select.Item label="Others" value="Others" />
-                      </Select>
-                      <Button
-                        w="75%"
-                        ml="10%"
-                        mt={5}
-                        colorScheme="teal"
-                        onPress={createSubChannel}
-                      >
-                        Create Channel
-                      </Button>
-                    </FormControl>
-                  </Actionsheet.Content>
-                </Actionsheet>
-              </KeyboardAvoidingView>
-          </Box>
+            <Button 
+              onPress={onOpen}
+              w="75%"
+              my={5}
+              ml="10%"
+              alignSelf="start"
+              colorScheme="white"
+              variant="outline"
+              endIcon={<Icon as={<Entypo name="plus" />} size="md" />}
+            >
+              Create Channel Now 
+            </Button>
+              {/*Actionsheet*/}
+              <ActSheet/>
+            </Box>
         </Box>
       )
     }
   }
-
   const [friendMenu, setFriendMenu] = useState(false)
   
   const bloackUser = (uid:string) => {

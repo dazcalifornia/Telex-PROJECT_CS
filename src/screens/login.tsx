@@ -19,6 +19,8 @@ import {
   Icon,
   Pressable,
 } from 'native-base'
+
+import {LinearGradient} from 'expo-linear-gradient';
 import { auth } from '../../firebase'
 
 import { Entypo } from '@expo/vector-icons';
@@ -48,7 +50,20 @@ const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
   return (
     <> 
     <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-    <Image
+    
+      <LinearGradient 
+        colors={['#FFEFBA', '#FFFFFF']}
+        start={[0, 0]}
+        end={[1, 1]}
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 0,
+          height: '100%',
+        }}
+      >
+      <Image
         source={require('../../assets/wave.png')}
         alt="bg"
         size="xl"
@@ -58,6 +73,7 @@ const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
         w="100%"
         h="50%"
       />
+      </LinearGradient>
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
@@ -122,8 +138,9 @@ const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
               onChangeText={(text) => setPassword(text)} />
           </FormControl>
           <Button
-            colorScheme="cyan"
-            _text={{ color: 'white' }}
+            backgroundColor="#A5F3FC"
+            _text={{ color: 'black' }}
+            endIcon={<Icon as={<Entypo name="chevron-right" />} size="sm" color="black" />}
             onPress={() => signIn()}
           >
             Sign In
