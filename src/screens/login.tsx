@@ -1,5 +1,8 @@
 import React, { useCallback, useState,useEffect } from 'react'
 import {
+    Platform,
+} from 'react-native';
+import {
   Text,
   Button,
   VStack,
@@ -12,14 +15,19 @@ import {
   Center,
   Image,
   StatusBar,
+  KeyboardAvoidingView,
+  Icon,
+  Pressable,
 } from 'native-base'
 import { auth } from '../../firebase'
+
+import { Entypo } from '@expo/vector-icons';
 
 const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  const [show, setShow] = useState(false);
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(function(user) {
       if (user) {
@@ -38,71 +46,102 @@ const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
       });
   }
   return (
-    <>
-    <StatusBar barStyle='dark-content'/>
-    <Center w="100%">
-      <Box safeArea p="2" py="8" w="90%" maxW="290">
-          <Image source={require('../../assets/loginmesh.png')} alt="logo" size="xl" />
+    <> 
+    <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+    <Image
+        source={require('../../assets/wave.png')}
+        alt="bg"
+        size="xl"
 
-        <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{
-          color: "warmGray.50"
-        }}>
-          Welcome
-        </Heading>
-        <Heading mt="1" _dark={{
-          color: "warmGray.200"
-        }} color="coolGray.600" fontWeight="medium" size="xs">
-          Sign in to continue!
-        </Heading>
+        position="absolute"
+        zIndex={-1}
+        w="100%"
+        h="50%"
+      />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <Center flex={1} px={2} w="90%" mx='auto'>
+      
 
-        <VStack space={3} mt="5">
+        <Image 
+          source={require('../../assets/login-mesh.png')}
+          alt="Alternate Text"
+          size="350px"
+          resizeMode="cover"
+          borderRadius={100}
+          my={5}
+        />
+        <Heading size="lg" color='primary.500'>
+          Welcome back! 
+        </Heading>
+        <Text color='muted.400' textAlign='center'>
+          Sign in to continue
+        </Text>
+        <VStack space={2} mt={5}>
           <FormControl>
-            <FormControl.Label>Email ID</FormControl.Label>
-            <Input
-              value={email}
-              onChangeText={setEmail}
-            />
+            <FormControl.Label
+              _text={{ color: 'muted.700', fontSize: 'sm', fontWeight: 600 }}
+            >
+              Email ID
+            </FormControl.Label>
+            <Input 
+              w="50%"
+              InputRightElement={
+                <Icon 
+                  as={<Entypo name="mail" />}
+                  size="sm"
+                  mr={2}
+                  color='muted.500'
+                />
+              }
+              placeholder='Enter Email'
+              onChangeText={(text) => setEmail(text)} />
           </FormControl>
-          <FormControl>
-            <FormControl.Label>Password</FormControl.Label>
-            <Input
-              value={password}
-              onChangeText={setPassword}
-              type="password" />
-            <Link _text={{
-              fontSize: "xs",
-              fontWeight: "500",
-              color: "indigo.500"
-            }} alignSelf="flex-end" mt="1">
-              Forget Password?
-            </Link>
+          <FormControl mt={2}>
+            <FormControl.Label
+              _text={{ color: 'muted.700', fontSize: 'sm', fontWeight: 600 }}
+            >
+              Password
+            </FormControl.Label>
+            <Input 
+              InputRightElement={
+                <Pressable onPress={() => setShow(!show)}>
+                <Icon 
+                  as={<Entypo name={show ? "eye":"eye-with-line"} />}
+                  size="sm"
+                  mr={2}
+                  color='muted.500'
+                />
+                </Pressable>
+              }
+              w="50%" 
+              placeholder='Enter your password' 
+              type={show ? "text" : "password"} 
+              onChangeText={(text) => setPassword(text)} />
           </FormControl>
           <Button
-            mt="2"
-            colorScheme="indigo"
-            onPress={signIn}
+            colorScheme="cyan"
+            _text={{ color: 'white' }}
+            onPress={() => signIn()}
           >
-            Sign in
+            Sign In
           </Button>
-          <HStack mt="6" justifyContent="center">
-            <Text fontSize="sm" color="coolGray.600" _dark={{
-              color: "warmGray.200"
-            }}>
-              I'm a new user.{" "}
-            </Text>
-            <Link _text={{
-              color: "indigo.500",
-              fontWeight: "medium",
-              fontSize: "sm"
-            }} onPress={() => props.navigation.navigate('Register')}>
-
-            >
-              Sign Up
-            </Link>
-          </HStack>
         </VStack>
-      </Box>
-    </Center>
+        <HStack justifyContent="center" mt={5}>
+          <Text fontSize="sm" color='muted.700' fontWeight={400}>
+            I'm a new user.{' '}
+          </Text>
+          <Link
+            _text={{ color: 'cyan.500', bold: true, fontSize: 'sm' }}
+            onPress={() => props.navigation.navigate('Register')}
+          >
+            Sign Up
+          </Link>
+        </HStack>
+      </Center>
+    </KeyboardAvoidingView>
     </>
   )
 }
