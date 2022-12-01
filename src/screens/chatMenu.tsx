@@ -2,6 +2,9 @@ import React,{
   useState,
   useEffect,
 } from 'react';
+import {
+  Platform
+} from 'react-native';
 
 import {
   IconButton,
@@ -18,7 +21,12 @@ import {
   Icon,
   Heading,
   HStack,
-  Pressable
+  Pressable,
+  Divider,
+  FormControl,
+  Actionsheet,
+  useDisclose,
+  KeyboardAvoidingView
 } from 'native-base';
 
 import {auth, db} from '../../firebase';
@@ -45,6 +53,12 @@ const ChatMenu = (props:any) => {
   const chatId = member.sort().join('_');
   
   const [keyword, setKeyword] = useState('');
+
+  const {
+    isOpen,
+    onOpen,
+    onClose
+  } = useDisclose();
   
   useEffect(() => {
     console.log('chatId',chatId)
@@ -123,10 +137,39 @@ const ChatMenu = (props:any) => {
   const ThrowChannel = () => {
     if(channel?.length !== 0){
       return(
+        <Box>
+          <HStack
+            alignItems="center"
+            justifyContent="start"
+            px={4}
+            py={2}
+          >
+            <Heading
+              size="xl"
+              color="white"
+            >
+              Your Channel List 
+            </Heading>
+              <Icon 
+                ml="1"
+                as={<Entypo name="list" />}
+                size="md"
+                color="white"
+              />
+          </HStack>
+            <Divider
+              bg="white"
+              my={2}
+              ml={4}
+              w="60%"
+            />
             <Select
-            minWidth={200}
-            accessibilityLabel="Select a setService"
-            placeholder="Select setService"
+            w="75%"
+            my={5}
+            ml="10%"
+            alignSelf="start"
+            accessibilityLabel="Select a chat"
+            placeholder="SELECT YOUR CHAT CHANNEL"
             selectedValue={chatName}
             onValueChange={(itemValue) => changeChannel(itemValue)}
             _selectedItem={{
@@ -138,11 +181,78 @@ const ChatMenu = (props:any) => {
               <Select.Item label={item.chatName} value={item.channelId} key={key} />
             ))}
           </Select>
+        </Box>
       )
     }
-    if(channel?.length === 0){
-      return(
-        <Text>no channel</Text>
+    if(channel?.length == 0){
+      return (
+        <Box>
+          <HStack alignItems="center" justifyContent="flex-start" px={4} py={2}>
+            <Heading size="lg" color="white">
+              You didn't create any channel yet 🥲
+            </Heading>
+          </HStack>
+          <Divider bg="white" my={1} ml={4} w="90%" />
+          <Box>
+            <Text color="white" ml="10%" my={2} size="md">
+              Create your channel now
+              <IconButton
+                ml="1"
+                icon={<Entypo name="plus" />}
+                size="md"
+                color="white"
+                onPress={onOpen}
+              />
+            </Text>
+            <KeyboardAvoidingView
+                h={{
+                  base: '400px',
+                  lg: 'auto'
+                }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              >
+                <Actionsheet isOpen={isOpen} onClose={onClose}>
+                  <Actionsheet.Content>
+                    <FormControl mb={5}>
+                      <FormControl.Label>Channel-Name</FormControl.Label>
+                      <Input
+                        w="75%"
+                        ml="10%"
+                        placeholder="Enter your channel name"
+                        onChangeText={text => setNewChat(text)}
+                      />
+                      <FormControl.Label>Channel-Category</FormControl.Label>
+                      <Select
+                        w="75%"
+                        ml="10%"
+                        placeholder="Select your channel category"
+                        selectedValue={chatcategory}
+                        onValueChange={itemValue => setChatcategory(itemValue)}
+                        _selectedItem={{
+                          bg: 'teal.600',
+                          endIcon: <CheckIcon size={4} />
+                        }}
+                      >
+                        <Select.Item label="Study" value="Study" />
+                        <Select.Item label="Work" value="Work" />
+                        <Select.Item label="Social" value="Social" />
+                        <Select.Item label="Others" value="Others" />
+                      </Select>
+                      <Button
+                        w="75%"
+                        ml="10%"
+                        mt={5}
+                        colorScheme="teal"
+                        onPress={createSubChannel}
+                      >
+                        Create Channel
+                      </Button>
+                    </FormControl>
+                  </Actionsheet.Content>
+                </Actionsheet>
+              </KeyboardAvoidingView>
+          </Box>
+        </Box>
       )
     }
   }
@@ -244,7 +354,9 @@ const searchInSubCollection = (keyword: string, chatId: string) => {
       flex={1}
     >
       <LinearGradient
-        colors={['#4c669f', '#3b5998', '#192f6a']}
+        colors={['#BBD2C5', '#539576', '#292E49']}
+        start={{ x: 1, y: 1 }}
+        end={{ x: 0, y: 0 }}
         style={{
           position: 'absolute',
           left: 0,
@@ -257,7 +369,7 @@ const searchInSubCollection = (keyword: string, chatId: string) => {
       <Box>
         <HStack
           px={2}
-          py={2}
+          py={4}
           shadow={2}
           rounded="md"
           alignItems="center"
@@ -266,10 +378,11 @@ const searchInSubCollection = (keyword: string, chatId: string) => {
         >
           <IconButton
           ml="34px"
+          variant="ghost"
           _icon={{
             as: Entypo,
             name: "chevron-left",
-            size: 5,
+            size: 9,
             color: "subbase",
           }}
           onPress={() =>{ 
@@ -278,12 +391,23 @@ const searchInSubCollection = (keyword: string, chatId: string) => {
             }
           }
         />
-          <Heading size="md" color="white">
+          <Heading size="xl" color="white">
             ChatOptions
           </Heading>
+            <Icon as={Entypo} name="chat" size={5} color="white" ml="2" mr="2" />
         </HStack>
-
-      </Box> 
+          <Divider w="80%" alignSelf="center" />
+      </Box>
+      {/*body*/}
+      <Box
+          flex={1}
+          mt={2}
+          shadow={2}
+          p={2}
+          h="auto"
+        >
+        <ThrowChannel />
+      </Box>
     </View>
   )
 }
