@@ -18,9 +18,8 @@ const Search = (props:{keyword:string,chatId:string,prompt:string}) => {
   console.log('Data:',keyword,prompt,chatId)
   db.collection('Chatroom').doc(chatId).collection('messages').where('text','==',keyword).get().then((querySnapshot) => {
     setSearchResult(querySnapshot.docs.map(doc => doc.data()))
-  }).then(()=>{
-    console.log('searchResult',searchResult);
-  })
+  })  
+  return searchResult
 }
 export {Search}
 

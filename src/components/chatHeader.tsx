@@ -30,6 +30,7 @@ export default function ChatHeader(props:{chatId:string, navigation:any, route:a
   const {chatName} = props.route.params;
   //get Object value chatId in props 
   const chatId = props.chatId;
+  const subId = props.subId;
   const [room, setRoom] = useState('');
 
   useEffect(() => {
@@ -82,6 +83,7 @@ export default function ChatHeader(props:{chatId:string, navigation:any, route:a
             onPress={() => {
               navigate('ChatMenu', {
                 chatId: chatId,
+                subId: subId,
                 userId: userId,
                 name: name,
                 email: email,
