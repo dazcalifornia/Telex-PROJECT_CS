@@ -12,7 +12,6 @@ import 'react-native-gesture-handler';
 
 import HomeScreen from './screens/homepage';
 import LoginScreen from './screens/login';
-import MessageTest from './screens/messageTest';
 import Register from './screens/Register';
 import Chat from './screens/Chat';
 import UserMenu from './screens/userMenu';
@@ -46,7 +45,6 @@ const Loader = () => {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="MessageTest" component={MessageTest} />
 
 
         <Stack.Screen name="Chat" component={Chat} />

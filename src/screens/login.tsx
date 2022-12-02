@@ -90,7 +90,7 @@ const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
           my={5}
         />
         <Heading size="lg" color='primary.500'>
-          Welcome back! 
+          Welcome back! to TELEX 
         </Heading>
         <Text color='muted.400' textAlign='center'>
           Sign in to continue

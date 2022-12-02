@@ -30,6 +30,7 @@ const searchInSubCollection = (keyword:string,chatId:string) => {
   })
   console.log(messages);
 }
+//rework this shit
 
 
 

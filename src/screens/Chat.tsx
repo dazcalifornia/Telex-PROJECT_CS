@@ -26,9 +26,7 @@ import ChatHeader from '../components/chatHeader';
 import { Entypo } from '@expo/vector-icons';
 
 function Chat (props:{userId:string,name:string, email:string, photoURL:string,navigation:any}) {
-
-
-  console.log('BtmSheet',props.btmSheet)
+  console.log('mainchat props', props)
 
   const {userId, name, email, photoURL} = props.route.params;
 

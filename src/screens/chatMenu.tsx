@@ -42,6 +42,7 @@ import { Entypo } from '@expo/vector-icons';
 
 import {LinearGradient} from 'expo-linear-gradient';
 const ChatMenu = (props:any) => {
+  console.log('chatmenu props', props)
 
   const {dispatch,navigate,replace} = props.navigation;
 
@@ -289,7 +290,7 @@ const ChatMenu = (props:any) => {
             ml="10%"
             alignSelf="start"
             accessibilityLabel="Select a chat"
-            placeholder="SELECT YOUR CHAT CHANNEL"
+            placeholder="SELECT YOUR CHAT-CHANNEL"
             selectedValue={chatName}
             onValueChange={(itemValue) => changeChannel(itemValue)}
             _selectedItem={{
@@ -307,8 +308,10 @@ const ChatMenu = (props:any) => {
             mt={5}
             colorScheme="teal"
             onPress={onOpen}
+            endIcon={<Icon as={<Entypo name="plus" />} size="md" />}
+            rounded="full"
           >
-            Create Channel
+            Create Another Channel
           </Button>
           <ActSheet />
         </Box>
@@ -342,59 +345,6 @@ const ChatMenu = (props:any) => {
       )
     }
   }
-  const [friendMenu, setFriendMenu] = useState(false)
-  
-  const bloackUser = (uid:string) => {
-    console.log('block',uid)
-    db.collection('users').doc(auth.currentUser?.uid).collection('block').doc(uid).get().then((doc) => {
-      if(doc.exists){
-        alert('user already block')
-      }else{
-        db.collection('users').doc(auth.currentUser?.uid).collection('block').doc(uid).set({
-          blockId: uid,
-          createdAt: new Date(),
-        }).then(() => {
-          alert('user block')
-        }).catch((error) => {
-          console.log("error getting documents: ", error);
-        })
-      }
-    })
-  }
-
-  const unFriend = (uid:string) => {
-    console.log('unFriend',uid)
-    //convert uid to username
-    db.collection('users').where('uid','==',uid).get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        let target = doc.data().username;
-        console.log('target',target)
-        db.collection('users').doc(auth.currentUser?.uid).get().then((doc) => {
-          console.log(doc.data())
-          //get friend list
-          let friendList = doc.data()?.friends;
-          console.log('friend',friendList)
-          //remove target from friend friendList
-          let newFriendList = friendList.filter((item:any) => item !== target);
-          console.log('newFriend',newFriendList)
-          //if traget is in friendList Remove
-          if(friendList.includes(target)){
-            db.collection('users').doc(auth.currentUser?.uid).update({
-              friends: firebase.firestore.FieldValue.arrayRemove(target)
-              }).then(() => {
-                replace('Home')
-                alert('unfriend success')
-              }).catch((error) => {
-                console.log("error getting documents: ", error);
-              })
-          }else{
-            alert('unfriend failed')
-          }
-        })
-      })
-    })
-  }
-
 const [messages, setMessages] = useState([])
 const Search = (keyword: string, chatId: string) => {
   db.collection('Chatroom')

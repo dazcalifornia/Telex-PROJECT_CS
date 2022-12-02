@@ -13,7 +13,7 @@ import ChatHeader from '../components/chatHeader';
 function SubChatrooms (props:any) {
   const {subId, chatId, chatName } = props.route.params;
   const [message, setMessage] = useState([])  //loadmessage from firebase specific to user 
-
+  console.info('all props', props)
   useLayoutEffect(() => {
     console.log('channel',subId)
     const loadSubChat = db.collection('Chatroom').doc(chatId).collection('subChannel').doc(subId).collection('messages')
