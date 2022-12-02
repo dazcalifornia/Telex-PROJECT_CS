@@ -32,7 +32,7 @@ import {
   leaveGroup,
   AcceptInvite,
 } from "../components/eventHandle/Groupchat";
-
+import { Search } from "../components/eventHandle/search";
 export default  function DEV () {
   const [service, setService] = useState('');
   const [category, setCategory] = useState('');
@@ -47,7 +47,6 @@ export default  function DEV () {
   const [groupInvite, setGroupInvite] = useState([]);
   
   const [messageGroup, setMessageGroup] = useState([]);
-
 
   useEffect(() => {
       db.collection('group').where('groupOwner', '==', auth.currentUser?.uid).get().then((snapshot) => {
@@ -80,7 +79,7 @@ export default  function DEV () {
 
 
   const [chatroom, setChatroom] = useState([]);
-  const [keyword, setKeyword] = useState('');
+  // const [keyword, setKeyword] = useState('');
   const [messageroom, setMessageroom] = useState([]);
   
 
@@ -190,6 +189,8 @@ export default  function DEV () {
     })
   }
       
+  const [keyword, setKeyword] = useState('');
+  const [searchtype, setSearchtype] = useState('');
 
   return (
     <View style={{flex:1}} w="100%" h="100%">
@@ -208,6 +209,36 @@ export default  function DEV () {
         <Button onPress={() => findMessage(keyword)}>Search</Button>
         <Button onPress={() => findInsubChannel(keyword)}>Search in subChannel</Button>
         <Text>Message:</Text>
+
+
+
+        <Input 
+        placeholder="Search" 
+        value={keyword}
+        onChangeText={setKeyword}
+      />
+      <Select
+        selectedValue={searchtype}
+        minWidth={200}
+        accessibilityLabel="Select a search type"
+        placeholder="Select a search type"
+        onValueChange={(itemValue) => setSearchtype(itemValue)}
+        _selectedItem={{
+          bg: "cyan.600",
+          endIcon: <CheckIcon size={4} />,
+        }}
+      >
+        <Select.Item label="User" value="user" />
+        <Select.Item label="Channel" value="channel" />
+        <Select.Item label="Message" value="message" />
+      </Select>
+      <Button onPress={()=>{
+        Search({
+          keyword:keyword,
+          chatId:'CglEQ4Gd02Y4KtNUZX0Wr2YEKkz1_UOaAUGoFvkVM1SgPBl4DL0txOfc2',
+          prompt:searchtype,
+          });
+        }}>Search</Button>
         <ScrollView> 
           {/* show message and where message from  */}
           {messageroom.map((messageroom,index) => (

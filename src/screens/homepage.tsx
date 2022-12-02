@@ -14,7 +14,7 @@ const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
     >
       <LinearGradient
         // Background LinearGradient
-
+        // colors={['#9796f0','#FBC7D4']}
         colors={['#076585', '#ffffff']}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 1 }}

@@ -51,8 +51,8 @@ const Header = (props:{navigation:{navigate:any;};}) => {
   return (
     <>
     <StatusBar barStyle="light-content" />
-    <HStack 
-        roundedBottom="lg"
+    <HStack
+        roundedBottom="35px"
         safeAreaTop px="1" py="3"
         bg="base"
         justifyContent="space-between" 

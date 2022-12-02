@@ -81,6 +81,7 @@ export default function ChatHeader(props:{chatId:string, navigation:any, route:a
           }}
             onPress={() => {
               navigate('ChatMenu', {
+                chatId: chatId,
                 userId: userId,
                 name: name,
                 email: email,

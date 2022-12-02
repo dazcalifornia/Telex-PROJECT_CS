@@ -28,7 +28,8 @@ import {
   FormControl,
   Actionsheet,
   useDisclose,
-  TextField
+  TextField,
+  FlatList,
 } from 'native-base';
 
 import {auth, db} from '../../firebase';
@@ -46,14 +47,14 @@ const ChatMenu = (props:any) => {
 
   const {dispatch,navigate,replace} = props.navigation;
 
-  const {userId, name, email, photoURL} = props.route.params;
+  const {chatId, userId, name, email, photoURL} = props.route.params;
     
   const [channel, setChannel] = useState([]) //load subroom from firebase
 
   const [chatName, setChatName] = useState('') //load chat name from firebase specific to userId
   
   const member = [auth.currentUser?.uid, userId];
-  const chatId = member.sort().join('_');
+
   
   const [keyword, setKeyword] = useState('');
 
@@ -442,6 +443,37 @@ const searchInSubCollection = (keyword: string, chatId: string) => {
           h="auto"
         >
         <ThrowChannel />
+        <Button
+          w="75%"
+          my={5}
+          alignSelf="center"
+          variant="outline"
+          colorScheme="white"
+          onPress={() => {
+            console.log('go subchannel')
+            navigate('subChListed')
+            }
+          }
+          endIcon={<Icon as={<Entypo name="chevron-right" />} size="md" />}
+        >
+          More Options
+        </Button>
+         <Button
+          w="75%"
+          my={5}
+          alignSelf="center"
+          variant="outline"
+          colorScheme="white"
+          onPress={() => {
+            console.log('go search')
+            navigate('Search', {chatId: chatId})
+            }
+          }
+          endIcon={<Icon as={<Entypo name="magnifying-glass" />} size="md" />}
+        >
+          Search Message
+        </Button>
+
       </Box>
     </View>
   )

@@ -8,11 +8,6 @@ import { auth, db } from '../../../firebase';
 
 import firebase from 'firebase/compat/app';
 
-const Groupchat = () => {
-
-}
-
-
 const CreateGroup = (props:{name:string,category:string}) => {
   const {name,category} = props;
   
@@ -112,4 +107,4 @@ const AcceptInvite = (props:{groupId:string}) => {
 
 
 
-export {Groupchat,CreateGroup,addMember,removeMember,deleteGroup,leaveGroup,AcceptInvite}
+export {CreateGroup,addMember,removeMember,deleteGroup,leaveGroup,AcceptInvite}

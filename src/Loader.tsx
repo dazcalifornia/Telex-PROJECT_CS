@@ -20,6 +20,8 @@ import Logout from './screens/logout';
 import DEV from './screens/dev';
 
 import ChatMenu from './screens/chatMenu';
+import SubChListed from './screens/subChListed';
+import SearchScreen from './screens/search';
 
 import MenuDrawer from './components/drawer';
 
@@ -54,6 +56,8 @@ const Loader = () => {
           headerShown: false,
         }}>
           <Stack.Screen name="ChatMenu" component={ChatMenu} />
+            <Stack.Screen name="subChListed" component={SubChListed}  />
+            <Stack.Screen name="Search" component={SearchScreen} />
         </Stack.Group>
           
         <Stack.Screen name="SubChannel" component={SubChatrooms} />
