@@ -31,6 +31,9 @@ const searchInSubCollection = (keyword:string,chatId:string) => {
   console.log(messages);
 }
 //rework this shit
+//->get propmt to search in subchannel or main channel 
+//->get prompt to search in all subchannel or specific subchannel 
+//->get prompt to search in all chatroom or specific chatroom 
 
 
 
