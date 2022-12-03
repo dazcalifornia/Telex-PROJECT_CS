@@ -18,6 +18,7 @@ import {
     HStack,
     Avatar,
     Heading,
+    ScrollView,
 } from 'native-base'
 
 import {Search} from '../components/eventHandle/search';
@@ -107,7 +108,8 @@ const SearchScreen = (props:{chatId:string}) => {
       <Button onPress={()=> {
         searchMsg()
       }}>Search</Button>
-
+      
+      <ScrollView>
       {searchResult ? searchResult.map((item, index) => (
         <Box
           alignSelf="center"
@@ -129,6 +131,7 @@ const SearchScreen = (props:{chatId:string}) => {
               <HStack space={1}>
                 <Heading color="white" size="md" bold>{item.user.name}</Heading>
                 <Text
+                  key={index}
                   pl={1}
                   color="white" 
                   fontSize="md"   
@@ -155,7 +158,7 @@ const SearchScreen = (props:{chatId:string}) => {
         </Box>
       )) : null}
 
-      
+      </ScrollView>
     </View>
   )
 }

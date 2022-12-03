@@ -17,19 +17,21 @@ function SubChatrooms (props:any) {
   const [chatData, setChatData] = useState("")
   
 
-  const HandleSubChat = () => {
-    try {
-    
-    } catch (error) {
-      console.log(error)
-    }
-    console.log('2 subChannel', chatData)
-  }
-  useEffect(() => {
-    
-  }, [chatData])
+  // console.log('ChatNaME', chatName)
 
-  console.log('3 SubChatrooms props', subId)
+  // useEffect(() => {
+  //   db.collection('Chatroom').doc(chatId).collection('subChannel').doc(subId).get().then((doc) => {
+  //     console.log('subChannel', doc.data()?.chatName)
+  //     if (doc.exists) {
+  //       setChatData(doc.data()?.chatName)
+  //       console.log("1 Document data:", chatData);
+  //     } else {
+  //       // doc.data() will be undefined in this case
+  //       console.log("1 No such document!");
+  //     }
+  //   })
+    
+  // }, [chatData])
 
   useLayoutEffect(() => {
     console.log('channel',subId)
@@ -46,6 +48,7 @@ function SubChatrooms (props:any) {
   }, [])
 
   const onSend = useCallback((messages = []) => {
+    console.log('chatName:', chatData)
     setMessage(previousMessages => GiftedChat.append(previousMessages, messages))
     const {
       _id,
@@ -53,34 +56,20 @@ function SubChatrooms (props:any) {
       text, 
       user 
     } = messages[0]
-    if(chatData !== ''){
     db.collection('Chatroom').doc(chatId).collection('subChannel').doc(subId).collection('messages').add({
       _id: _id,
-      createdAt: createdAt,
-      address: chatData,
-      text: text,
-      user: user,
+      createdAt,
+      address: chatName,
+      text,
+      user,
+      delivered: false,
     })
-    }else{
-      alert('Please wait for the chat to load')
-    }
   }, [])
   return (
     <>
       <ChatHeader chatId={chatId} subId={subId} navigation={props.navigation} route={props.route}/>
       <Button
-        onPress={() =>
-          db.collection('Chatroom').doc(chatId).collection('subChannel').doc(subId).get().then((doc) => {
-      console.log('subChannel', doc.data()?.chatName)
-      if (doc.exists) {
-        setChatData(doc.data()?.chatName)
-        console.log("1 Document data:", chatData);
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("1 No such document!");
-      }
-    })
-        }
+        onPress={() => console.log('chatData', chatData)}
       >bruh</Button>
       <GiftedChat
         isTyping={true}
