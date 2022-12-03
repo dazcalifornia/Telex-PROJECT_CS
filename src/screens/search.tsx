@@ -21,7 +21,6 @@ import {
     ScrollView,
 } from 'native-base'
 
-import {Search} from '../components/eventHandle/search';
 
 import {auth,db} from '../../firebase';
 
@@ -74,6 +73,7 @@ const SearchScreen = (props:{chatId:string}) => {
     }else if (searchtype ==='user'){
       console.log('searching user')
     }else{
+      alert('Please select search type')
       console.log('searching all')
     }
   }

@@ -18,8 +18,9 @@ import {
 import { 
   GiftedChat,
   InputToolbar,
-  RenderMessageImage,
+  IMessage,
   Actions,
+  Bubble,
 } from 'react-native-gifted-chat';
 import ChatHeader from '../components/chatHeader';
 
@@ -41,9 +42,6 @@ function Chat (props:{
 
   const chatId = member.sort().join('_');
  
-
-
-
   useLayoutEffect(() => {
     const loadChat = db.collection('Chatroom').doc(chatId).collection('messages')
     .orderBy('createdAt', 'desc').onSnapshot(snapshot => (
@@ -88,21 +86,6 @@ function Chat (props:{
       })
     })
   }, [])
-
-  //render image in chat 
-  const renderCustomView = (props) => {
-    return (
-      <RenderMessageImage
-        {...props}
-        imageStyle={{
-          width: 150,
-          height: 150,
-          borderRadius: 13,
-          margin: 3,
-        }}
-      />
-    )
-  }
 
   const renderActions = (props) => {
     return (
@@ -170,7 +153,53 @@ function Chat (props:{
     )
   }
 
+  const renderBubble = (props:any) => {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: '#06C755',
+          },
+          left: {
+            backgroundColor: '#E5E5EA',
+          },
+        }}
+        textStyle={{
+          right: {
+            color: '#fff',
+          },
+        }}
+      />
+    )
+  }
+  
 
+  const messageHandler = (message:any) => {
+    console.log('message', message)
+    renderBubble(message)
+    let messageText = message.text;
+    if(messageText.includes('https://' || 'http://')){
+      renderImage(message.text)
+    }
+    return message
+  }
+
+
+  const renderImage = (props:any) => {
+    return (
+      <Image 
+        {...props}
+        style={{
+          width: 150,
+          height: 150,
+          borderRadius: 13,
+          margin: 3,
+        }}  
+      />
+    )
+  }
+  
   return (
     <View style={{flex:1, backgroundColor:'#1D1E24'}}>
       <ChatHeader chatId={chatId} navigation={props.navigation} route={props.route}/>
@@ -178,8 +207,9 @@ function Chat (props:{
       <GiftedChat
         isTyping={true}
         isAnimated={true}
-        messages={message}
+        messages={messageHandler(message)}
         showUserAvatar={true}
+        renderBubble={renderBubble}
         renderInputToolbar={props => customInputToolbar(props)}
         onSend={messages => onSend(messages)}
         user={{

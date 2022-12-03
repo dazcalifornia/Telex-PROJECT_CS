@@ -7,14 +7,20 @@ import {
 
 } from 'native-base';
 
-import { GiftedChat } from 'react-native-gifted-chat';
+import { 
+  GiftedChat,
+  InputToolbar,
+  RenderMessageImageProps,
+  Actions,
+} from 'react-native-gifted-chat';
+
 import ChatHeader from '../components/chatHeader';
 
 
 function SubChatrooms (props:any) {
   const {subId, chatId, chatName } = props.route.params;
   const [message, setMessage] = useState([])  //loadmessage from firebase specific to user 
-  const [chatData, setChatData] = useState("")
+  // const [chatData, setChatData] = useState("")
   
 
   // console.log('ChatNaME', chatName)
@@ -65,6 +71,91 @@ function SubChatrooms (props:any) {
       delivered: false,
     })
   }, [])
+
+
+
+  //render image in chat 
+  const renderCustomView = (props) => {
+    return (
+      <RenderMessageImage
+        {...props}
+        imageStyle={{
+          width: 150,
+          height: 150,
+          borderRadius: 13,
+          margin: 3,
+        }}
+      />
+    )
+  }
+
+  const renderActions = (props) => {
+    return (
+      <Actions
+        {...props}
+        containerStyle={{
+          width: 44,
+          height: 44,
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginLeft: 4,
+          marginBottom: 0,
+        }}
+        icon={() => (
+          <Icon
+            as={<Entypo name="plus" />}
+            size="sm"
+            color="muted.400"
+          />
+        )}
+        options={{
+          'Choose From Library': () => {
+            console.log('Choose From Library')
+          },
+          'Take Picture': () => {
+            console.log('Take Picture')
+          },
+          'Send Location': () => {
+            console.log('Send Location')
+          },
+
+          Cancel: () => {
+            console.log('Cancel')
+          },
+        }}
+        optionTintColor="#222B45"
+      />
+
+    )
+  }
+
+
+  const customInputToolbar = (props:any) => {
+    return(
+      
+      <InputToolbar
+        {...props}
+        renderActions={() => renderActions(props)}
+        //renderComposer={() => renderComposer(props)}
+        containerStyle={{
+          //make it blur and adjust it to center screen
+          //text white
+          backgroundColor: 'white',
+          borderRadius: 10,
+          borderWidth: 1,
+          borderColor: 'white',
+          marginHorizontal: 10,
+          borderTopWidth: 0,
+          borderBottomWidth: 0,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        />
+
+    )
+  }
+
+
   return (
     <>
       <ChatHeader chatId={chatId} subId={subId} navigation={props.navigation} route={props.route}/>
@@ -76,6 +167,7 @@ function SubChatrooms (props:any) {
         isAnimated={true}
         messages={message}
         showUserAvatar={true}
+        renderInputToolbar={props => customInputToolbar(props)}
         onSend={messages => onSend(messages)}
         user={{
           _id: auth?.currentUser?.uid,
