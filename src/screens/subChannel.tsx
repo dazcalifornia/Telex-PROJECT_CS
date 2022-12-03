@@ -14,30 +14,22 @@ import ChatHeader from '../components/chatHeader';
 function SubChatrooms (props:any) {
   const {subId, chatId, chatName } = props.route.params;
   const [message, setMessage] = useState([])  //loadmessage from firebase specific to user 
-  console.info('all props', props)
-  const [chatData, setChatData] = useState('')
+  const [chatData, setChatData] = useState("")
   
-  const handleChatData = async() => {
+
+  const HandleSubChat = () => {
+    try {
     
+    } catch (error) {
+      console.log(error)
+    }
+    console.log('2 subChannel', chatData)
   }
   useEffect(() => {
-    if(chatData === ''){
-    db.collection('Chatroom').doc(chatId).collection('subChannel').doc(subId).get().then((doc) => {
-      if (doc.exists) {
-        setChatData(doc.data()?.chatName)
-        console.log("Document data:", chatData);
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-      }
-    }).catch((error) => {
-      console.log("Error getting document:", error);
-    });
-    }
+    
   }, [chatData])
 
-  console.log('SubChatrooms props', subId)
-  console.log('ChatData', chatData)
+  console.log('3 SubChatrooms props', subId)
 
   useLayoutEffect(() => {
     console.log('channel',subId)
@@ -77,7 +69,18 @@ function SubChatrooms (props:any) {
     <>
       <ChatHeader chatId={chatId} subId={subId} navigation={props.navigation} route={props.route}/>
       <Button
-        onPress={() => console.log('ChatData', chatData)}
+        onPress={() =>
+          db.collection('Chatroom').doc(chatId).collection('subChannel').doc(subId).get().then((doc) => {
+      console.log('subChannel', doc.data()?.chatName)
+      if (doc.exists) {
+        setChatData(doc.data()?.chatName)
+        console.log("1 Document data:", chatData);
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("1 No such document!");
+      }
+    })
+        }
       >bruh</Button>
       <GiftedChat
         isTyping={true}
