@@ -178,10 +178,7 @@ function Chat (props:{
   const messageHandler = (message:any) => {
     console.log('message', message)
     renderBubble(message)
-    let messageText = message.text;
-    if(messageText.includes('https://' || 'http://')){
-      renderImage(message.text)
-    }
+
     return message
   }
 
