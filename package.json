@@ -39,7 +39,10 @@
     "react-native-svg": "12.3.0",
     "react-native-web": "~0.18.7",
     "styled-components": "^5.3.6",
-    "styled-system": "^5.1.5"
+    "styled-system": "^5.1.5",
+    "react-native-view-shot": "3.3.0",
+    "expo-media-library": "~14.2.0",
+    "expo-permissions": "~13.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",

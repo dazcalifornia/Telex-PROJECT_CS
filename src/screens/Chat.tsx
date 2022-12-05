@@ -9,18 +9,24 @@ import React, {
 import {auth, db} from '../../firebase';
 
 import {
+  pickImage
+} from '../components/eventHandle/mediaUtils';
+
+
+import {
   View,
   IconButton,
   Icon,
   Text,
+  KeyboardAvoidingView,
 } from 'native-base';
 
 import { 
   GiftedChat,
   InputToolbar,
-  IMessage,
   Actions,
   Bubble,
+  MessageImage,
 } from 'react-native-gifted-chat';
 import ChatHeader from '../components/chatHeader';
 
@@ -29,7 +35,6 @@ import { Entypo } from '@expo/vector-icons';
 function Chat (props:{
   route: any;userId:string,name:string, email:string, photoURL:string,navigation:any
 }) {
-  console.log('mainchat props', props)
 
   const {userId, name, email, photoURL} = props.route.params;
 
@@ -38,6 +43,10 @@ function Chat (props:{
   const [channel, setChannel] = useState([]) //load subroom from firebase
 
   const [chatName, setChatName] = useState('') //load chat name from firebase specific to userId
+
+  const [image, setImage] = useState(null)
+
+
   const member = [auth.currentUser?.uid, userId];
 
   const chatId = member.sort().join('_');
@@ -49,6 +58,7 @@ function Chat (props:{
         _id: doc.data()._id,    
         createdAt: doc.data().createdAt.toDate(),
         text: doc.data().text,
+        image: doc.data().image,
         user: doc.data().user,
       })))
     ))
@@ -109,7 +119,10 @@ function Chat (props:{
         options={{
           'Choose From Library': () => {
             console.log('Choose From Library')
-          },
+            //pickimage and set result to image 
+            pickImage(setImage)
+            console.log('image', image)
+            },
           'Take Picture': () => {
             console.log('Take Picture')
           },
@@ -133,6 +146,7 @@ function Chat (props:{
       
       <InputToolbar
         {...props}
+        renderMessageImage={renderMessageImage}
         renderActions={() => renderActions(props)}
         //renderComposer={() => renderComposer(props)}
         containerStyle={{
@@ -148,10 +162,41 @@ function Chat (props:{
           justifyContent: 'center',
           alignItems: 'center',
         }}
-        />
+        >
+        {image ? (
+          <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+            <Image source={{uri: image}} style={{width: 100, height: 100}} />
+            <IconButton
+              icon={<Icon as={<Entypo name="cross" />} size="sm" color="muted.400" />}
+              onPress={() => setImage(null)}
+              variant="unstyled"
+              size="sm"
+              style={{backgroundColor: 'white', borderRadius: 10}}
+            />
+          </View>
+        ) : null}
+
+      </InputToolbar>
 
     )
   }
+
+  const renderMessageImage = (props:any) => {
+    return (
+      <MessageImage
+        {...props}
+        imageStyle={{
+          left: {
+            borderRadius: 13,
+          },
+          right: {
+            borderRadius: 13,
+          },
+        }}
+      />
+    )
+  }
+
 
   const renderBubble = (props:any) => {
     return (
@@ -173,30 +218,6 @@ function Chat (props:{
       />
     )
   }
-  
-
-  const messageHandler = (message:any) => {
-    console.log('message', message)
-    renderBubble(message)
-
-    return message
-  }
-
-
-  const renderImage = (props:any) => {
-    return (
-      <Image 
-        {...props}
-        style={{
-          width: 150,
-          height: 150,
-          borderRadius: 13,
-          margin: 3,
-        }}  
-      />
-    )
-  }
-  
   return (
     <View style={{flex:1, backgroundColor:'#1D1E24'}}>
       <ChatHeader chatId={chatId} navigation={props.navigation} route={props.route}/>
@@ -204,9 +225,10 @@ function Chat (props:{
       <GiftedChat
         isTyping={true}
         isAnimated={true}
-        messages={messageHandler(message)}
-        showUserAvatar={true}
+        messages={message}
         renderBubble={renderBubble}
+        showUserAvatar={true}
+        alwaysShowSend={true}
         renderInputToolbar={props => customInputToolbar(props)}
         onSend={messages => onSend(messages)}
         user={{
@@ -216,8 +238,6 @@ function Chat (props:{
         }
       }
       />
-
-
     </View>
   );
 }
