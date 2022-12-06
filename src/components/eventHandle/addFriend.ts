@@ -6,6 +6,7 @@ import { auth, db } from '../../../firebase';
 const addFriends = (props: { friendID: string }) => {
   //recieve friendID from props
   const { friendID } = props;
+  console.log('friendID', friendID);
   console.log(friendID);
   if (friendID == '') {
     alert('Please enter friend ID')

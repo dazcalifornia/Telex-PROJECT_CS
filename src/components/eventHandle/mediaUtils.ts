@@ -3,7 +3,8 @@ import React,{
   useEffect,
 } from 'react';
 
-
+import firebase from 'firebase/compat/app';
+import {storage} from '../../../firebase';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 
@@ -12,6 +13,27 @@ const getPermission = async () => {
   if (status !== 'granted') {
     alert('Sorry, we need camera roll permissions to make this work!');
   }
+};
+const uploadImage = async (uri:string) => {
+    const imageUri  = uri;
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        resolve(xhr.response);
+      }
+      xhr.onerror = function(e) {
+        reject(new TypeError('Network request failed'));
+      }
+      xhr.responseType = 'blob';
+      xhr.open('GET', imageUri, true);
+      xhr.send(null);
+    });
+    const ref = storage.ref().child(`chatImage/${new Date().getTime()}`);
+    const snapshot = await ref.put(blob);
+    blob.close();
+    const url = await snapshot.ref.getDownloadURL();
+    console.log('url',url)
+    return url;
 };
 
 export const pickImage = async () => {
@@ -23,6 +45,8 @@ export const pickImage = async () => {
   });
 
   if (!result.cancelled) {
-    return console.log(result.uri);
+    const url = await uploadImage(result.uri);
+    return url;
   }
 }
+

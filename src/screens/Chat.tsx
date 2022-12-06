@@ -44,7 +44,7 @@ function Chat (props:{
 
   const [chatName, setChatName] = useState('') //load chat name from firebase specific to userId
 
-  const [image, setImage] = useState(null)
+  const [userImage, setUserImage] = useState(null)
 
 
   const member = [auth.currentUser?.uid, userId];
@@ -59,6 +59,7 @@ function Chat (props:{
         createdAt: doc.data().createdAt.toDate(),
         text: doc.data().text,
         image: doc.data().image,
+        video: doc.data().video,
         user: doc.data().user,
       })))
     ))
@@ -71,7 +72,7 @@ function Chat (props:{
     const {
       _id,
       createdAt, 
-      text, 
+      text,
       user 
     } = messages[0]
     const docId = Math.random().toString(36).substring(7);
@@ -120,9 +121,8 @@ function Chat (props:{
           'Choose From Library': () => {
             console.log('Choose From Library')
             //pickimage and set result to image 
-            pickImage(setImage)
-            console.log('image', image)
-            },
+            pickImage().then((result) => setUserImage(result))
+          },
           'Take Picture': () => {
             console.log('Take Picture')
           },
@@ -146,7 +146,7 @@ function Chat (props:{
       
       <InputToolbar
         {...props}
-        renderMessageImage={renderMessageImage}
+        renderMessageImage={() => { renderMessageImage(props) }}
         renderActions={() => renderActions(props)}
         //renderComposer={() => renderComposer(props)}
         containerStyle={{
@@ -163,18 +163,28 @@ function Chat (props:{
           alignItems: 'center',
         }}
         >
-        {image ? (
-          <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-            <Image source={{uri: image}} style={{width: 100, height: 100}} />
+        {userImage && (
+          <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center',}}>
+            <MessageImage
+              imageStyle={{
+                width: 200,
+                height: 200,
+                borderRadius: 10,
+                margin: 5,
+              }}
+              currentMessage={{
+                image: userImage,
+              }}
+            />
             <IconButton
               icon={<Icon as={<Entypo name="cross" />} size="sm" color="muted.400" />}
-              onPress={() => setImage(null)}
+              onPress={() => setUserImage(null)}
               variant="unstyled"
               size="sm"
-              style={{backgroundColor: 'white', borderRadius: 10}}
+              style={{position: 'absolute', right: 0, top: 0, zIndex: 1}}
             />
           </View>
-        ) : null}
+        )}
 
       </InputToolbar>
 
@@ -183,17 +193,15 @@ function Chat (props:{
 
   const renderMessageImage = (props:any) => {
     return (
-      <MessageImage
-        {...props}
-        imageStyle={{
-          left: {
-            borderRadius: 13,
-          },
-          right: {
-            borderRadius: 13,
-          },
-        }}
-      />
+     <MessageImage
+      {...props}
+      imageStyle={{
+        width: 200,
+        height: 200,
+        borderRadius: 10,
+        margin: 5,
+      }}
+    />
     )
   }
 
@@ -224,7 +232,7 @@ function Chat (props:{
      
       <GiftedChat
         isTyping={true}
-        isAnimated={true}
+        isAnimated
         messages={message}
         renderBubble={renderBubble}
         showUserAvatar={true}
