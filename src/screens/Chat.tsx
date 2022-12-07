@@ -27,6 +27,8 @@ import {
   Actions,
   Bubble,
   MessageImage,
+  IMessage,
+  Composer,
 } from 'react-native-gifted-chat';
 import ChatHeader from '../components/chatHeader';
 
@@ -38,7 +40,8 @@ function Chat (props:{
 
   const {userId, name, email, photoURL} = props.route.params;
 
-  const [message, setMessage] = useState([])  //loadmessage from firebase specific to user 
+  const [messages, setMessages] = useState<IMessage[]>([]);
+
 
   const [channel, setChannel] = useState([]) //load subroom from firebase
 
@@ -54,11 +57,13 @@ function Chat (props:{
   useLayoutEffect(() => {
     const loadChat = db.collection('Chatroom').doc(chatId).collection('messages')
     .orderBy('createdAt', 'desc').onSnapshot(snapshot => (
-        setMessage(snapshot.docs.map(doc => ({
+        setMessages(snapshot.docs.map(doc => ({
         _id: doc.data()._id,    
         createdAt: doc.data().createdAt.toDate(),
         text: doc.data().text,
         image: doc.data().image,
+        sent: doc.data().sent,
+        received: doc.data().received,
         video: doc.data().video,
         user: doc.data().user,
       })))
@@ -68,7 +73,7 @@ function Chat (props:{
   }, [])
 
   const onSend = useCallback((messages = []) => {
-    setMessage(previousMessages => GiftedChat.append(previousMessages, messages))
+    setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
     const {
       _id,
       createdAt, 
@@ -90,10 +95,11 @@ function Chat (props:{
       db.collection('Chatroom').doc(chatId).collection('messages').add({
         _id: _id,
         createdAt,
-        address: chatId,
+        address: "Regular",
         text,
         user,
-        delivered: false,
+        sent: true,
+        received: false,
       })
     })
   }, [])
@@ -140,6 +146,22 @@ function Chat (props:{
     )
   }
 
+
+  const renderComposer = (props) => {
+    return (
+      <Composer
+        {...props}
+        textInputStyle={{
+          backgroundColor: '#ECECEC',
+          borderRadius: 20,
+          padding: 8,
+          color: '#222B45',
+        }}
+        placeholder="Type a message"
+        placeholderTextColor="#9CA3AF"
+      />
+    )
+  }
 
   const customInputToolbar = (props:any) => {
     return(
@@ -227,17 +249,23 @@ function Chat (props:{
       />
     )
   }
+  const isTyping  = () => {
+    console.log('typing')
+  }
   return (
     <View style={{flex:1, backgroundColor:'#1D1E24'}}>
       <ChatHeader chatId={chatId} navigation={props.navigation} route={props.route}/>
      
-      <GiftedChat
-        isTyping={true}
+      <GiftedChat 
+        alwaysShowSend
+        scrollToBottom
+        sendOnEnter
+        isTyping
         isAnimated
-        messages={message}
+        messages={messages}
+        renderComposer={props => renderComposer(props)}
         renderBubble={renderBubble}
         showUserAvatar={true}
-        alwaysShowSend={true}
         renderInputToolbar={props => customInputToolbar(props)}
         onSend={messages => onSend(messages)}
         user={{
