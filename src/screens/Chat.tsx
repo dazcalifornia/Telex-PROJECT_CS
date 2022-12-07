@@ -146,6 +146,7 @@ function Chat (props:{
       
       <InputToolbar
         {...props}
+        MessageImage={() => {renderMessageImage(props)}}
         renderMessageImage={() => { renderMessageImage(props) }}
         renderActions={() => renderActions(props)}
         //renderComposer={() => renderComposer(props)}
@@ -163,8 +164,8 @@ function Chat (props:{
           alignItems: 'center',
         }}
         >
-        {userImage && (
-          <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center',}}>
+        {userImage &&  (
+          <>
             <MessageImage
               imageStyle={{
                 width: 200,
@@ -183,7 +184,7 @@ function Chat (props:{
               size="sm"
               style={{position: 'absolute', right: 0, top: 0, zIndex: 1}}
             />
-          </View>
+            </>
         )}
 
       </InputToolbar>
