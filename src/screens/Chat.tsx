@@ -174,6 +174,10 @@ function Chat (props:{
   const customInputToolbar = (props:any) => {
     return(
       <>
+      <KeyboardAvoidingView
+        style={{flex: 1}}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+       >
       <MessageImage
         imageStyle={{
           width: 200,
@@ -248,6 +252,7 @@ function Chat (props:{
             />
           </View>
         )}
+        </KeyboardAvoidingView>
         </>
     )
   }
