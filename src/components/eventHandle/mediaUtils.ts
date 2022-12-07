@@ -47,6 +47,7 @@ export const pickImage = async () => {
   if (!result.cancelled) {
     const url = result.uri;
     //const url = await uploadImage(result.uri);
+    console.log('url',url)
     return url;
   }
 }

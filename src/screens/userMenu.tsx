@@ -292,7 +292,12 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
           }}
         />
         <Flex>
-          <HStack space={2} alignItems="flex-start" justifyContent="space-between">
+          <HStack 
+            space={4} 
+            alignItems="center"
+            justifyContent="space-between"
+            overflow="hidden"
+            >
             <Heading
               style={{
                 color: 'white',
@@ -337,12 +342,23 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
                 </Modal.Footer>
               </Modal.Content>
             </Modal>
-
+            <Icon
+              as={Entypo}
+              name="chevron-down"
+              size="sm"
+              style={{
+                color: 'mute.400',
+                marginTop: 20,
+                marginRight: 20
+              }}
+              onPress={() => goBack()}
+            />
             <Button
               leftIcon={<Icon as={Entypo} name="log-out" size="sm" />}
               style={{ marginTop: 20, marginRight: 20 }}
-              colorScheme="secondary"
+              colorScheme="indigo"
               onPress={() => setModalVisible(true)}
+              borderRadius={10}
             >
               Sign Out
             </Button>

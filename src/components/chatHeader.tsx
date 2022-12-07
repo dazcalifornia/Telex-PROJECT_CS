@@ -15,6 +15,7 @@ import {
   VStack,
   IconButton,
   Image,
+  Avatar,
 } from 'native-base';
 import { Entypo } from '@expo/vector-icons';
 
@@ -66,9 +67,19 @@ export default function ChatHeader(props:{chatId:string, navigation:any, route:a
           }
         />
         <HStack space={4} alignItems="center">
-        <Image source={{
+          <Avatar
+            source={{
+              uri: photoURL
+            }}
+            alt="Profile image"
+            ml="24px"
+            size={54}
+            rounded="full"
+          />
+          
+        {/* <Image source={{
           uri: photoURL
-        }} alt="Profile image" ml="24px" size={54} rounded="full" />
+        }} alt="Profile image" ml="24px" size={54} rounded="full" /> */}
             <Heading color="white" fontSize="2xl" fontWeight="bold">{name}</Heading>
           </HStack>
             

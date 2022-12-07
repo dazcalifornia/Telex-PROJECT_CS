@@ -19,6 +19,7 @@ import {
   Icon,
   Text,
   KeyboardAvoidingView,
+  HStack,
 } from 'native-base';
 
 import { 
@@ -29,6 +30,7 @@ import {
   MessageImage,
   IMessage,
   Composer,
+  Send,
 } from 'react-native-gifted-chat';
 import ChatHeader from '../components/chatHeader';
 
@@ -78,6 +80,7 @@ function Chat (props:{
       _id,
       createdAt, 
       text,
+      image,
       user 
     } = messages[0]
     const docId = Math.random().toString(36).substring(7);
@@ -96,8 +99,9 @@ function Chat (props:{
         _id: _id,
         createdAt,
         address: "Regular",
-        text,
-        user,
+        text: text,
+        user: user,
+        image:"",
         sent: true,
         received: false,
       })
@@ -108,6 +112,7 @@ function Chat (props:{
     return (
       <Actions
         {...props}
+
         containerStyle={{
           width: 44,
           height: 44,
@@ -149,28 +154,43 @@ function Chat (props:{
 
   const renderComposer = (props) => {
     return (
-      <Composer
-        {...props}
-        textInputStyle={{
-          backgroundColor: '#ECECEC',
-          borderRadius: 20,
-          padding: 8,
-          color: '#222B45',
-        }}
-        placeholder="Type a message"
-        placeholderTextColor="#9CA3AF"
+
+     <Composer 
+          {...props}
+          textInputStyle={{
+            color: '#222B45',
+            fontSize: 16,
+            fontWeight: '500',
+            marginLeft: 4,
+            marginBottom: 0,
+
+          }}
+          placeholder="Type a message"
+          placeholderTextColor="#9CA3AF"
       />
     )
   }
 
   const customInputToolbar = (props:any) => {
     return(
-      
+      <>
+      <MessageImage
+        imageStyle={{
+          width: 200,
+          height: 200,
+          borderRadius: 10,
+          margin: 5,
+        }}
+        imageProps={{
+          resizeMode: 'cover',
+        }}
+        currentMessage={{
+          image: userImage,
+        }}
+      />
+
       <InputToolbar
         {...props}
-        MessageImage={() => {renderMessageImage(props)}}
-        renderMessageImage={() => { renderMessageImage(props) }}
-        renderActions={() => renderActions(props)}
         //renderComposer={() => renderComposer(props)}
         containerStyle={{
           //make it blur and adjust it to center screen
@@ -185,15 +205,81 @@ function Chat (props:{
           justifyContent: 'center',
           alignItems: 'center',
         }}
-        >
+       / >
+
         {userImage &&  (
-          <>
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 41,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              inset: 0,
+              marginHorizontal: -10,
+              marginBottom: 10,
+              zIndex: 1,
+              paddingLeft: 10,
+            }}
+          >
             <MessageImage
               imageStyle={{
                 width: 200,
                 height: 200,
                 borderRadius: 10,
                 margin: 5,
+              }}
+              imageProps={{
+                resizeMode: 'cover',
+              }}
+
+              currentMessage={{
+                image: userImage,
+              }}
+            />
+            <IconButton
+              icon={<Icon as={<Entypo name="cross" />} size="sm" color="muted.400" />}
+              onPress={() => setUserImage(null)}
+              variant="solid"
+              size="sm"
+              bg="white"
+              borderRadius="full"
+              style={{position: 'absolute', right: 0, top: 0, zIndex: 1}}
+            />
+          </View>
+        )}
+        </>
+    )
+  }
+
+  const renderMessageImage = (props:any) => {
+    return (
+      <>
+      {userImage &&  (
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 41,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              inset: 0,
+              marginHorizontal: -10,
+              marginBottom: 10,
+              right: 0,
+            }}
+          >
+            <MessageImage
+              imageStyle={{
+                width: 200,
+                height: 200,
+                borderRadius: 10,
+                margin: 5,
+              }}
+              imageProps={{
+                resizeMode: 'cover',
+                
+
               }}
               currentMessage={{
                 image: userImage,
@@ -202,29 +288,15 @@ function Chat (props:{
             <IconButton
               icon={<Icon as={<Entypo name="cross" />} size="sm" color="muted.400" />}
               onPress={() => setUserImage(null)}
-              variant="unstyled"
+              variant="solid"
               size="sm"
+              bg="white"
+              borderRadius="full"
               style={{position: 'absolute', right: 0, top: 0, zIndex: 1}}
             />
-            </>
+          </View>
         )}
-
-      </InputToolbar>
-
-    )
-  }
-
-  const renderMessageImage = (props:any) => {
-    return (
-     <MessageImage
-      {...props}
-      imageStyle={{
-        width: 200,
-        height: 200,
-        borderRadius: 10,
-        margin: 5,
-      }}
-    />
+      </>
     )
   }
 
@@ -235,35 +307,123 @@ function Chat (props:{
         {...props}
         wrapperStyle={{
           right: {
-            backgroundColor: '#06C755',
+            backgroundColor: '#2DD7A6',
           },
           left: {
-            backgroundColor: '#E5E5EA',
+            backgroundColor: '#ECECEC',
           },
         }}
         textStyle={{
           right: {
-            color: '#fff',
+            color: '#171717',
+          },
+          left: {
+            color: '#171717',
+          },
+        }}
+        timeTextStyle={{
+          right: {
+            color: '#171727',
+          },
+          left: {
+            color: '#171727',
           },
         }}
       />
     )
   }
-  const isTyping  = () => {
-    console.log('typing')
+
+  const renderSend = (props:any) => {
+    return (
+      <Send
+        {...props}
+        disabled={!props.text}
+        containerStyle={{
+          width: 44,
+          height: 44,
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginRight: 4,
+          marginBottom: 0,
+        }}
+      >
+        <Icon
+          as={<Entypo name="paper-plane" />}
+          size="sm"
+          color="subalt"
+        />
+      </Send>
+    )
   }
+
+  //if userImage is not null, then render the image
+  //if userImage is null, then render the input toolbar
+
+  const onSendMsg = useCallback((messages = []) => {
+    setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
+    const {text, image} = messages[0]
+    if (text) {
+      db.collection('chats').doc(chatId).collection('messages').add({
+        text,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        user: {
+          _id: auth?.currentUser?.uid,
+          name: auth?.currentUser?.displayName,
+          avatar: auth?.currentUser?.photoURL,
+        },
+      })
+    } else if (image) {
+      const uploadTask = storage.ref(`images/${image}`).putFile(image)
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100,
+          )
+          setProgress(progress)
+        },
+        (error) => {
+          console.log(error)
+        },
+        () => {
+          storage
+            .ref('images')
+            .child(image)
+            .getDownloadURL()
+            .then((url) => {
+              db.collection('chats').doc(chatId).collection('messages').add({
+                image: url,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                user: {
+                  _id: auth?.currentUser?.uid,
+                  name: auth?.currentUser?.displayName,
+                  avatar: auth?.currentUser?.photoURL,
+                },
+              })
+            })
+        },
+      )
+    }
+  }, [])
+
+
+
   return (
     <View style={{flex:1, backgroundColor:'#1D1E24'}}>
       <ChatHeader chatId={chatId} navigation={props.navigation} route={props.route}/>
      
       <GiftedChat 
+        MessageImage={() => {renderMessageImage(props)}}
+        renderActions={() => renderActions(props)}
         alwaysShowSend
         scrollToBottom
         sendOnEnter
         isTyping
         isAnimated
         messages={messages}
+
         renderComposer={props => renderComposer(props)}
+        renderSend={props => renderSend(props)}
         renderBubble={renderBubble}
         showUserAvatar={true}
         renderInputToolbar={props => customInputToolbar(props)}

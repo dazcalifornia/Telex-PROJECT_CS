@@ -8,7 +8,8 @@ import {
   Image,
   Modal,
   Button,
-  VStack
+  VStack,
+  Avatar
 } from 'native-base'
 import React,{
   useState,
@@ -57,15 +58,24 @@ const Header = (props:{navigation:{navigate:any;};}) => {
         bg="base"
         justifyContent="space-between" 
         alignItems="center" w="100%" h="165px">
-        <Image source={{
+        <Avatar
+          source={{
+            uri: auth?.currentUser?.photoURL
+          }}
+          alt="Profile image"
+          ml="24px"
+          size={65}
+          rounded="full"
+        />
+        {/* <Image source={{
           uri: auth?.currentUser?.photoURL
-        }} alt="Profile image" ml="24px" size={65} rounded="full" />
+        }} alt="Profile image" ml="24px" size={65} rounded="full" /> */}
         {/*/<HStack alignItems="center" ml="24px">
           //<Text color="white" fontSize="2xl" fontWeight="bold">Logo</Text>
         </HStack>/*/}
         <VStack alignItems="center" >
           <Text isTruncated maxW={200} color="white" fontSize="2xl" fontWeight="bold">Hello "{name}"</Text>
-          <Text isTruncated color="subalt" maxW={230} fontSize="md" fontWeight="bold">{userStatus}</Text>
+          <Text isTruncated color="altbase" maxW={230} fontSize="md" fontWeight="bold">{userStatus}</Text>
         </VStack>
         <IconButton
           mr="24px"
