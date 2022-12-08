@@ -3,13 +3,23 @@ import * as React from 'react';
 
 import Loader from './src/Loader';
 import AppContainer from './src/Container';
-import MenuDrawer from './src/components/drawer';
+import {
+  useFonts,
+  Prompt_400Regular
+} from '@expo-google-fonts/prompt';
 function App() {
-  return (
-    <AppContainer>
-      <Loader />
-    </AppContainer>
-  );
+  let [fontsLoaded] = useFonts({
+    Prompt_400Regular,
+  });
+  if (!fontsLoaded) {
+    return null;
+  } else {
+    return (
+      <AppContainer>
+        <Loader />
+      </AppContainer>
+    );
+  }
 }
 
 export default App;
