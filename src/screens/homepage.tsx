@@ -4,10 +4,12 @@ import Header from '../components/header'
 import ChatList from '../components/chatList'
 import {
   View,
+  Text,
   } from 'native-base';
 import {LinearGradient} from 'expo-linear-gradient';
 
 const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
+
   return(
     <View
       flex={1}
@@ -28,6 +30,7 @@ const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
 
       />
       <Header {...props}/>
+      <Text style={{color:'white', fontSize: 20, fontFamily: 'Prompt_400Regular', textAlign: 'center', marginTop: 20}}>Chats</Text>
       <ChatList {...props}/>
 
    </View>
