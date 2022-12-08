@@ -175,6 +175,28 @@ function Chat (props:{
   const customInputToolbar = (props:any) => {
     return(
       <>
+<<<<<<< HEAD
+=======
+      <KeyboardAvoidingView
+        style={{flex: 1}}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+       >
+      <MessageImage
+        imageStyle={{
+          width: 200,
+          height: 200,
+          borderRadius: 10,
+          margin: 5,
+        }}
+        imageProps={{
+          resizeMode: 'cover',
+        }}
+        currentMessage={{
+          image: userImage,
+        }}
+      />
+
+>>>>>>> c1781476eacd85ee8595ad683559394d7fef11b0
       <InputToolbar
         {...props}
         //renderComposer={() => renderComposer(props)}
@@ -191,8 +213,56 @@ function Chat (props:{
           justifyContent: 'center',
           alignItems: 'center',
         }}
+<<<<<<< HEAD
        />
       </>
+=======
+       / >
+
+        {userImage &&  (
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 41,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              inset: 0,
+              marginHorizontal: -10,
+              marginBottom: 10,
+              zIndex: 1,
+              paddingLeft: 10,
+            }}
+          >
+            <MessageImage
+              imageStyle={{
+                width: 200,
+                height: 200,
+                borderRadius: 10,
+                margin: 5,
+              }}
+              imageProps={{
+                resizeMode: 'cover',
+              }}
+
+              currentMessage={{
+                image: userImage,
+              }}
+            />
+            <IconButton
+              icon={<Icon as={<Entypo name="cross" />} size="sm" color="muted.400" />}
+              onPress={() => setUserImage(null)}
+              variant="solid"
+              size="sm"
+              bg="white"
+              borderRadius="full"
+              style={{position: 'absolute', right: 0, top: 0, zIndex: 1}}
+            />
+          </View>
+        )}
+        </KeyboardAvoidingView>
+        </>
+>>>>>>> c1781476eacd85ee8595ad683559394d7fef11b0
     )
   }
 
