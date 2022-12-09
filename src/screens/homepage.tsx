@@ -29,8 +29,9 @@ const HomeScreen = (props: { navigation: { navigate: any; }; }) => {
         }}
 
       />
-      <Header {...props}/>
-      <Text style={{color:'white', fontSize: 20, fontFamily: 'Prompt_400Regular', textAlign: 'center', marginTop: 20}}>Chats</Text>
+      <Header 
+        {...props}
+      />
       <ChatList {...props}/>
 
    </View>

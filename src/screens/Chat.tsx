@@ -174,26 +174,6 @@ function Chat (props:{
 
   const customInputToolbar = (props:any) => {
     return(
-      <>
-      <KeyboardAvoidingView
-        style={{flex: 1}}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-       >
-      <MessageImage
-        imageStyle={{
-          width: 200,
-          height: 200,
-          borderRadius: 10,
-          margin: 5,
-        }}
-        imageProps={{
-          resizeMode: 'cover',
-        }}
-        currentMessage={{
-          image: userImage,
-        }}
-      />
-
       <InputToolbar
         {...props}
         //renderComposer={() => renderComposer(props)}
@@ -211,55 +191,22 @@ function Chat (props:{
           alignItems: 'center',
         }}
        />
-
-
-        {userImage &&  (
-          <View
-            style={{
-              position: 'absolute',
-              bottom: 41,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              inset: 0,
-              marginHorizontal: -10,
-              marginBottom: 10,
-              zIndex: 1,
-              paddingLeft: 10,
-            }}
-          >
-            <MessageImage
-              imageStyle={{
-                width: 200,
-                height: 200,
-                borderRadius: 10,
-                margin: 5,
-              }}
-              imageProps={{
-                resizeMode: 'cover',
-              }}
-
-              currentMessage={{
-                image: userImage,
-              }}
-            />
-            <IconButton
-              icon={<Icon as={<Entypo name="cross" />} size="sm" color="muted.400" />}
-              onPress={() => setUserImage(null)}
-              variant="solid"
-              size="sm"
-              bg="white"
-              borderRadius="full"
-              style={{position: 'absolute', right: 0, top: 0, zIndex: 1}}
-            />
-          </View>
-        )}
-        </KeyboardAvoidingView>
-        </>
-    )
+      )
   }
 
   const renderMessageImage = (props:any) => {
+    if(props.currentMessage.image){
+      return(
+        <MessageImage
+          {...props}
+          imageStyle={{
+            borderRadius: 16,
+            width: 200,
+            height: 200,
+          }}
+        />
+        )
+    }
     return (
       <>
       {userImage &&  (
@@ -418,12 +365,10 @@ function Chat (props:{
   return (
     <View style={{flex:1, backgroundColor:'#1D1E24'}}>
       <ChatHeader chatId={chatId} navigation={props.navigation} route={props.route}/>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-       > 
+      
       <GiftedChat 
-        MessageImage={() => {renderMessageImage(props)}}
+        fontFamily="Prompt"
+        fontWeight="500"
         renderActions={() => renderActions(props)}
         alwaysShowSend
         scrollToBottom
@@ -431,7 +376,6 @@ function Chat (props:{
         isTyping
         isAnimated
         messages={messages}
-
         renderComposer={props => renderComposer(props)}
         renderSend={props => renderSend(props)}
         renderBubble={renderBubble}
@@ -445,7 +389,6 @@ function Chat (props:{
         }
       }
       />
-      </KeyboardAvoidingView>
       
     </View>
   );

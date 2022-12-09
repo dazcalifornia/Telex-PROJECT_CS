@@ -79,8 +79,6 @@ const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
       style={{ flex: 1 }}
     >
       <Center flex={1} px={2} w="90%" mx='auto'>
-      
-
         <Image 
           source={require('../../assets/login-mesh.png')}
           alt="Alternate Text"
@@ -89,7 +87,9 @@ const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
           borderRadius={100}
           my={5}
         />
-        <Heading size="lg" color='primary.500'>
+        <Heading size="lg" color='primary.500'
+          fontFamily={'Prompt_700Bold'}
+        >
           Welcome back! to TELEX 
         </Heading>
         <Text color='muted.400' textAlign='center'>
@@ -98,7 +98,7 @@ const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
         <VStack space={2} mt={5}>
           <FormControl>
             <FormControl.Label
-              _text={{ color: 'muted.700', fontSize: 'sm', fontWeight: 600 }}
+              _text={{ color: 'muted.700', fontSize: 'sm', fontFamily: 'Prompt_400Regular' }}
             >
               Email ID
             </FormControl.Label>
@@ -117,7 +117,7 @@ const LoginScreen = (props: { navigation: { navigate: any; }; }) => {
           </FormControl>
           <FormControl mt={2}>
             <FormControl.Label
-              _text={{ color: 'muted.700', fontSize: 'sm', fontWeight: 600 }}
+              _text={{ color: 'muted.700', fontSize: 'sm', fontFamily: 'Prompt_400Regular' }}
             >
               Password
             </FormControl.Label>

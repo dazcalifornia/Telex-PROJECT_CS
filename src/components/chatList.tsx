@@ -216,8 +216,8 @@ function ChatList(props: { navigation: { navigate: any; }; }) {
                       alignItems="center"
                       w="auto"
                     >
-                        <Text fontSize="lg" fontWeight="bold"> {userobj.name} </Text>
-                        <Text isTruncated maxW={200} fontSize="sm" > {userobj.status} </Text>
+                        <Text fontSize="lg" fontFamily="Prompt_700Bold" > {userobj.name} </Text>
+                        <Text isTruncated maxW={200} fontWeight="500"> {userobj.status} </Text>
                       </VStack>
                       <IconButton
                         borderRadius="15px"

@@ -10,9 +10,26 @@ import {
 //config Theme
 //
 const config = extendTheme({
-
     useSystemColor: false,
     initialColorMode: "light",
+    fontConfig: {
+      Prompt: {
+        400: {
+          normal: "Prompt_400Regular",
+        },
+        500: {
+          normal: "Prompt_500Medium",
+        },
+        700: {
+          normal: "Prompt_700Bold",
+        },
+      },
+    },
+    fonts: {
+      heading: "Prompt",
+      body: "Prompt",
+      mono: "Prompt",
+    },
 
 })
 
