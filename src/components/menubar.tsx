@@ -47,6 +47,7 @@ export default function Menubar(props: { navigation: { navigate: any; }; }) {
                 fontSize: 'sm',
                 fontWeight: 'bold',
               }}
+              rightIcon={<Entypo name="code" size={18} color="black" />}
               onPress={() => props.navigation.navigate('DEV')}
             >
              開発者向けオプション

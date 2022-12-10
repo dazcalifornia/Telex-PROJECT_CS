@@ -11,15 +11,12 @@ import {auth, db} from '../../firebase';
 import {
   pickImage
 } from '../components/eventHandle/mediaUtils';
-import {
-    Platform,
-  } from 'react-native';
+
 import {
   View,
   IconButton,
   Icon,
   Text,
-  KeyboardAvoidingView,
   HStack,
 } from 'native-base';
 
@@ -76,6 +73,39 @@ function Chat (props:{
   }, [])
 
   const onSend = useCallback((messages = []) => {
+    //checf currentMessage is image or text
+    //if image, upload to firebase storage
+    //if text, upload to firebase firestore
+    setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
+    const {text, image, video} = messages[0];
+    if (text) {
+      db.collection('Chatroom').doc(chatId).collection('messages').add({
+        _id: messages[0]._id,
+        createdAt: messages[0].createdAt,
+        text: messages[0].text,
+        user: messages[0].user,
+        sent: true,
+        received: true,
+      })
+    } else if (image) {
+      db.collection('Chatroom').doc(chatId).collection('messages').add({
+        _id: messages[0]._id,
+        createdAt: messages[0].createdAt,
+        image: messages[0].image,
+        user: messages[0].user,
+        sent: true,
+        received: true,
+      })
+    } else if (video) {
+      db.collection('Chatroom').doc(chatId).collection('messages').add({
+        _id: messages[0]._id,
+        createdAt: messages[0].createdAt,
+        video: messages[0].video,
+        user: messages[0].user,
+        sent: true,
+        received: true,
+      })
+    }
     setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
     const {
       _id,
@@ -107,6 +137,7 @@ function Chat (props:{
         received: false,
       })
     })
+
   }, [])
 
   const renderActions = (props) => {
