@@ -6,7 +6,7 @@ import React, {
   useRef,
   useMemo,
 } from 'react';
-import {auth, db} from '../../firebase';
+import {auth, db,storage} from '../../firebase';
 
 import {
   pickImage
@@ -87,7 +87,7 @@ function Chat (props:{
         sent: true,
         received: true,
       })
-    } else if (image) {
+    } else if (userImage) {
       db.collection('Chatroom').doc(chatId).collection('messages').add({
         _id: messages[0]._id,
         createdAt: messages[0].createdAt,
@@ -106,7 +106,8 @@ function Chat (props:{
         received: true,
       })
     }
-    setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
+
+{/*    setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
     const {
       _id,
       createdAt, 
@@ -114,6 +115,8 @@ function Chat (props:{
       image,
       user 
     } = messages[0]
+    */}
+
     const docId = Math.random().toString(36).substring(7);
     db.collection('Chatroom').doc(chatId).set({
       chatId: chatId,
@@ -205,6 +208,46 @@ function Chat (props:{
 
   const customInputToolbar = (props:any) => {
     return(
+      <>
+       {userImage &&  (
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 41,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginHorizontal: 10,
+              marginBottom: 10,
+              right: 0,
+            }}
+          >
+            <MessageImage
+              imageStyle={{
+                width: 200,
+                height: 200,
+                borderRadius: 10,
+                margin: 5,
+              }}
+              imageProps={{
+                resizeMode: 'cover',
+              }}
+              currentMessage={{
+                image: userImage,
+              }}
+            />
+            <IconButton
+              icon={<Icon as={<Entypo name="cross" />} size="sm" color="muted.400" />}
+              onPress={() => setUserImage(null)}
+              variant="solid"
+              size="sm"
+              bg="white"
+              borderRadius="full"
+              style={{position: 'absolute', right: 0, top: 0, zIndex: 1}}
+            />
+          </View>
+        )}
+
       <InputToolbar
         {...props}
         //renderComposer={() => renderComposer(props)}
@@ -222,70 +265,9 @@ function Chat (props:{
           alignItems: 'center',
         }}
        />
+       </>
       )
   }
-
-  const renderMessageImage = (props:any) => {
-    if(props.currentMessage.image){
-      return(
-        <MessageImage
-          {...props}
-          imageStyle={{
-            borderRadius: 16,
-            width: 200,
-            height: 200,
-          }}
-        />
-        )
-    }
-    return (
-      <>
-      {userImage &&  (
-          <View
-            style={{
-              position: 'absolute',
-              bottom: 41,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              inset: 0,
-              marginHorizontal: -10,
-              marginBottom: 10,
-              right: 0,
-            }}
-          >
-            <MessageImage
-              imageStyle={{
-                width: 200,
-                height: 200,
-                borderRadius: 10,
-                margin: 5,
-              }}
-              imageProps={{
-                resizeMode: 'cover',
-                
-
-              }}
-              currentMessage={{
-                image: userImage,
-              }}
-            />
-            <IconButton
-              icon={<Icon as={<Entypo name="cross" />} size="sm" color="muted.400" />}
-              onPress={() => setUserImage(null)}
-              variant="solid"
-              size="sm"
-              bg="white"
-              borderRadius="full"
-              style={{position: 'absolute', right: 0, top: 0, zIndex: 1}}
-            />
-          </View>
-        )}
-      </>
-    )
-  }
-
-
   const renderBubble = (props:any) => {
     return (
       <Bubble
@@ -390,8 +372,12 @@ function Chat (props:{
       )
     }
   }, [])
-
-
+  
+  const longpressHandle = (props:any) =>{
+    if(props.onLongPress){
+        props.on
+      }
+  }
 
   return (
     <View style={{flex:1, backgroundColor:'#1D1E24'}}>
@@ -407,6 +393,7 @@ function Chat (props:{
         isTyping
         isAnimated
         messages={messages}
+        image={userImage}
         renderComposer={props => renderComposer(props)}
         renderSend={props => renderSend(props)}
         renderBubble={renderBubble}

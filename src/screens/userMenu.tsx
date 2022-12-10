@@ -143,6 +143,8 @@ function UserMenu(props:{navigation:{navigate:any;};}) {
       }).then(function() {
         // Update successful.
           // Update photoURL in database
+          // show upload status
+
         db.collection('users').doc(auth.currentUser?.uid).update({
           imageURL: source,
         }).then(()=>{

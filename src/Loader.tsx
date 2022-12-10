@@ -23,7 +23,6 @@ import ChatMenu from './screens/chatMenu';
 import SubChListed from './screens/subChListed';
 import SearchScreen from './screens/search';
 
-import MenuDrawer from './components/drawer';
 
 const Stack = createStackNavigator();
 
@@ -50,7 +49,6 @@ const Loader = () => {
 
 
         <Stack.Screen name="Chat" component={Chat} />
-        <Stack.Screen name="MenuDrawer" component={MenuDrawer} options={{headerShown:false}}/>
         <Stack.Group screenOptions={{
           presentation: 'modal',
           headerShown: false,
