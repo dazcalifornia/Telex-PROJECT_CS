@@ -77,47 +77,43 @@ function Chat (props:{
     //if image, upload to firebase storage
     //if text, upload to firebase firestore
     setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
-    const {text, image, video} = messages[0];
-    if (text) {
-      db.collection('Chatroom').doc(chatId).collection('messages').add({
-        _id: messages[0]._id,
-        createdAt: messages[0].createdAt,
-        text: messages[0].text,
-        user: messages[0].user,
-        sent: true,
-        received: true,
-      })
-    } else if (userImage) {
-      db.collection('Chatroom').doc(chatId).collection('messages').add({
-        _id: messages[0]._id,
-        createdAt: messages[0].createdAt,
-        image: messages[0].image,
-        user: messages[0].user,
-        sent: true,
-        received: true,
-      })
-    } else if (video) {
-      db.collection('Chatroom').doc(chatId).collection('messages').add({
-        _id: messages[0]._id,
-        createdAt: messages[0].createdAt,
-        video: messages[0].video,
-        user: messages[0].user,
-        sent: true,
-        received: true,
-      })
-    }
-
-{/*    setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
     const {
       _id,
       createdAt, 
       text,
-      image,
       user 
     } = messages[0]
-    */}
 
-    const docId = Math.random().toString(36).substring(7);
+    if(userImage){
+      //upload image to firebase storage
+      const uploadTask = storage.ref(`chat/${chatId}/${userImage.name}`).put(userImage);
+      uploadTask.on(
+        "state_changed",
+        snapshot => {},
+        error => {
+          console.log(error);
+        },
+        () => {
+          storage
+            .ref(`chat/${chatId}`)
+            .child(userImage.name)
+            .getDownloadURL()
+            .then(url => {
+              db.collection('Chatroom').doc(chatId).collection('messages').add({
+                _id,
+                createdAt,
+                text,
+                image: url,
+                sent: true,
+                received: true,
+                user,
+              })
+            })
+        }
+      )
+    }else{
+      
+
     db.collection('Chatroom').doc(chatId).set({
       chatId: chatId,
       member: member,
@@ -140,6 +136,7 @@ function Chat (props:{
         received: false,
       })
     })
+    }
 
   }, [])
 
@@ -189,8 +186,8 @@ function Chat (props:{
 
   const renderComposer = (props) => {
     return (
-
-     <Composer 
+    
+         <Composer 
           {...props}
           textInputStyle={{
             color: '#222B45',
@@ -232,7 +229,9 @@ function Chat (props:{
               imageProps={{
                 resizeMode: 'cover',
               }}
-              currentMessage={{
+              currentMessage ={{
+                //this is the image url 
+                //define type of images
                 image: userImage,
               }}
             />
@@ -257,6 +256,7 @@ function Chat (props:{
           backgroundColor: 'white',
           borderRadius: 10,
           borderWidth: 1,
+          color:"subalt",
           borderColor: 'white',
           marginHorizontal: 10,
           borderTopWidth: 0,
@@ -304,6 +304,7 @@ function Chat (props:{
     return (
       <Send
         {...props}
+        
         disabled={!props.text}
         containerStyle={{
           width: 44,
@@ -317,7 +318,7 @@ function Chat (props:{
         <Icon
           as={<Entypo name="paper-plane" />}
           size="sm"
-          color="subalt"
+          color={props.text ? '#2DD7A6' : '#9CA3AF'}
         />
       </Send>
     )
