@@ -9,7 +9,8 @@ import React, {
 import {auth, db,storage} from '../../firebase';
 
 import {
-  pickImage
+  pickImage,
+  uploadImage,
 } from '../components/eventHandle/mediaUtils';
 
 import {
@@ -85,35 +86,30 @@ function Chat (props:{
     } = messages[0]
 
     if(userImage){
-      //upload image to firebase storage
-      const uploadTask = storage.ref(`chat/${chatId}/${userImage.name}`).put(userImage);
-      uploadTask.on(
-        "state_changed",
-        snapshot => {},
-        error => {
-          console.log(error);
-        },
-        () => {
-          storage
-            .ref(`chat/${chatId}`)
-            .child(userImage.name)
-            .getDownloadURL()
-            .then(url => {
-              db.collection('Chatroom').doc(chatId).collection('messages').add({
-                _id,
-                createdAt,
-                text,
-                image: url,
-                sent: true,
-                received: true,
-                user,
-              })
-            })
+      db.collection('Chatroom').doc(chatId).set({
+        chatId: chatId,
+        member: member,
+        chatName: chatName,
+        recentMessage: {
+          _id: _id,
+          createdAt: createdAt,
+          text: text,
+          image: userImage,
+          user: user,
         }
-      )
+      }).then(() => {
+        db.collection('Chatroom').doc(chatId).collection('messages').add({
+          _id: _id,
+          createdAt: createdAt,
+          text: text,
+          image: userImage,
+          address: "Regular",
+          user: user,
+            sent: true,
+            received: true,
+        })
+      })
     }else{
-      
-
     db.collection('Chatroom').doc(chatId).set({
       chatId: chatId,
       member: member,
@@ -155,7 +151,7 @@ function Chat (props:{
         }}
         icon={() => (
           <Icon
-            as={<Entypo name="plus" />}
+            as={<Entypo name="camera" />}
             size="sm"
             color="muted.400"
           />
@@ -166,12 +162,7 @@ function Chat (props:{
             //pickimage and set result to image 
             pickImage().then((result) => setUserImage(result))
           },
-          'Take Picture': () => {
-            console.log('Take Picture')
-          },
-          'Send Location': () => {
-            console.log('Send Location')
-          },
+          
 
           Cancel: () => {
             console.log('Cancel')
@@ -229,11 +220,10 @@ function Chat (props:{
               imageProps={{
                 resizeMode: 'cover',
               }}
-              currentMessage ={{
-                //this is the image url 
-                //define type of images
-                image: userImage,
-              }}
+              currentMessage ={
+                //add userImage to currentMessage
+                {messages, image: userImage}
+              }
             />
             <IconButton
               icon={<Icon as={<Entypo name="cross" />} size="sm" color="muted.400" />}
@@ -318,73 +308,19 @@ function Chat (props:{
         <Icon
           as={<Entypo name="paper-plane" />}
           size="sm"
-          color={props.text ? '#2DD7A6' : '#9CA3AF'}
+          color={props.text||userImage ? '#2DD7A6' : '#9CA3AF'}
+
         />
       </Send>
     )
-  }
-
-  //if userImage is not null, then render the image
-  //if userImage is null, then render the input toolbar
-
-  const onSendMsg = useCallback((messages = []) => {
-    setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
-    const {text, image} = messages[0]
-    if (text) {
-      db.collection('chats').doc(chatId).collection('messages').add({
-        text,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        user: {
-          _id: auth?.currentUser?.uid,
-          name: auth?.currentUser?.displayName,
-          avatar: auth?.currentUser?.photoURL,
-        },
-      })
-    } else if (image) {
-      const uploadTask = storage.ref(`images/${image}`).putFile(image)
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100,
-          )
-          setProgress(progress)
-        },
-        (error) => {
-          console.log(error)
-        },
-        () => {
-          storage
-            .ref('images')
-            .child(image)
-            .getDownloadURL()
-            .then((url) => {
-              db.collection('chats').doc(chatId).collection('messages').add({
-                image: url,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                user: {
-                  _id: auth?.currentUser?.uid,
-                  name: auth?.currentUser?.displayName,
-                  avatar: auth?.currentUser?.photoURL,
-                },
-              })
-            })
-        },
-      )
-    }
-  }, [])
-  
-  const longpressHandle = (props:any) =>{
-    if(props.onLongPress){
-        props.on
-      }
   }
 
   return (
     <View style={{flex:1, backgroundColor:'#1D1E24'}}>
       <ChatHeader chatId={chatId} navigation={props.navigation} route={props.route}/>
       
-      <GiftedChat 
+      <GiftedChat
+        onLongPress={props => longpressHandle(props)}
         fontFamily="Prompt"
         fontWeight="500"
         renderActions={() => renderActions(props)}

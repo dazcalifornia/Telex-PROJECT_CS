@@ -14,7 +14,7 @@ const getPermission = async () => {
     alert('Sorry, we need camera roll permissions to make this work!');
   }
 };
-const uploadImage = async (uri:string) => {
+export const uploadImage = async (uri:string, chatId:string) => {
     const imageUri  = uri;
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -45,8 +45,8 @@ export const pickImage = async () => {
   });
 
   if (!result.cancelled) {
-    const url = result.uri;
-    //const url = await uploadImage(result.uri);
+    //const url = result.uri;
+    const url = await uploadImage(result.uri);
     console.log('url',url)
     return url;
   }

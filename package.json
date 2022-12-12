@@ -46,7 +46,8 @@
     "react-native-view-shot": "3.3.0",
     "react-native-web": "~0.18.7",
     "styled-components": "^5.3.6",
-    "styled-system": "^5.1.5"
+    "styled-system": "^5.1.5",
+    "expo-updates": "~0.14.7"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",
