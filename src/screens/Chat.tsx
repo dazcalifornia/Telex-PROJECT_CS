@@ -73,6 +73,35 @@ function Chat (props:{
 
   }, [])
 
+{/*
+const onSend = useCallback((messages = []) => {
+  // Check if the current message is an image or text
+  const message = messages[0];
+  if (message.image) {
+    // If the message is an image, upload it to Firebase Storage
+    uploadImage(message.image).then((imageUrl) => {
+      // Update the message object with the URL of the uploaded image
+      const updatedMessage = {
+        ...message,
+        image: imageUrl,
+      };
+
+      // Add the updated message to the list of messages
+      setMessages((prevMessages) => GiftedChat.append(prevMessages, updatedMessage));
+
+      // Save the message to Firebase Firestore
+      saveMessage(updatedMessage);
+    });
+  } else {
+    // If the message is text, save it to Firebase Firestore
+    saveMessage(message);
+
+    // Add the message to the list of messages
+    setMessages((prevMessages) => GiftedChat.append(prevMessages, message));
+  }
+}, []);
+    */}
+
   const onSend = useCallback((messages = []) => {
     //checf currentMessage is image or text
     //if image, upload to firebase storage
@@ -82,35 +111,11 @@ function Chat (props:{
       _id,
       createdAt, 
       text,
-      user 
+      user, 
     } = messages[0]
-
-    if(userImage){
-      db.collection('Chatroom').doc(chatId).set({
-        chatId: chatId,
-        member: member,
-        chatName: chatName,
-        recentMessage: {
-          _id: _id,
-          createdAt: createdAt,
-          text: text,
-          image: userImage,
-          user: user,
-        }
-      }).then(() => {
-        db.collection('Chatroom').doc(chatId).collection('messages').add({
-          _id: _id,
-          createdAt: createdAt,
-          text: text,
-          image: userImage,
-          address: "Regular",
-          user: user,
-            sent: true,
-            received: true,
-        })
-      })
-    }else{
-    db.collection('Chatroom').doc(chatId).set({
+   
+    setMessages(previousMessages => GiftedChat.append(previousMessages, messageImage))
+     db.collection('Chatroom').doc(chatId).set({
       chatId: chatId,
       member: member,
       chatName: "Regular",
@@ -164,7 +169,8 @@ function Chat (props:{
           },
           
 
-          Cancel: () => {
+          Cancel: () => { console.log("image", userImage)
+
             console.log('Cancel')
           },
         }}
@@ -295,7 +301,7 @@ function Chat (props:{
       <Send
         {...props}
         
-        disabled={!props.text}
+        disabled={!props.text || }
         containerStyle={{
           width: 44,
           height: 44,
@@ -314,6 +320,7 @@ function Chat (props:{
       </Send>
     )
   }
+       console.log("image", userImage)
 
   return (
     <View style={{flex:1, backgroundColor:'#1D1E24'}}>
