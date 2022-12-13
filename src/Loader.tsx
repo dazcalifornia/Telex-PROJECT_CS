@@ -23,6 +23,8 @@ import ChatMenu from './screens/chatMenu';
 import SubChListed from './screens/subChListed';
 import SearchScreen from './screens/search';
 
+import Stations from './screens/stations';
+
 
 const Stack = createStackNavigator();
 
@@ -57,6 +59,8 @@ const Loader = () => {
             <Stack.Screen name="subChListed" component={SubChListed}  />
             <Stack.Screen name="Search" component={SearchScreen} />
         </Stack.Group>
+
+        <Stack.Screen name="stations" component={Stations} />
           
         <Stack.Screen name="SubChannel" component={SubChatrooms} />
 

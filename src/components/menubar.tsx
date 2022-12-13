@@ -17,6 +17,7 @@ import addFriends from './eventHandle/addFriend';
 import Bruh from './eventHandle/bruh';
 
 export default function Menubar(props: { navigation: { navigate: any; }; }) {
+  const {navigate} = props.navigation
   const [friendID,setFriendID] = useState('');
 
   const [friendModal, setFriendModal] = React.useState(false);
@@ -79,7 +80,7 @@ export default function Menubar(props: { navigation: { navigate: any; }; }) {
                 fontSize: 'sm',
                 fontWeight: 'bold',
               }}
-              onPress={() => alert('thois for global group')}
+              onPress={() => navigate('stations')}
             >
             Select Stations
             </Button>

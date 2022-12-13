@@ -32,6 +32,7 @@ const Stations = () => {
     }
   }, []);
 }
+export default Stations;
 
 
 
