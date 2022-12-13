@@ -111,10 +111,10 @@ const onSend = useCallback((messages = []) => {
       _id,
       createdAt, 
       text,
+      image,
       user, 
     } = messages[0]
    
-    setMessages(previousMessages => GiftedChat.append(previousMessages, messageImage))
      db.collection('Chatroom').doc(chatId).set({
       chatId: chatId,
       member: member,
@@ -132,15 +132,12 @@ const onSend = useCallback((messages = []) => {
         address: "Regular",
         text: text,
         user: user,
-        image:"",
         sent: true,
         received: false,
       })
     })
-    }
 
   }, [])
-
   const renderActions = (props) => {
     return (
       <Actions
@@ -162,10 +159,31 @@ const onSend = useCallback((messages = []) => {
           />
         )}
         options={{
-          'Choose From Library': () => {
+          'Choose From Library': () => {{
+          }
             console.log('Choose From Library')
             //pickimage and set result to image 
             pickImage().then((result) => setUserImage(result))
+            .catch((error) => console.log(error))
+            .finally(() => {
+              const updatedMessage = {
+                ...messages,
+                image: userImage,
+              };
+              setMessages((prevMessages) => GiftedChat.append(prevMessages, updatedMessage))
+            })
+            // //add userImage to message
+            // uploadImage(userImage).then((imageUrl) => {
+            //   // Update the message object with the URL of the uploaded image
+            //   const updatedMessage = {
+            //     ...message,
+            //     image: imageUrl,
+            //   };
+            //   // Add the updated message to the list of messages
+            //   setMessages((prevMessages) => GiftedChat.append(prevMessages, updatedMessage));
+            //   // Save the message to Firebase Firestore
+            //   onSend(updatedMessage);
+            // });
           },
           
 
@@ -226,10 +244,7 @@ const onSend = useCallback((messages = []) => {
               imageProps={{
                 resizeMode: 'cover',
               }}
-              currentMessage ={
-                //add userImage to currentMessage
-                {messages, image: userImage}
-              }
+          
             />
             <IconButton
               icon={<Icon as={<Entypo name="cross" />} size="sm" color="muted.400" />}
@@ -301,7 +316,7 @@ const onSend = useCallback((messages = []) => {
       <Send
         {...props}
         
-        disabled={!props.text || }
+        disabled={!props.text}
         containerStyle={{
           width: 44,
           height: 44,
@@ -336,8 +351,8 @@ const onSend = useCallback((messages = []) => {
         sendOnEnter
         isTyping
         isAnimated
+
         messages={messages}
-        image={userImage}
         renderComposer={props => renderComposer(props)}
         renderSend={props => renderSend(props)}
         renderBubble={renderBubble}

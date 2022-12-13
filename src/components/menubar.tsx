@@ -74,7 +74,7 @@ export default function Menubar(props: { navigation: { navigate: any; }; }) {
               px = "10px"
               borderRadius="15px"
               variant="solid"
-              bg="#979797"
+              bg="#06C755"
               _text={{
                 color: 'black',
                 fontSize: 'sm',

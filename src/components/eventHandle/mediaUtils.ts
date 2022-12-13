@@ -28,7 +28,7 @@ export const uploadImage = async (uri:string, chatId:string) => {
       xhr.open('GET', imageUri, true);
       xhr.send(null);
     });
-    const ref = storage.ref().child(`chatImage/${new Date().getTime()}`);
+    const ref = storage.ref().child(`chat/${chatId}/${new Date().getTime()}`);
     const snapshot = await ref.put(blob);
     blob.close();
     const url = await snapshot.ref.getDownloadURL();
