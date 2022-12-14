@@ -21,14 +21,15 @@ import DEV from './screens/dev';
 
 import ChatMenu from './screens/chatMenu';
 import SubChListed from './screens/subChListed';
+import GroupChat from './screens/groupchat';
 import SearchScreen from './screens/search';
+
 
 import Stations from './screens/stations';
 
 
 const Stack = createStackNavigator();
 
-import {auth} from '../../firebase';
 
 const Loader = () => {
     
@@ -63,7 +64,7 @@ const Loader = () => {
         <Stack.Screen name="stations" component={Stations} />
           
         <Stack.Screen name="SubChannel" component={SubChatrooms} />
-
+        <Stack.Screen name="GroupChat" component={GroupChat} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="logout" component={Logout} />
         <Stack.Screen name="DEV" component={DEV} />

@@ -14,7 +14,7 @@ const getPermission = async () => {
     alert('Sorry, we need camera roll permissions to make this work!');
   }
 };
-export const uploadImage = async (uri:string, chatId:string) => {
+export const uploadImage = async (uri:string) => {
     const imageUri  = uri;
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -28,7 +28,7 @@ export const uploadImage = async (uri:string, chatId:string) => {
       xhr.open('GET', imageUri, true);
       xhr.send(null);
     });
-    const ref = storage.ref().child(`chat/${chatId}/${new Date().getTime()}`);
+    const ref = storage.ref().child(`chat/${new Date().getTime()}`);
     const snapshot = await ref.put(blob);
     blob.close();
     const url = await snapshot.ref.getDownloadURL();
@@ -45,7 +45,7 @@ export const pickImage = async () => {
   });
 
   if (!result.cancelled) {
-    // const url = result.uri;
+    //const url = result.uri;
     const url = await uploadImage(result.uri);
     console.log('url',url)
     return url;

@@ -1,27 +1,22 @@
-import React, { 
+import React ,{
   useState,
-  useEffect, 
-  useLayoutEffect,
+  useEffect,
   useCallback,
-  useRef,
-  useMemo,
-} from 'react';
-import {auth, db,storage} from '../../firebase';
-
-import {
-  pickImage,
-  uploadImage,
-} from '../components/eventHandle/mediaUtils';
-
+  useLayoutEffect
+}from 'react';
 import {
   View,
-  IconButton,
-  Icon,
   Text,
-  HStack,
   Button,
-} from 'native-base';
-
+  Box,
+  HStack,
+  IconButton,
+  Modal,
+  VStack,
+  Input,
+  Icon,
+}from 'native-base';
+import {auth,db} from '../../firebase';
 import { 
   GiftedChat,
   InputToolbar,
@@ -32,32 +27,31 @@ import {
   Composer,
   Send,
 } from 'react-native-gifted-chat';
-import ChatHeader from '../components/chatHeader';
-
 import { Entypo } from '@expo/vector-icons';
+import {
+  CreateGroup,
+  addMember,
+  removeMember,
+  deleteGroup,
+  leaveGroup,
+  AcceptInvite,} from '../components/eventHandle/Groupchat'
+  import {
+    pickImage,
+    uploadImage,
+  } from '../components/eventHandle/mediaUtils';
+const GroupChat = (props:any) => {
+  console.log('props',props);
+  const userId = auth.currentUser?.uid;
+  const {navigate,goBack} = props.navigation;
+  const {groupId,groupName,groupOwner} = props.route.params;
 
-function Chat (props:{
-  route: any;userId:string,name:string, email:string, photoURL:string,navigation:any
-}) {
-
-  const {userId, name, email, photoURL} = props.route.params;
-
+  const [menuModal, setMenuModal] = useState(false);
+  const [adduser, setAdduser] = useState('');
+  const [userImage, setUserImage] = useState(null)
   const [messages, setMessages] = useState<IMessage[]>([]);
 
-
-  const [channel, setChannel] = useState([]) //load subroom from firebase
-
-  const [chatName, setChatName] = useState('') //load chat name from firebase specific to userId
-
-  const [userImage, setUserImage] = useState(null)
-
-
-  const member = [auth.currentUser?.uid, userId];
-
-  const chatId = member.sort().join('_');
- 
   useLayoutEffect(() => {
-    const loadChat = db.collection('Chatroom').doc(chatId).collection('messages')
+    const loadChat = db.collection('group').doc(groupId).collection('messages')
     .orderBy('createdAt', 'desc').onSnapshot(snapshot => (
         setMessages(snapshot.docs.map(doc => ({
         _id: doc.data()._id,    
@@ -74,35 +68,6 @@ function Chat (props:{
 
   }, [])
 
-{/*
-const onSend = useCallback((messages = []) => {
-  // Check if the current message is an image or text
-  const message = messages[0];
-  if (message.image) {
-    // If the message is an image, upload it to Firebase Storage
-    uploadImage(message.image).then((imageUrl) => {
-      // Update the message object with the URL of the uploaded image
-      const updatedMessage = {
-        ...message,
-        image: imageUrl,
-      };
-
-      // Add the updated message to the list of messages
-      setMessages((prevMessages) => GiftedChat.append(prevMessages, updatedMessage));
-
-      // Save the message to Firebase Firestore
-      saveMessage(updatedMessage);
-    });
-  } else {
-    // If the message is text, save it to Firebase Firestore
-    saveMessage(message);
-
-    // Add the message to the list of messages
-    setMessages((prevMessages) => GiftedChat.append(prevMessages, message));
-  }
-}, []);
-    */}
-
   const onSend = useCallback((messages = []) => {
     //checf currentMessage is image or text
     //if image, upload to firebase storage
@@ -114,19 +79,8 @@ const onSend = useCallback((messages = []) => {
       text,
       user, 
     } = messages[0]
-   
-     db.collection('Chatroom').doc(chatId).set({
-      chatId: chatId,
-      member: member,
-      chatName: "Regular",
-      recentMessage: {
-        _id: _id,
-        createdAt: createdAt,
-        text: text,
-        user: user
-      }
-    }).then(() => {
-      db.collection('Chatroom').doc(chatId).collection('messages').doc(_id).set({
+  
+      db.collection('group').doc(groupId).collection('messages').doc(_id).set({
         _id: _id,
         createdAt,
         address: "Regular",
@@ -139,7 +93,6 @@ const onSend = useCallback((messages = []) => {
         console.log('message sent')
         setUserImage(null)
       })
-    })
 
   }, [])
   const renderActions = (props) => {
@@ -357,8 +310,79 @@ const onSend = useCallback((messages = []) => {
   }
 
   return (
-    <View style={{flex:1, backgroundColor:'#1D1E24'}}>
-      <ChatHeader chatId={chatId} navigation={props.navigation} route={props.route}/>
+    <View style={{flex:1}}>
+      <Box
+        bg='#1D1E24'
+        flex={1}
+        px={2}
+        py={2}
+        safeAreaTop
+      >
+      <HStack
+        justifyContent='space-between'
+        alignItems='center'
+        bg='#1D1E24'
+        px={2}
+        py={2}
+      >
+        <IconButton
+          icon={<Entypo name="chevron-left" size={24} color="white" />}
+          onPress={() => goBack()}
+        />
+        <Text style={{color:'white', fontSize:20, fontWeight:'bold', margin:10}}>You're in {groupName}</Text>
+        <IconButton
+          icon={<Entypo name="dots-three-vertical" size={24} color="white" />}
+          onPress={() => setMenuModal(true)}
+        />
+        <Modal isOpen={menuModal} onClose={() => setMenuModal(false)}>
+          <Modal.Content maxWidth="400px">
+            <Modal.CloseButton />
+            <Modal.Header>Modal Title</Modal.Header>
+            <Modal.Body>
+                <VStack space={2}>
+              <Button onPress={() => {
+                leaveGroup({groupId:groupId})
+                navigate('Home')
+                }}>Leave Group</Button>
+              <Input 
+                  placeholder="Enter username to add"
+                  onChangeText={(text) => setAdduser(text)}
+                />
+                <Button
+                  onPress={() => {
+                    addMember({groupId: groupId, username: adduser})
+                    alert('User invited')
+                  }}
+                >Add Member</Button>
+                <Button
+                  colorScheme="red"
+                  onPress={() => {
+                    console.log('leave group')
+                    leaveGroup({groupId:groupId})
+                    navigate('Home')
+                  }}
+                >Leave Group</Button>
+              {groupOwner === userId ? 
+              <>
+              <Button colorScheme="red" onPress={() => {
+                deleteGroup({groupId:groupId})
+                navigate('Home')
+              }}>Delete Group</Button>
+              <Button
+                colorScheme="red"
+                  onPress={() => {
+                    removeMember({groupId: groupId, username: adduser})
+                  }}
+                >Remove Member</Button>
+              </>
+               : null}
+              </VStack>
+            </Modal.Body>
+           
+          </Modal.Content>
+        </Modal>
+
+      </HStack>
       <GiftedChat
         onLongPress={(context, message) => longpressHandler(context, message)}
         fontFamily="Prompt"
@@ -384,8 +408,9 @@ const onSend = useCallback((messages = []) => {
         }
       }
       />
-      
+      </Box>
     </View>
   );
-}
-export default Chat;
+};
+
+export default GroupChat;

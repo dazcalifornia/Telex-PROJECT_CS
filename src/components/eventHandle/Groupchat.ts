@@ -66,6 +66,7 @@ const deleteGroup = (props:{groupId:string}) => {
 
 const leaveGroup = (props:{groupId:string}) => {
   const {groupId} = props;
+  console.log(groupId)
   if(auth?.currentUser?.uid){
     db.collection('group').doc(groupId).get().then((doc) => {
       if(doc.exists){

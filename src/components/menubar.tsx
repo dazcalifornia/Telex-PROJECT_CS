@@ -14,7 +14,6 @@ import {
 import {Entypo} from '@expo/vector-icons';
 
 import addFriends from './eventHandle/addFriend';
-import Bruh from './eventHandle/bruh';
 
 export default function Menubar(props: { navigation: { navigate: any; }; }) {
   const {navigate} = props.navigation
@@ -80,7 +79,7 @@ export default function Menubar(props: { navigation: { navigate: any; }; }) {
                 fontSize: 'sm',
                 fontWeight: 'bold',
               }}
-              onPress={() => navigate('stations')}
+              onPress={() => navigate('stations', {navigation: navigate})}
             >
             Select Stations
             </Button>
